@@ -13,11 +13,13 @@ name: 测试PR
 
 on:
   pull_request:
-    types: [opened,
-            synchronize,      # 后续提交
-            ready_for_review, # draft PR 转为正式 PR
-            review_requested,
-            reopened]
+    types: [
+        opened,
+        synchronize, # 后续提交
+        ready_for_review, # draft PR 转为正式 PR
+        review_requested,
+        reopened,
+      ]
     paths:
       - "src/**"
       - "lib/**"
@@ -32,30 +34,32 @@ jobs:
       - name: 检出代码
         uses: actions/checkout@v4
 
+      - name: 安装 just
+        uses: extractions/setup-just@v3
+
       - name: 测试构建情况
         run: |
-          make
+          just build
 
       - name: 测试test情况
         run: |
-          make test
+          just test
 
   test-on-windows:
     name: 在Windows上测试
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     if: github.event.pull_request.base.ref == 'dev'
 
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 安装依赖
-        run: |
-          choco install just
+      - name: 安装 just
+        uses: extractions/setup-just@v3
 
       - name: 测试构建情况
         run: |
-          just
+          just build
 
       - name: 测试test情况
         run: |
