@@ -761,7 +761,7 @@ main (int argc, char const *argv[])
   else if (   xy_streql (command, "reset")
            || xy_streql (command, "rest")
            || xy_streql (command, "r"))
-    {
+    {   
       if (argc < cli_arg_Target_pos)
         {
           char *msg = ENGLISH ? "Please provide the target name you want to reset the source. " MSG_EN_USE_LIST_TARGETS
