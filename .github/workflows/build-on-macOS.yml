@@ -11,8 +11,7 @@
 
 name: 构建于 macOS
 on:
-  push:
-    branches: [ "gh-build" ]
+  workflow_dispatch:
 
 jobs:
   on-arm64:

@@ -11,8 +11,7 @@
 
 name: 构建于 Linux AArch64
 on:
-  push:
-    branches: [ "gh-build" ]
+  workflow_dispatch:
 
 jobs:
   build-and-upload:
