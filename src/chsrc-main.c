@@ -45,6 +45,10 @@ chsrc_register_contributors ()
   // 该注释下一行的用户 ID 为 Gitee ID
   chef_register_contributor ("@G_I_Y",          "郭恒",           "2085471348@qq.com",              NULL);
 
+  /* 项目协作者 */
+  chef_register_contributor ("@happy-game",     "Happy Game",     "happygame1024@gmail.com",        NULL);
+  chef_register_contributor ("@Mikachu2333",    "Mikachu2333",    "linkchou@yandex.com",            NULL);
+
   /* 所有贡献者 (按参与贡献时间排序) */
   chef_register_contributor ("@Aaron-212",      "Aaron Ruan",     "aaron212cn@outlook.com",         NULL);
   chef_register_contributor ("@chenrui333",     "Rui Chen",       "rui@chenrui.dev",                NULL);
@@ -54,7 +58,6 @@ chsrc_register_contributors ()
   chef_register_contributor ("@MrWillCom",      "Mr. Will",       "mr.will.com@outlook.com",        NULL);
   chef_register_contributor ("@Jerry-Terrasse", "Terrasse",       "terrasse@qq.com",                NULL);
   chef_register_contributor ("@lontten",        "Lontten",        "lontten@163.com",                NULL);
-  chef_register_contributor ("@happy-game",     "Happy Game",     "happygame1024@gmail.com",        NULL);
   chef_register_contributor ("@Word2VecT",      "Word2VecT",      "tangzinan@bupt.edu.cn",          NULL);
   chef_register_contributor ("@wickdynex",      "Xuan",           "wick.dynex@qq.com",              NULL);
   chef_register_contributor ("@Efterklang",     "GnixAij",        "gaojiaxing0220@gmail.com",       NULL);
@@ -69,11 +72,9 @@ chsrc_register_contributors ()
   chef_register_contributor ("@Kattos",         "ccy",            "icuichengyi@gmail.com",          NULL);
   chef_register_contributor ("@xrgzs",          "MadDogOwner",    "xiaoran@xrgzs.top",              NULL);
   chef_register_contributor ("@sanchuanhehe",   "sanchuanhehe",   "wyihe5520@gmail.com",            NULL);
-  chef_register_contributor ("@Mikachu2333",    "Mikachu2333",    "linkchou@yandex.com",     NULL);
   chef_register_contributor ("@techoc",         "Rui Yang",       "techoc@foxmail.com",             NULL);
   chef_register_contributor ("@BingChunMoLi",   "BingChunMoLi",   "bingchunmoli@bingchunmoli.com",  NULL);
   chef_register_contributor ("@wcbing",         "wcbing",         "i@wcbing.top",                   NULL);
-  chef_register_contributor ("@daocoder",       "daocoder",       "daocoder@foxmail.com",           NULL);
   // 该注释下一行的用户 ID 为 Gitee ID
   chef_register_contributor ("@hezonglun",      "HeZongLun",      "hezonglun123456@outlook.com",    NULL);
   chef_register_contributor ("@Young-Lord",     "LY",             "ly-niko@qq.com",                 NULL);
@@ -81,11 +82,12 @@ chsrc_register_contributors ()
   chef_register_contributor ("@usernameisnull", "MaBing",         "cumt_ttr@163.com",               NULL);
   chef_register_contributor ("@AnonTokio",      "Anon Tokio",     "anontokio@163.com",              NULL);
   chef_register_contributor ("@NewbieXvwu",     "Mingzhe Jiang",   "newbiexvwu@gmail.com",          NULL);
+  chef_register_contributor ("@daocoder",       "daocoder",       "daocoder@foxmail.com",           NULL);
 
   /**
    * AI贡献者：
    *
-   *    ChatGPT、GitHub Copilot、DeepSeek
+   *    ChatGPT、GitHub Copilot、DeepSeek、Claude
    *
    * 这几位是贡献者显式说明的，也许还有隐式使用的一些AI并没有被记录下来，可以添加在这里
    */

@@ -2,10 +2,10 @@
  ! SPDX-License-Identifier: GPL-3.0-or-later
  ! -------------------------------------------------------------
  ! Config Type   : rawstr4c (Markdown)
- ! Config Authors: 曾奥然 <ccmywish@qq.com>
+ ! Config Authors: @ccmywish
  ! Contributors  : Nil Null <nil@null.org>
  ! Created On    : <2025-07-22>
- ! Last Modified : <2025-10-29>
+ ! Last Modified : <2026-08-11>
  ! ---------------------------------------------------------- -->
 
 # [rawstr4c] input for chsrc
@@ -69,10 +69,7 @@
    -no-color                  无颜色输出
 
 维护:
-   邀请您担任  Chef, 为用户把关您熟悉的 recipe
-
    源代码地址: https://github.com/RubyMetric/chsrc
-   成为维护者: https://github.com/RubyMetric/chsrc/issues/275
 ```
 
 <br>
@@ -120,10 +117,7 @@ OPTIONS:
    -no-color                  Output without color
 
 MAINTAIN:
-   We invite you to become a Chef to ensure the quality of recipes you are familiar with for users:
-
    Source Code:               https://github.com/RubyMetric/chsrc
-   Become a Maintainer:       https://github.com/RubyMetric/chsrc/issues/275
 ```
 
 <br>
