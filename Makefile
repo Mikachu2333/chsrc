@@ -8,9 +8,10 @@
 #								| @sanchuanhehe
 #								| @G_I_Y
 #               | @NewbieXvwu
+#               | @Mikachu2333
 #               |
 # Created On    : <2023-08-28>
-# Last Modified : <2026-07-22>
+# Last Modified : <2026-08-11>
 #
 # 请阅读 ./doc/01-开发与构建.md 来使用
 # --------------------------------------------------------------
@@ -28,12 +29,11 @@ ifeq ($(shell uname), Darwin)
 	On-macOS = 1
 endif
 
-# 只有 MSYS2 会定义 $(OS) 变量
+# 只有 MSYS2 会定义 $(OS) 变量，而原生 Windows 不会定义
+# 而 原生 Windows 会定义 $(ComSpec) 变量，且区分大小写，但是 MSYS2 并不会定义
 ifeq ($(OS), Windows_NT)
 	On-Windows = 1
 endif
-# 注意, 原生 Windows 会定义 $(ComSpec) 变量，且区分大小写
-# 但是 MSYS2 并不会定义
 #=====================================
 
 
@@ -61,20 +61,24 @@ endif
 CFLAGS += -Iinclude -Ilib
 
 ifeq ($(On-Windows), 1)
-	# 依据 MSYS2 环境的目标架构选择 clang 的 target triple
-	# MSYSTEM_CARCH 由 MSYS2 提供: x86_64 (MINGW64/UCRT64/CLANG64) / i686 (MINGW32) / aarch64 (CLANGARM64)
-	# 非 MSYS2 环境 (独立 LLVM) 下回退到 x86_64
+  # 依据 MSYS2 环境的目标架构选择 clang 的 target triple
+  # MSYSTEM_CARCH 由 MSYS2 提供: x86_64 (MINGW64/UCRT64/CLANG64) / i686 (MINGW32) / aarch64 (CLANGARM64)
+  # 非 MSYS2 环境 (独立 LLVM) 下回退到 x86_64
 	Windows-Clang-Arch = $(if $(MSYSTEM_CARCH),$(MSYSTEM_CARCH),x86_64)
-	CLANG_FLAGS = -target $(Windows-Clang-Arch)-pc-windows-gnu
+	CFLAGS_clang = -target $(Windows-Clang-Arch)-pc-windows-gnu
 endif
 
 ifeq ($(CC), clang)
-	CFLAGS += $(CLANG_FLAGS)
+	CFLAGS += $(CFLAGS_clang)
 endif
 
 override WARN += -Wall -Wextra -Wno-unused-variable -Wno-unused-function -Wno-missing-braces -Wno-misleading-indentation \
 	-Wno-missing-field-initializers -Wno-unused-parameter -Wno-sign-compare
-_C_Warning_Flags := $(WARN)
+
+# 将在后续的 target 定义中看到，我们是单独使用这个变量，而不是 += 到 CFLAGS 中
+# 是因为想在用户 make 某个 target 的时候，不显示出一长串警告的编译选项
+# 而只显示出对用户重要的、便于排查问题的编译选项
+CFLAGS_warning := $(WARN)
 
 DevMode-Target-Name = chsrc
 DebugMode-Target-Name = chsrc-debug
@@ -98,16 +102,29 @@ endif
 
 
 
+#====== release mode 的配置 ==========
+ifneq ($(filter build-in-release-mode br,$(MAKECMDGOALS)),)
+
+	ifeq ($(On-Windows), 1)
+    # 注意: Android 交叉编译同样在 Windows/MSYS2 下进行, 必须排除, 不能链入 Windows 资源
+		ifneq ($(CROSS_BUILD_WINDOWS_FOR_ANDROID), 1)
+			Windows-Resource = chsrc.res
+		endif
+	endif
+
+endif
+#=====================================
+
+
+
 #====== CI release mode 的配置 =======
-ifeq ($(MAKECMDGOALS), build-in-ci-release-mode)
+ifneq ($(filter build-in-ci-release-mode bcir,$(MAKECMDGOALS)),)
 
 	CFLAGS += $(CFLAGS_optimization)
 
-  # Windows 上嵌入图标与版本信息资源 (与 justfile 中 build-in-release-mode 一致)
-	# 注意: Android 交叉编译同样在 Windows/MSYS2 下进行, 必须排除, 不能链入 Windows 资源
 	ifeq ($(On-Windows), 1)
 		ifneq ($(CROSS_BUILD_WINDOWS_FOR_ANDROID), 1)
-			Windows-CI-Resource = chsrc.res
+			Windows-Resource = chsrc.res
 		endif
 	endif
 
@@ -146,28 +163,34 @@ c: clean
 
 build-in-dev-mode:
 	@echo Starting: Build in DEV mode: \'$(CC)\' $(CFLAGS) -o $(DevMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(CFLAGS) $(_C_Warning_Flags) -o $(DevMode-Target-Name)
+	@$(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(DevMode-Target-Name)
 	@echo Finished: Build in DEV mode
 
 build-in-debug-mode: CFLAGS += $(CFLAGS_debug)
 build-in-debug-mode:
 	@echo Starting: Build in DEBUG mode: \'$(CC)\' $(CFLAGS) -o $(DebugMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(CFLAGS) $(_C_Warning_Flags) -o $(DebugMode-Target-Name)
+	@$(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(DebugMode-Target-Name)
 	@echo Finished: Build in DEBUG mode
 
+build-windows-resource:
+	@windres src/resource/chsrc.rc -O coff -o chsrc.res
+
+# 动态增加先决条件prerequisites
+ifeq ($(Windows-Resource), chsrc.res)
+build-in-release-mode build-in-ci-release-mode: build-windows-resource
+endif
+
+# 这是 Target-specific variables
 build-in-release-mode: CFLAGS += $(CFLAGS_optimization)
 build-in-release-mode:
 	@echo Starting: Build in RELEASE mode: \'$(CC)\' $(CFLAGS) -o $(ReleaseMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(CFLAGS) $(_C_Warning_Flags) -o $(ReleaseMode-Target-Name)
+	@$(CC) src/chsrc-main.c $(Windows-Resource) $(CFLAGS) $(CFLAGS_warning) -o $(ReleaseMode-Target-Name)
 	@echo Finished: Build in RELEASE mode
 
 # CI release mode 的配置在该文件上方
 build-in-ci-release-mode:
 	@echo Starting: Build in CI-RELEASE mode: \'$(CC)\' $(CFLAGS) -o $(CIReleaseMode-Target-Name)
-ifeq ($(Windows-CI-Resource), chsrc.res)
-	@windres src/resource/chsrc.rc -O coff -o chsrc.res
-endif
-	@$(CC) src/chsrc-main.c $(Windows-CI-Resource) $(CFLAGS) $(_C_Warning_Flags) -o $(CIReleaseMode-Target-Name)
+	@$(CC) src/chsrc-main.c $(Windows-Resource) $(CFLAGS) $(CFLAGS_warning) -o $(CIReleaseMode-Target-Name)
 	@echo Finished: Build in CI-RELEASE mode
 
 # 永远重新编译
@@ -245,5 +268,5 @@ install: $(ReleaseMode-Target-Name)
 #	@bash ./tool/rawstr4c/run/run.sh $(ARGS)
 
 .PHONY: all b build bd br bcir d t check c \
-	build-in-dev-mode build-in-debug-mode build-in-release-mode build-in-ci-release-mode \
+	build-in-dev-mode build-in-debug-mode build-in-release-mode build-in-ci-release-mode build-windows-resource \
 	debug test test-make-env test-xy test-fw fastcheck test-cli clean install build-deb clean-deb rawstr4c
