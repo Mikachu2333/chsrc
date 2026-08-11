@@ -7,7 +7,7 @@
  * Contributors  : @livelycode36
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-02>
+ * Last Modified : <2026-08-11>
  *
  * chsrc struct
  * ------------------------------------------------------------*/
@@ -175,9 +175,19 @@ typedef struct Target_t
   void (*setfn)   (char *option);
   void (*resetfn) (char *option);
 
-  /* 初始化函数，用于填充该 struct 的各种信息 */
+  /**
+   * 初始化函数，用于填充该 struct 的各种信息
+   *
+   * 值得注意的是，preludefn() 将初始化该结构体内三个最重要的函数:
+   * 即 getfn setfn resetfn 的函数地址，但是 preludefn 这个函数自
+   * 身的函数地址不可能由自己初始化，所以需要额外的位置初始化:
+   *
+   *   1. menu.c 中通过 add() 注册
+   *   2. recipe 内部手动调用，如 "源target"
+   */
   void (*preludefn) (void);
   bool inited; /* 是否执行过了 preludefn() */
+
 
   Source_t *sources;
        int  sources_n;
@@ -212,12 +222,24 @@ Target_t;
 
 #define def_target(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Target_t t##_target={aliases};
 
+/* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_js_nvm 以及 pl_py_uv */
+#define def_sources_target(t, name) Target_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
+
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_s(t)   this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_sr(t)  this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_gs(t)  this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_NOOP(t)
 #define chef_prep_this(t,op) Target_t *this = &t##_target; this->inited = true; chef_allow_##op(t);
+
+/* 简化 "源target" 的编写 */
+#define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t); \
+chef_deny_english(); \
+chef_deny_user_define();
+
+/* 内部 "源target" 的 prelude 未通过 menu.c 的 add() 注册, 手动挂载 */
+#define chef_set_preludefn_for_sources_target(t) t##target.preludefn = t##_prelude;
+
 
 #define chef_use_this(t) Target_t *this = &t##_target;
 #define chsrc_use_this_source(t) Target_t *this = &t##_target; Source_t source = chsrc_yield_source_and_confirm (this, option);
