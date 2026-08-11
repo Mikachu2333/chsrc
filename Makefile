@@ -102,13 +102,15 @@ endif
 
 
 
-#====== release mode 的配置 ==========
-ifneq ($(filter build-in-release-mode br,$(MAKECMDGOALS)),)
+#====== 两种 release mode 的共同配置 ==========
+ifneq ($(filter build-in-release-mode br build-in-ci-release-mode bcir,$(MAKECMDGOALS)),)
+
+  CFLAGS += $(CFLAGS_optimization)
 
 	ifeq ($(On-Windows), 1)
     # 注意: Android 交叉编译同样在 Windows/MSYS2 下进行, 必须排除, 不能链入 Windows 资源
 		ifneq ($(CROSS_BUILD_WINDOWS_FOR_ANDROID), 1)
-			Windows-Resource = chsrc.res
+			Use-Binary-Windows-Resource = 1
 		endif
 	endif
 
@@ -119,14 +121,6 @@ endif
 
 #====== CI release mode 的配置 =======
 ifneq ($(filter build-in-ci-release-mode bcir,$(MAKECMDGOALS)),)
-
-	CFLAGS += $(CFLAGS_optimization)
-
-	ifeq ($(On-Windows), 1)
-		ifneq ($(CROSS_BUILD_WINDOWS_FOR_ANDROID), 1)
-			Windows-Resource = chsrc.res
-		endif
-	endif
 
   # 仅在 Linux 上使用静态链接
 	ifeq ($(On-Linux), 1)
@@ -161,45 +155,66 @@ c: clean
 
 
 
+
+
+
+#============ Target 定义开始 ================
+
+# 编译开始结束时的提示信息
+Starting-Echo-Info = echo Starting: Build in ${1} mode: \'$(CC)\' $(CFLAGS) -o ${2}
+Finished-Echo-Info = echo Finished: Build in ${1} mode
+
+# 真正的编译命令
+Build-Command = $(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(1)
+
+Build-Command-For-Release = $(CC) src/chsrc-main.c chsrc.res $(CFLAGS) $(CFLAGS_warning) -o $(1)
+
+
+
 build-in-dev-mode:
-	@echo Starting: Build in DEV mode: \'$(CC)\' $(CFLAGS) -o $(DevMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(DevMode-Target-Name)
-	@echo Finished: Build in DEV mode
-
-build-in-debug-mode: CFLAGS += $(CFLAGS_debug)
-build-in-debug-mode:
-	@echo Starting: Build in DEBUG mode: \'$(CC)\' $(CFLAGS) -o $(DebugMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(DebugMode-Target-Name)
-	@echo Finished: Build in DEBUG mode
-
-build-windows-resource:
-	@windres src/resource/chsrc.rc -O coff -o chsrc.res
-
-# 动态增加先决条件prerequisites
-ifeq ($(Windows-Resource), chsrc.res)
-build-in-release-mode build-in-ci-release-mode: build-windows-resource
-endif
+	@$(call Starting-Echo-Info, DEV, $(DevMode-Target-Name))
+	@$(call Build-Command, $(DevMode-Target-Name))
+	@$(call Finished-Echo-Info, DEV)
 
 # 这是 Target-specific variables
-build-in-release-mode: CFLAGS += $(CFLAGS_optimization)
-build-in-release-mode:
-	@echo Starting: Build in RELEASE mode: \'$(CC)\' $(CFLAGS) -o $(ReleaseMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(Windows-Resource) $(CFLAGS) $(CFLAGS_warning) -o $(ReleaseMode-Target-Name)
-	@echo Finished: Build in RELEASE mode
+build-in-debug-mode: CFLAGS += $(CFLAGS_debug)
+build-in-debug-mode:
+	@$(call Starting-Echo-Info, DEBUG, $(DebugMode-Target-Name))
+	@$(call Build-Command, $(DebugMode-Target-Name))
+	@$(call Finished-Echo-Info, DEBUG)
 
-# CI release mode 的配置在该文件上方
+
+
+ifeq ($(Use-Binary-Windows-Resource), 1)
+# 动态增加 target: Windows 上的二进制资源文件
+chsrc.res:
+	@windres src/resource/chsrc.rc -O coff -o chsrc.res
+
+# 动态增加先决条件
+build-in-release-mode build-in-ci-release-mode: chsrc.res
+endif
+
+build-in-release-mode:
+	@$(call Starting-Echo-Info, RELEASE, $(ReleaseMode-Target-Name))
+	@$(call Build-Command-For-Release,   $(ReleaseMode-Target-Name))
+	@$(call Finished-Echo-Info, RELEASE)
+
 build-in-ci-release-mode:
-	@echo Starting: Build in CI-RELEASE mode: \'$(CC)\' $(CFLAGS) -o $(CIReleaseMode-Target-Name)
-	@$(CC) src/chsrc-main.c $(Windows-Resource) $(CFLAGS) $(CFLAGS_warning) -o $(CIReleaseMode-Target-Name)
-	@echo Finished: Build in CI-RELEASE mode
+	@$(call Starting-Echo-Info, CI-RELEASE, $(CIReleaseMode-Target-Name))
+	@$(call Build-Command-For-Release,      $(CIReleaseMode-Target-Name))
+	@$(call Finished-Echo-Info, CI-RELEASE)
+
+
 
 # 永远重新编译
 debug: build-in-debug-mode
 	@$(DEBUGGER) $(DebugMode-Target-Name)
 
-test: test-make-env test-xy test-fw
 
-test-make-env:
+
+test: test-make-var test-xy test-fw
+
+test-make-var:
 	@echo "On-Linux: $(On-Linux)"
 	@echo "On-Windows: $(On-Windows)"
 	@echo "On-macOS: $(On-macOS)"
@@ -248,6 +263,8 @@ clean:
 	-@rm chsrc-release  	 2>/dev/null
 	-@rm chsrc-ci-release  2>/dev/null
 
+
+
 # -include pkg/deb/Makefile # 不这么做，因为 pkg/deb/Makefile 需要在 pkg/deb 目录下执行
 # 保持动词在前的任务名风格
 build-deb:
@@ -261,6 +278,8 @@ install: $(ReleaseMode-Target-Name)
 	install -D -m 644 doc/chsrc.1 $(DESTDIR)/usr/share/man/man1/chsrc.1
 	install -D -m 644 tool/completion/bash_completion.sh  $(DESTDIR)/usr/share/bash-completion/completions/chsrc
 
+
+
 # 这样还是太麻烦，不用，我们还是靠 just 来调用吧
 #
 # 通过 make rawstr4c ARGS="[--debug] Markdown.md" 来调用
@@ -268,5 +287,5 @@ install: $(ReleaseMode-Target-Name)
 #	@bash ./tool/rawstr4c/run/run.sh $(ARGS)
 
 .PHONY: all b build bd br bcir d t check c \
-	build-in-dev-mode build-in-debug-mode build-in-release-mode build-in-ci-release-mode build-windows-resource \
-	debug test test-make-env test-xy test-fw fastcheck test-cli clean install build-deb clean-deb rawstr4c
+	build-in-dev-mode build-in-debug-mode build-in-release-mode build-in-ci-release-mode \
+	debug test test-make-var test-xy test-fw fastcheck test-cli clean install build-deb clean-deb rawstr4c
