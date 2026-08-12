@@ -59,7 +59,7 @@ pl_uv_python_build_prelude (void)
 void
 pl_uv_python_build_getsrc (char *option)
 {
-  char *uv_config = pl_py_find_uv_config (false);
+  char *uv_config = pl_uv_find_uv_config (false);
 
   if (!uv_config || !chsrc_check_file (uv_config))
     {
@@ -71,7 +71,7 @@ pl_uv_python_build_getsrc (char *option)
     }
 
   // uv.toml 与 pyproject.toml 均使用同一套受限 TOML 读取逻辑。
-  char *content = xy_read_file (xy_normalize_path (uv_config));
+  char *content = xy_file_read (xy_normalize_path (uv_config));
   if (!content)
     {
       chsrc_error2 ("无法读取 uv 配置文件");
@@ -81,7 +81,7 @@ pl_uv_python_build_getsrc (char *option)
   bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
-  char *mirror = uvh_get_value_in_table (content, "python-install-mirror", parent_table);
+  char *mirror = pl_uvth_get_value_in_table (content, "python-install-mirror", parent_table);
   if (mirror)
     {
       println (mirror);
@@ -98,18 +98,18 @@ pl_uv_python_build_getsrc (char *option)
 void
 pl_uv_python_build_setsrc (char *option)
 {
-  char *uv_config = pl_py_find_uv_config (true);
+  char *uv_config = pl_uv_find_uv_config (true);
   if (!uv_config)
     {
       chsrc_error2 ("无法获取 uv 配置文件路径");
       return;
     }
 
-  char *content = xy_read_file (xy_normalize_path (uv_config));
+  char *content = xy_file_read (xy_normalize_path (uv_config));
   if (!content)
     {
       chsrc_error2 ("无法读取 uv 配置文件");
-      return false;
+      return;
     }
 
 
@@ -118,11 +118,19 @@ pl_uv_python_build_setsrc (char *option)
   bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
-  char *updated = uvh_replace_key_value (content, "python-install-mirror", source.url, parent_table);
+  char *updated = pl_uvth_replace_key_value (content, "python-install-mirror", source.url, parent_table);
 
   chsrc_backup (uv_config);
   chsrc_overwrite_file (updated, uv_config);
 
   chsrc_determine_chgtype (ChgType_Auto);
   chsrc_conclude (&source);
+}
+
+
+
+void
+pl_uv_python_build_resetsrc (char *option)
+{
+  pl_uv_python_build_setsrc (option);
 }

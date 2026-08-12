@@ -2,10 +2,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * -------------------------------------------------------------
  * File Authors  : @Mikachu2333
- * Contributors  :  Nul None <nul@none.org>
+ * Contributors  : @ccmywish
  *               |
  * Created On    : <2026-08-02>
- * Last Modified : <2026-08-02>
+ * Last Modified : <2026-08-12>
  *
  * uv 配置 (uv.toml / pyproject.toml) 字符串改写工具
  * (由 uv.c #include, 可被 test 单独 #include)
@@ -18,8 +18,6 @@
  * 刻意不处理: 多行字符串、数组/内联表值、字符串转义 ——
  * 因为所有改写都按“整行替换/删除”进行, 无需解析值本身。
  * 已知限制: 多行字符串 (`"""`) 内若出现行首 `[` 会被误认为段头, 罕见可忽略。
- *
- * 所有函数均为 static, 依赖调用方所在翻译单元提供 stdlib/string.h。
  * ------------------------------------------------------------*/
 
 /**
@@ -35,7 +33,7 @@
  * @return 行首以 key 开始且满足键边界时为 true, 否则为 false
  */
 static bool
-uvh_key_prefix (const char *p, const char *key)
+pl_uvth_key_prefix (const char *p, const char *key)
 {
   size_t kl = strlen (key);
   const char *end = NULL;
@@ -61,7 +59,7 @@ uvh_key_prefix (const char *p, const char *key)
  * @return 原字符串中第一个非空白字符的指针
  */
 static const char *
-uvh_skip_indent (const char *p)
+pl_uvth_skip_indent (const char *p)
 {
   while (*p == ' ' || *p == '\t') p++;
   return p;
@@ -79,9 +77,9 @@ uvh_skip_indent (const char *p)
  * @return 匹配时返回 true, 否则返回 false
  */
 static bool
-uvh_header_match (const char *p, const char *header)
+pl_uvth_header_match (const char *p, const char *header)
 {
-  p = uvh_skip_indent (p);
+  p = pl_uvth_skip_indent (p);
   size_t hl = strlen (header);
   if (strncmp (p, header, hl) == 0)
     {
@@ -108,7 +106,7 @@ uvh_header_match (const char *p, const char *header)
  * @return 下一行的行首指针 (或字符串结尾)
  */
 static const char *
-uvh_next_line (const char *p)
+pl_uvth_next_line (const char *p)
 {
   while (*p && *p != '\n') p++;
   if (*p == '\n') p++;
@@ -123,13 +121,13 @@ uvh_next_line (const char *p)
  * @return 下一个段头行的位置; 直到文件结尾都没有新段头时返回 NULL
  */
 static const char *
-uvh_find_section_end (const char *start)
+pl_uvth_find_section_end (const char *start)
 {
   const char *p = start;
   while (*p)
     {
-      if (*uvh_skip_indent (p) == '[') return p;
-      p = uvh_next_line (p);
+      if (*pl_uvth_skip_indent (p) == '[') return p;
+      p = pl_uvth_next_line (p);
     }
   return NULL;
 }
@@ -143,14 +141,14 @@ uvh_find_section_end (const char *start)
  * @return 匹配的表头行位置; 未找到返回 NULL
  */
 static const char *
-uvh_find_table (const char *content, const char *header)
+pl_uvth_find_table (const char *content, const char *header)
 {
   const char *p = content;
   while (*p)
     {
-      const char *line = uvh_skip_indent (p);
-      if (*line == '[' && uvh_header_match (line, header)) return p;
-      p = uvh_next_line (p);
+      const char *line = pl_uvth_skip_indent (p);
+      if (*line == '[' && pl_uvth_header_match (line, header)) return p;
+      p = pl_uvth_next_line (p);
     }
   return NULL;
 }
@@ -165,11 +163,11 @@ uvh_find_table (const char *content, const char *header)
  * @return 匹配的键行位置; 未找到返回 NULL
  */
 static const char *
-uvh_find_key_in_section (const char *first, const char *end, const char *key)
+pl_uvth_find_key_in_section (const char *first, const char *end, const char *key)
 {
-  for (const char *s = first; *s && (!end || s < end); s = uvh_next_line (s))
+  for (const char *s = first; *s && (!end || s < end); s = pl_uvth_next_line (s))
     {
-      if (uvh_key_prefix (uvh_skip_indent (s), key)) return s;
+      if (pl_uvth_key_prefix (pl_uvth_skip_indent (s), key)) return s;
     }
   return NULL;
 }
@@ -188,7 +186,7 @@ uvh_find_key_in_section (const char *first, const char *end, const char *key)
  *   return caller-free
  */
 static char *
-uvh_escape_basic_string (const char *value)
+pl_uvth_escape_basic_string (const char *value)
 {
   size_t n = 0;
   for (const char *p = value; *p; p++)
@@ -229,7 +227,7 @@ uvh_escape_basic_string (const char *value)
  * @return 对应的数值 0-15; 不是合法十六进制字符时返回 -1
  */
 static int
-uvh_hex_digit (char c)
+pl_uvth_hex_digit (char c)
 {
   if (c >= '0' && c <= '9') return c - '0';
   if (c >= 'a' && c <= 'f') return c - 'a' + 10;
@@ -250,7 +248,7 @@ uvh_hex_digit (char c)
  * @return 编码成功返回 true, 无效 code point 返回 false
  */
 static bool
-uvh_append_utf8 (char **out, size_t *pos, unsigned long codepoint)
+pl_uvth_append_utf8 (char **out, size_t *pos, unsigned long codepoint)
 {
   if (codepoint <= 0x7f)
     (*out)[(*pos)++] = (char)codepoint;
@@ -292,9 +290,9 @@ uvh_append_utf8 (char **out, size_t *pos, unsigned long codepoint)
  *   return caller-free
  */
 static char *
-uvh_extract_string_value (const char *line)
+pl_uvth_extract_string_value (const char *line)
 {
-  const char *eq = strchr (uvh_skip_indent (line), '=');
+  const char *eq = strchr (pl_uvth_skip_indent (line), '=');
   if (!eq) return NULL;
   const char *v = eq + 1;
   while (*v == ' ' || *v == '\t') v++;
@@ -322,11 +320,11 @@ uvh_extract_string_value (const char *line)
               v++;
               for (int i = 0; i < digits; i++, v++)
                 {
-                  int digit = uvh_hex_digit (*v);
+                  int digit = pl_uvth_hex_digit (*v);
                   if (digit < 0) { free (ret); return NULL; }
                   codepoint = (codepoint << 4) | (unsigned)digit;
                 }
-              if (!uvh_append_utf8 (&ret, &pos, codepoint))
+              if (!pl_uvth_append_utf8 (&ret, &pos, codepoint))
                 { free (ret); return NULL; }
               continue;
             }
@@ -365,11 +363,11 @@ uvh_extract_string_value (const char *line)
  * @return 值为 true 时返回 true, 否则返回 false
  */
 static bool
-uvh_value_is_true (const char *line)
+pl_uvth_value_is_true (const char *line)
 {
-  const char *eq = strchr (uvh_skip_indent (line), '=');
+  const char *eq = strchr (pl_uvth_skip_indent (line), '=');
   if (!eq) return false;
-  const char *v = uvh_skip_indent (eq + 1);
+  const char *v = pl_uvth_skip_indent (eq + 1);
   return strncmp (v, "true", 4) == 0
       && (v[4] == '\0' || v[4] == '\r' || v[4] == '\n' || v[4] == ' ' || v[4] == '\t' || v[4] == '#');
 }
@@ -386,18 +384,18 @@ uvh_value_is_true (const char *line)
  * @return 选中的 index 段头位置; 不存在 index 段时返回 NULL
  */
 static const char *
-uvh_find_managed_index (const char *content, const char *index_header)
+pl_uvth_find_managed_index (const char *content, const char *index_header)
 {
   const char *first = NULL;
-  for (const char *s = content; *s; s = uvh_next_line (s))
+  for (const char *s = content; *s; s = pl_uvth_next_line (s))
     {
-      if (!uvh_header_match (s, index_header)) continue;
+      if (!pl_uvth_header_match (s, index_header)) continue;
       if (!first) first = s;
 
-      const char *body = uvh_next_line (s);
-      const char *end = uvh_find_section_end (body);
-      const char *default_line = uvh_find_key_in_section (body, end, "default");
-      if (default_line && uvh_value_is_true (default_line)) return s;
+      const char *body = pl_uvth_next_line (s);
+      const char *end = pl_uvth_find_section_end (body);
+      const char *default_line = pl_uvth_find_key_in_section (body, end, "default");
+      if (default_line && pl_uvth_value_is_true (default_line)) return s;
     }
   return first;
 }
@@ -418,13 +416,13 @@ uvh_find_managed_index (const char *content, const char *index_header)
  *   return caller-free
  */
 static char *
-uvh_replace_line (const char *content, const char *line, const char *new_line_text)
+pl_uvth_replace_line (const char *content, const char *line, const char *new_line_text)
 {
   const char *line_end = strchr (line, '\n');
   if (!line_end) line_end = content + strlen (content);
 
   /* 复用原行缩进 */
-  const char *indent_end = uvh_skip_indent (line);
+  const char *indent_end = pl_uvth_skip_indent (line);
   size_t ind = indent_end - line;
 
   size_t len = strlen (content) + ind + strlen (new_line_text) + 8;
@@ -453,7 +451,7 @@ uvh_replace_line (const char *content, const char *line, const char *new_line_te
  *   return caller-free
  */
 static char *
-uvh_insert_before (const char *content, const char *insert_at, const char *insert_text)
+pl_uvth_insert_before (const char *content, const char *insert_at, const char *insert_text)
 {
   size_t head = insert_at - content;
 
@@ -480,9 +478,9 @@ uvh_insert_before (const char *content, const char *insert_at, const char *inser
  * @return malloc 的 caller-free 新内容
  */
 static char *
-uvh_append_segment (const char *content, const char *segment)
+pl_uvth_append_segment (const char *content, const char *segment)
 {
-  return uvh_insert_before (content, content + strlen (content), segment);
+  return pl_uvth_insert_before (content, content + strlen (content), segment);
 }
 
 
@@ -504,25 +502,25 @@ uvh_append_segment (const char *content, const char *segment)
  *   return caller-free
  */
 static char *
-replace_index_url (const char *content, const char *url, const char *index_header, const char *parent_table)
+pl_uvth_replace_index_url (const char *content, const char *url, const char *index_header, const char *parent_table)
 {
   /* default index 才是 uv 的 PyPI 替代源；不存在 default 时回退到第一个。 */
-  const char *ih = uvh_find_managed_index (content, index_header);
+  const char *ih = pl_uvth_find_managed_index (content, index_header);
   const char *boundary = content + strlen (content);
   if (!ih && parent_table)
     {
-      const char *table = uvh_find_table (content, parent_table);
+      const char *table = pl_uvth_find_table (content, parent_table);
       if (!table)
         {
           /* 父表不存在: 在文件末尾创建父表并在其中创建 index 段,
            * 中间改写统一 LF, 行尾由最终写入前按系统平台转换 */
-          char *escaped_url = uvh_escape_basic_string (url);
+          char *escaped_url = pl_uvth_escape_basic_string (url);
           size_t seg_len = strlen (parent_table) + strlen (index_header) + strlen (escaped_url) + 48;
           char *seg = calloc (seg_len, 1);
           snprintf (seg, seg_len, "%s\n%s\nurl = \"%s\"\ndefault = true\n",
                     parent_table, index_header, escaped_url);
           free (escaped_url);
-          char *ret = uvh_append_segment (content, seg);
+          char *ret = pl_uvth_append_segment (content, seg);
           free (seg);
           return ret;
         }
@@ -531,44 +529,44 @@ replace_index_url (const char *content, const char *url, const char *index_heade
   /* 作用域内无 index 段: 追加到边界之前 */
   if (!ih)
     {
-      char *escaped_url = uvh_escape_basic_string (url);
+      char *escaped_url = pl_uvth_escape_basic_string (url);
       size_t seglen = strlen (index_header) + strlen (escaped_url) + 48;
       char *seg = malloc (seglen);
       snprintf (seg, seglen, "%s\nurl = \"%s\"\ndefault = true\n", index_header, escaped_url);
       free (escaped_url);
-      char *ret = uvh_insert_before (content, boundary, seg);
+      char *ret = pl_uvth_insert_before (content, boundary, seg);
       free (seg);
       return ret;
     }
 
   /* 段内第一行与段边界 (下一个段头或文件尾) */
-  const char *first = uvh_next_line (ih);
-  const char *end = uvh_find_section_end (first);
-  const char *url_line = uvh_find_key_in_section (first, end, "url");
+  const char *first = pl_uvth_next_line (ih);
+  const char *end = pl_uvth_find_section_end (first);
+  const char *url_line = pl_uvth_find_key_in_section (first, end, "url");
 
   /* 段内没有 url 键: 在段内第一行之前插入 url (及缺失的 default) */
   if (!url_line)
     {
-      bool has_default = uvh_find_key_in_section (first, end, "default") != NULL;
-      char *escaped_url = uvh_escape_basic_string (url);
+      bool has_default = pl_uvth_find_key_in_section (first, end, "default") != NULL;
+      char *escaped_url = pl_uvth_escape_basic_string (url);
       size_t seglen = strlen (escaped_url) + (has_default ? 24 : 48);
       char *seg = malloc (seglen);
       size_t spos = 0;
       spos += snprintf (seg + spos, seglen - spos, "url = \"%s\"\n", escaped_url);
       if (!has_default)
         spos += snprintf (seg + spos, seglen - spos, "default = true\n");
-      char *ret = uvh_insert_before (content, first, seg);
+      char *ret = pl_uvth_insert_before (content, first, seg);
       free (seg);
       free (escaped_url);
       return ret;
     }
 
   /* 替换 url 行 */
-  char *escaped_url = uvh_escape_basic_string (url);
+  char *escaped_url = pl_uvth_escape_basic_string (url);
   size_t newlen = strlen (escaped_url) + 32;
   char *new_line = malloc (newlen);
   snprintf (new_line, newlen, "url = \"%s\"", escaped_url);
-  char *ret = uvh_replace_line (content, url_line, new_line);
+  char *ret = pl_uvth_replace_line (content, url_line, new_line);
   free (new_line);
   free (escaped_url);
   return ret;
@@ -592,40 +590,40 @@ replace_index_url (const char *content, const char *url, const char *index_heade
  *   return caller-free
  */
 static char *
-replace_key_value (const char *content, const char *key, const char *url, const char *parent_table)
+pl_uvth_replace_key_value (const char *content, const char *key, const char *url, const char *parent_table)
 {
   const char *old_line = NULL;
   const char *insert_at = NULL;
 
   if (parent_table)
     {
-      const char *table = uvh_find_table (content, parent_table);
+      const char *table = pl_uvth_find_table (content, parent_table);
       if (!table)
         {
           /* 父表不存在: 在文件末尾创建父表并写入键,
            * 中间改写统一 LF, 行尾由最终写入前按系统平台转换 */
-          char *escaped_url = uvh_escape_basic_string (url);
+          char *escaped_url = pl_uvth_escape_basic_string (url);
           size_t seg_len = strlen (parent_table) + strlen (key) + strlen (escaped_url) + 16;
           char *seg = calloc (seg_len, 1);
           snprintf (seg, seg_len, "%s\n%s = \"%s\"\n", parent_table, key, escaped_url);
           free (escaped_url);
-          char *ret = uvh_append_segment (content, seg);
+          char *ret = pl_uvth_append_segment (content, seg);
           free (seg);
           return ret;
         }
 
-      const char *first = uvh_next_line (table);
+      const char *first = pl_uvth_next_line (table);
       const char *key_zone_end = NULL;
-      for (const char *s = first; *s; s = uvh_next_line (s))
+      for (const char *s = first; *s; s = pl_uvth_next_line (s))
         {
-          const char *line = uvh_skip_indent (s);
+          const char *line = pl_uvth_skip_indent (s);
           if (*line == '[')
             {
               key_zone_end = s;
               break;
             }
         }
-      old_line = uvh_find_key_in_section (first, key_zone_end, key);
+      old_line = pl_uvth_find_key_in_section (first, key_zone_end, key);
       insert_at = key_zone_end ? key_zone_end : content + strlen (content);
     }
   else
@@ -634,9 +632,9 @@ replace_key_value (const char *content, const char *key, const char *url, const 
       const char *p = content;
       while (*p)
         {
-          if (*uvh_skip_indent (p) == '[') { insert_at = p; break; }
-          if (uvh_key_prefix (uvh_skip_indent (p), key)) old_line = p;
-          p = uvh_next_line (p);
+          if (*pl_uvth_skip_indent (p) == '[') { insert_at = p; break; }
+          if (pl_uvth_key_prefix (pl_uvth_skip_indent (p), key)) old_line = p;
+          p = pl_uvth_next_line (p);
         }
       if (!insert_at) insert_at = content + strlen (content);
     }
@@ -644,22 +642,22 @@ replace_key_value (const char *content, const char *key, const char *url, const 
   if (old_line)
     {
       /* 替换旧值行 */
-      char *escaped_url = uvh_escape_basic_string (url);
+      char *escaped_url = pl_uvth_escape_basic_string (url);
       size_t newlen = strlen (key) + strlen (escaped_url) + 32;
       char *new_line = malloc (newlen);
       snprintf (new_line, newlen, "%s = \"%s\"", key, escaped_url);
-      char *ret = uvh_replace_line (content, old_line, new_line);
+      char *ret = pl_uvth_replace_line (content, old_line, new_line);
       free (new_line);
       free (escaped_url);
       return ret;
     }
 
   /* 键不存在: 追加到作用域末尾 */
-  char *escaped_url = uvh_escape_basic_string (url);
+  char *escaped_url = pl_uvth_escape_basic_string (url);
   size_t seglen = strlen (key) + strlen (escaped_url) + 32;
   char *seg = malloc (seglen);
   snprintf (seg, seglen, "%s = \"%s\"\n", key, escaped_url);
-  char *ret = uvh_insert_before (content, insert_at, seg);
+  char *ret = pl_uvth_insert_before (content, insert_at, seg);
   free (seg);
   free (escaped_url);
   return ret;
@@ -681,20 +679,20 @@ replace_key_value (const char *content, const char *key, const char *url, const 
  *   return caller-free
  */
 static char *
-uvh_get_value_in_table (const char *content, const char *key, const char *parent_table)
+pl_uvth_get_value_in_table (const char *content, const char *key, const char *parent_table)
 {
   const char *p = content;
   if (parent_table)
     {
-      const char *table = uvh_find_table (content, parent_table);
+      const char *table = pl_uvth_find_table (content, parent_table);
       if (!table) return NULL;
-      p = uvh_next_line (table);
+      p = pl_uvth_next_line (table);
     }
 
-  const char *limit = uvh_find_section_end (p);
-  for (const char *s = p; *s && (!limit || s < limit); s = uvh_next_line (s))
+  const char *limit = pl_uvth_find_section_end (p);
+  for (const char *s = p; *s && (!limit || s < limit); s = pl_uvth_next_line (s))
     {
-      if (uvh_key_prefix (uvh_skip_indent (s), key)) return uvh_extract_string_value (s);
+      if (pl_uvth_key_prefix (pl_uvth_skip_indent (s), key)) return pl_uvth_extract_string_value (s);
     }
   return NULL;
 }
@@ -715,15 +713,15 @@ uvh_get_value_in_table (const char *content, const char *key, const char *parent
  *   return caller-free
  */
 static char *
-uvh_get_index_url (const char *content, const char *index_header)
+pl_uvth_get_index_url (const char *content, const char *index_header)
 {
   /* fully-qualified [[tool.uv.index]] 会隐式创建父路径，不要求显式 [tool.uv]。 */
-  const char *ih = uvh_find_managed_index (content, index_header);
+  const char *ih = pl_uvth_find_managed_index (content, index_header);
   if (!ih) return NULL;
 
-  const char *first = uvh_next_line (ih);
-  const char *end = uvh_find_section_end (first);
-  const char *url_line = uvh_find_key_in_section (first, end, "url");
+  const char *first = pl_uvth_next_line (ih);
+  const char *end = pl_uvth_find_section_end (first);
+  const char *url_line = pl_uvth_find_key_in_section (first, end, "url");
   if (!url_line) return NULL;
-  return uvh_extract_string_value (url_line);
+  return pl_uvth_extract_string_value (url_line);
 }

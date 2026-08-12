@@ -98,7 +98,7 @@ pl_rust_cargo_getsrc (char *option)
   char *cargo_config_file = pl_rust_cargo_config_file ();
 
   char *raw_content = xy_file_read (cargo_config_file);
-  free (cargo_config_file);
+
   char *formatted_content = xy_str_gsub (raw_content, " ", "");
   formatted_content = xy_str_gsub (formatted_content, "'", "\"");
 

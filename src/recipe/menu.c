@@ -164,6 +164,7 @@ chsrc_init_menu ()
   add (py_poetry);
   add (py_pdm);
   add (py_rye);
+  add (uv);
   add (uv_pypi_index);
   add (uv_python_build);
 

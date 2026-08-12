@@ -29,7 +29,7 @@ pl_py_rye_prelude (void)
 }
 
 char *
-pl_python_find_rye_config ()
+pl_py_find_rye_config ()
 {
   char *buf = xy_run ("rye config --show-path", 0);
   char *rye_config = xy_normalize_path (buf);
@@ -42,7 +42,7 @@ pl_python_find_rye_config ()
 void
 pl_py_rye_getsrc (char *option)
 {
-  char *rye_config = pl_python_find_rye_config ();
+  char *rye_config = pl_py_find_rye_config ();
   chsrc_note2 (xy_strcat (3, "请查看 ", rye_config, " 配置文件中的 [[sources]] 节内容"));
 }
 
@@ -61,7 +61,7 @@ pl_py_rye_setsrc (char *option)
   content = xy_str_gsub (content, "@1@", source.mirror->abbr);
   content = xy_str_gsub (content, "@2@", source.url);
 
-  char *rye_config = pl_python_find_rye_config ();
+  char *rye_config = pl_py_find_rye_config ();
   chsrc_note2 (xy_strcat (3, "请在配置文件 ", rye_config, " 中添加:"));
   println (content);
 
