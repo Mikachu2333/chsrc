@@ -1,16 +1,14 @@
 /** ------------------------------------------------------------
  * SPDX-License-Identifier: GPL-3.0-or-later
  * -------------------------------------------------------------
- * Lib Authors   :  Mikachu2333   <linkchou@yandex.com>
- * Contributors  :  Nul None      <nul@none.org>
+ * File Authors  : @Mikachu2333
+ * Contributors  :  Nul None <nul@none.org>
  *               |
  * Created On    : <2026-08-02>
  * Last Modified : <2026-08-02>
  *
- *
- * @file uv-helper.c
- * @brief uv 配置 (uv.toml / pyproject.toml) 字符串改写工具
- *        (由 uv.c #include, 可被 test 单独 #include)
+ * uv 配置 (uv.toml / pyproject.toml) 字符串改写工具
+ * (由 uv.c #include, 可被 test 单独 #include)
  *
  * 仅处理 chsrc 关心的 uv 配置子集, 不是完整 TOML 解析器:
  *   - uv.toml:        顶层 [[index]] 数组表、顶层 python-install-mirror 键
