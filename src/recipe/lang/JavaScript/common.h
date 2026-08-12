@@ -45,26 +45,18 @@ pl_js_group_prelude (void)
 
 
 
-def_target(pl_js_nodejs_binary, "__internal_target_nodejs_binary__");
+def_sources_target (pl_js_nodejs_binary, "nodejs-binary");
 
 void
 pl_js_nodejs_binary_prelude (void)
 {
-  chef_prep_this (pl_js_nodejs_binary, NOOP);
+  chef_prep_sources_target (pl_js_nodejs_binary);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
-  chef_set_recipe_last_updated (this, "2025-08-22");
+  chef_set_recipe_last_updated (this, "2026-08-12");
 
   chef_set_chefs (this, 1, "@ccmywish");
   chef_set_sauciers (this, 0);
-
-  chef_set_scope_cap (this, ProjectScope, ScopeCap_Unknown);
-  chef_set_scope_cap (this, UserScope,    ScopeCap_Able_And_Implemented);
-  chef_set_scope_cap (this, SystemScope,  ScopeCap_Unknown);
-  chef_set_default_scope (this, UserScope);
-
-  chef_allow_english(this);
-  chef_allow_user_define(this);
 
   def_sources_begin()
   {&UpstreamProvider,  "https://nodejs.org/dist/", FeedByPrelude},

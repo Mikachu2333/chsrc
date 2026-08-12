@@ -7,7 +7,7 @@
  *                |
  * Created On     : <2023-09-01>
  * Major Revision :      6
- * Last Modified  : <2026-08-02>
+ * Last Modified  : <2026-08-12>
  * ------------------------------------------------------------*/
 
 #include "lang/rawstr4c.h"
@@ -230,6 +230,5 @@ chsrc_init_menu ()
   add (anaconda);
 #undef add
 
-  // Internal Target 不会由用户使用，需要特殊对待
-  pl_js_nodejs_binary_target.preludefn = pl_js_nodejs_binary_prelude;
+  chef_set_preludefn_for_sources_target (pl_js_nodejs_binary);
 }
