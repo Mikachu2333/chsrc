@@ -27,7 +27,7 @@
   #include "lang/Python/uv/uv.c"
 
 
-#include "lang/JavaScript/common.h"
+#include "lang/JavaScript/Node.js-binary.c"
   #include "lang/JavaScript/npm.c"
   #include "lang/JavaScript/pnpm.c"
   #include "lang/JavaScript/Yarn.c"
@@ -242,5 +242,5 @@ chsrc_init_menu ()
 #undef add
 
   chef_set_preludefn_for_sources_target (pl_py_pypi);
-  chef_set_preludefn_for_sources_target (pl_js_nodejs_binary);
+  chef_set_preludefn_for_sources_target (pl_nodejs_binary);
 }
