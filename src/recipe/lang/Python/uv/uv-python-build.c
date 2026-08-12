@@ -9,7 +9,7 @@
  * 针对 python-build-standalone 的测速链接。
 */
 
-def_sources_target (pl_py_uv_python_build, "uv-python-build");
+def_sources_target(pl_py_uv_python_build, "uv-python-build");
 
 // CNB (Cloud Native Build, 腾讯) 托管的 python-build-standalone releases 镜像
 static MirrorSite_t CnbUvPython =

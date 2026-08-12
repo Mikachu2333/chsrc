@@ -13,13 +13,12 @@
 #include "lang/rawstr4c.h"
 
 #include "lang/Ruby/Ruby.c"
-#include "lang/Python/common.h"
- #include "lang/Python/pip.c"
+#include "lang/Python/pypi.c"
+  #include "lang/Python/pip.c"
   #include "lang/Python/Poetry.c"
   #include "lang/Python/PDM.c"
   #include "lang/Python/Rye.c"
   #include "lang/Python/uv/uv.c"
-#include "lang/Python/Python.c"
 
 #include "lang/JavaScript/common.h"
   #include "lang/JavaScript/npm.c"
@@ -155,7 +154,6 @@ chsrc_init_menu ()
 
 #define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preludefn = pl_##t##_prelude
   add (ruby);
-  add (py_group);
   add (py_pip);
   add (py_poetry);
   add (py_pdm);
@@ -230,5 +228,6 @@ chsrc_init_menu ()
   add (anaconda);
 #undef add
 
+  chef_set_preludefn_for_sources_target (pl_py_pypi);
   chef_set_preludefn_for_sources_target (pl_js_nodejs_binary);
 }

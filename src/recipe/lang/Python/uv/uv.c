@@ -27,7 +27,7 @@ pl_py_uv_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_py_group_target);
+  chef_use_other_target_sources (this, &pl_py_pypi_target);
 
   // 挂载 源target
   chef_set_preludefn_for_sources_target (pl_py_uv_python_build);
@@ -191,7 +191,7 @@ pl_py_uv_getsrc (char *option)
         chsrc_note2 ("No source configured in uv, showing default upstream source:");
       else
         chsrc_note2 ("uv 中未配置源，显示默认上游源：");
-      Source_t default_source = chsrc_yield_source (&pl_py_group_target, "upstream");
+      Source_t default_source = chsrc_yield_source (&pl_py_pypi_target, "upstream");
       say (default_source.url);
     }
 
@@ -272,7 +272,7 @@ pl_py_uv_setsrc (char *option)
           return;
         }
 
-      Source_t default_pypi = pl_py_uv_yield_target_source (&pl_py_group_target, "upstream");
+      Source_t default_pypi = pl_py_uv_yield_target_source (&pl_py_pypi_target, "upstream");
       Source_t default_gh   = pl_py_uv_yield_target_source (&pl_py_uv_python_build_target, "upstream");
 
       chsrc_backup (uv_config);
@@ -302,10 +302,10 @@ pl_py_uv_setsrc (char *option)
       for (int i = 0; i < pl_py_uv_python_build_target.sources_n; i++)
         if (xy_streql (pl_py_uv_python_build_target.sources[i].mirror->code, option))
           { gh_found = true; break; }
-      if (!pl_py_group_target.inited)
-        pl_py_group_target.preludefn ();
-      for (int i = 0; i < pl_py_group_target.sources_n; i++)
-        if (xy_streql (pl_py_group_target.sources[i].mirror->code, option))
+      if (!pl_py_pypi_target.inited)
+        pl_py_pypi_target.preludefn ();
+      for (int i = 0; i < pl_py_pypi_target.sources_n; i++)
+        if (xy_streql (pl_py_pypi_target.sources[i].mirror->code, option))
           { pypi_found = true; break; }
 
       if (gh_found && !pypi_found)
@@ -317,26 +317,21 @@ pl_py_uv_setsrc (char *option)
         gh_opt = option; // 共有 code: 两个 target 都使用同一 code
     }
 
-  Source_t source = chsrc_yield_source (&pl_py_group_target, pypi_opt);
+  Source_t source = chsrc_yield_source (&pl_py_pypi_target, pypi_opt);
+  chsrc_confirm_source (&source);
+
   // 内部 target 不得复用 Python group leader 的数组下标。
   Source_t gh_source = pl_py_uv_yield_target_source (&pl_py_uv_python_build_target, gh_opt);
-
-  if (chsrc_in_standalone_mode())
-    chsrc_confirm_source (&source);
+  chsrc_confirm_source (&gh_source);
 
   chsrc_backup (uv_config);
   if (!pl_py_uv_write_all (uv_config, source.url, gh_source.url))
     {
-      free (uv_config);
       return;
     }
-  free (uv_config);
 
-  if (chsrc_in_standalone_mode())
-    {
-      chsrc_determine_chgtype (ChgType_Auto);
-      chsrc_conclude (&source);
-    }
+  chsrc_determine_chgtype (ChgType_Auto);
+  chsrc_conclude (&source);
 }
 
 

@@ -24,7 +24,7 @@ pl_py_poetry_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_py_group_target);
+  chef_use_other_target_sources (this, &pl_py_pypi_target);
 }
 
 void
@@ -40,18 +40,13 @@ pl_py_poetry_getsrc (char *option)
 void
 pl_py_poetry_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_py_group_target, option);
-  if (chsrc_in_standalone_mode())
-    chsrc_confirm_source(&source);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
 
   char *cmd = xy_2strcat ("poetry source add my_mirror ", source.url);
   chsrc_run (cmd, RunOpt_No_Last_New_Line);
 
-  if (chsrc_in_standalone_mode())
-    {
-      chsrc_determine_chgtype (ChgType_Auto);
-      chsrc_conclude (&source);
-    }
+  chsrc_determine_chgtype (ChgType_Auto);
+  chsrc_conclude (&source);
 }
 
 

@@ -6,15 +6,15 @@
 @c Contributors  : Nul None <nul@none.org>
 @c               |
 @c Created On    : <2024-08-22>
-@c Last Modified : <2026-02-24>
+@c Last Modified : <2026-08-12>
 @c --------------------------------------------------------------
 
 \input texinfo
 @setfilename chsrc.info
 @settitle chsrc
 
-@set Chsrc_Version v0.2.5
-@set Doc_Publish_Date 2026-02-24
+@set Chsrc_Version v0.2.6
+@set Doc_Publish_Date 2026-08-12
 
 @copying
 @comment 这是软件copyright，不是文档copyright，因此不放在titlepage

@@ -45,7 +45,7 @@ pl_js_group_prelude (void)
 
 
 
-def_sources_target (pl_js_nodejs_binary, "nodejs-binary");
+def_sources_target(pl_js_nodejs_binary, "nodejs-binary");
 
 void
 pl_js_nodejs_binary_prelude (void)
@@ -57,6 +57,8 @@ pl_js_nodejs_binary_prelude (void)
 
   chef_set_chefs (this, 1, "@ccmywish");
   chef_set_sauciers (this, 0);
+
+  chef_allow_user_define(this);
 
   def_sources_begin()
   {&UpstreamProvider,  "https://nodejs.org/dist/", FeedByPrelude},

@@ -7,7 +7,7 @@
  ! Contributors  : @Mikachu2333
  !               |
  ! Created On    : <2024-08-19>
- ! Last Modified : <2026-01-21>
+ ! Last Modified : <2026-08-12>
  ! ---------------------------------------------------------- -->
 
 # Write A Recipe Even If You Don't Know C
@@ -81,7 +81,7 @@
 
     1. 看一眼就能上手的参照物是 [PHP recipe](../src/recipe/lang/PHP.c)
     2. 最好的参照物是 [Ruby recipe](../src/recipe/lang/Ruby/Ruby.c)
-    3. 组换源参照物是 [Python group recipe](../src/recipe/lang/Python/Python.c)
+    3. 组换源参照物是 [JS group recipe](../src/recipe/lang/JavaScript/JavaScript.c)
 
 5. 在 [Wiki] 中记录的镜像站中寻找可用源；可以额外补充镜像站
 

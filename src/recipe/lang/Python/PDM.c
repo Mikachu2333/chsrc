@@ -23,7 +23,7 @@ pl_py_pdm_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_py_group_target);
+  chef_use_other_target_sources (this, &pl_py_pypi_target);
 }
 
 
@@ -43,9 +43,7 @@ pl_py_pdm_getsrc (char *option)
 void
 pl_py_pdm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_py_group_target, option);
-  if (chsrc_in_standalone_mode())
-    chsrc_confirm_source(&source);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
 
   char *cmd = NULL;
 
@@ -56,11 +54,8 @@ pl_py_pdm_setsrc (char *option)
 
   chsrc_run (cmd, RunOpt_No_Last_New_Line);
 
-  if (chsrc_in_standalone_mode())
-    {
-      chsrc_determine_chgtype (ChgType_Auto);
-      chsrc_conclude (&source);
-    }
+  chsrc_determine_chgtype (ChgType_Auto);
+  chsrc_conclude (&source);
 }
 
 void

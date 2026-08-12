@@ -7,7 +7,7 @@
  * Contributors  : @livelycode36
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-11>
+ * Last Modified : <2026-08-12>
  *
  * chsrc struct
  * ------------------------------------------------------------*/
@@ -234,11 +234,10 @@ Target_t;
 
 /* 简化 "源target" 的编写 */
 #define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t); \
-chef_deny_english(); \
-chef_deny_user_define();
+chef_deny_english(this);
 
 /* 内部 "源target" 的 prelude 未通过 menu.c 的 add() 注册, 手动挂载 */
-#define chef_set_preludefn_for_sources_target(t) t##target.preludefn = t##_prelude;
+#define chef_set_preludefn_for_sources_target(t) t##_target.preludefn = t##_prelude;
 
 
 #define chef_use_this(t) Target_t *this = &t##_target;
