@@ -10,7 +10,7 @@
  *               | AnonTokio    <anontokio@163.com>
  *               |
  * Created On    : <2023-08-28>
- * Last Modified : <2026-06-22>
+ * Last Modified : <2026-08-13>
  *
  *
  *                     xy: 襄阳、咸阳
@@ -33,7 +33,7 @@
 #ifndef XY_H
 #define XY_H
 
-#define _XY_Version       "v0.2.3.1-2026/06/22"
+#define _XY_Version       "v0.2.4-2026/08/13"
 #define _XY_Maintain_URL  "https://github.com/RubyMetric/chsrc/blob/dev/lib/xy.h"
 #define _XY_Maintain_URL2 "https://gitee.com/RubyMetric/chsrc/blob/dev/lib/xy.h"
 
@@ -435,6 +435,44 @@ xy_strdup (const char *str)
   char *new = xy_malloc0 (len + 1);
   strcpy (new, str);
   return new;
+}
+
+
+/**
+ * @brief 将整数转换为十进制字符串，返回新字符串
+ *
+ * @param value 要转换的整数
+ *
+ * @return 转换后的新字符串
+ *
+ * @memory SAFE
+ *   return caller-free
+ */
+static char *
+xy_int_to_str (int value)
+{
+  /**
+   * sizeof (int) * CHAR_BIT
+   *   计算整数的二进制位数，转换为十进制数所需要的最大字符数不会超过二进制数字符
+   *
+   * +2
+   *   是为了容纳负号和终止符
+   */
+  char buffer[sizeof (int) * CHAR_BIT + 2];
+
+  /**
+   * 在这个位置 buffer 是数组，不是指针，所以此时 sizeof (buffer) 得到的是
+   * 整个数组大小，而不是指针大小
+   *
+   * 只有在数组作为函数参数传递时，才会退化成指针：
+   * void foo (char buffer[])
+   * {
+   *   sizeof (buffer); // 这里得到的是 char * 的大小
+   * }
+   *
+   */
+  snprintf (buffer, sizeof (buffer), "%d", value);
+  return xy_strdup (buffer);
 }
 
 #define _XY_Str_Bold      1

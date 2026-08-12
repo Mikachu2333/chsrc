@@ -5,7 +5,7 @@
  * Test Authors  : 曾奥然       <ccmywish@qq.com>
  * Contributors  : Mikachu2333  <linkchou@yandex.com>
  * Created On    : <2023-08-30>
- * Last Modified : <2026-03-22>
+ * Last Modified : <2026-08-13>
  *
  * Test xy.h
  * ------------------------------------------------------------*/
@@ -99,6 +99,10 @@ main (int argc, char const *argv[])
   assert_str ("abcdefg", xy_str_delete_prefix ("abcdefg", "0abcde"));
   assert_str ("abcdefg", xy_str_delete_prefix ("abcdefg", ""));
   assert_str ("defg",    xy_str_delete_prefix ("abcdefg", "abc"));
+
+  assert_str ("0",          xy_int_to_str (0));
+  assert_str ("12345",      xy_int_to_str (12345));
+  assert_str ("-2147483648", xy_int_to_str (INT_MIN));
 
   assert_str ("defdef",   xy_str_gsub ("abcdefabcdef", "abc", ""));    // 删除
   assert_str ("6def6def", xy_str_gsub ("abcdefabcdef", "abc", "6")); // 缩小
