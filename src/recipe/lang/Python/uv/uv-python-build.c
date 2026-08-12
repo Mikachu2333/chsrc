@@ -2,14 +2,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-/*
- * Python下载镜像 (python-install-mirror)
+/**
+ * 控制 uv 如何下载 Python 本身
  *
- * 内部源target, 仅用于 `uv` recipe 独立选择 Python 下载镜像。
- * 针对 python-build-standalone 的测速链接。
-*/
+ * @consult https://docs.astral.sh/uv/reference/settings/#python-install-mirror
+ *
+ * 针对上游仓库 python-build-standalone 的镜像。
+ */
 
-def_sources_target(pl_py_uv_python_build, "uv-python-build");
+def_target(pl_uv_python_build, "uv-python-build");
 
 // CNB (Cloud Native Build, 腾讯) 托管的 python-build-standalone releases 镜像
 static MirrorSite_t CnbUvPython =
@@ -20,15 +21,18 @@ static MirrorSite_t CnbUvPython =
 };
 
 void
-pl_py_uv_python_build_prelude (void)
+pl_uv_python_build_prelude (void)
 {
-  chef_prep_sources_target (pl_py_uv_python_build);
+  chef_prep_sources_target (pl_uv_python_build);
 
   chef_set_recipe_created_on   (this, "2026-08-02");
-  chef_set_recipe_last_updated (this, "2026-08-11");
+  chef_set_recipe_last_updated (this, "2026-08-12");
 
-  chef_set_chefs (this, 1, "@Mikachu2333");
-  chef_set_sauciers (this, 1, "@ccmywish");
+  chef_set_chefs (this, 2, "@Mikachu2333", "@ccmywish");
+  chef_set_sauciers (this, 0);
+
+  chef_deny_english (this);
+  chef_allow_user_define (this);
 
   def_sources_begin ()
   {&UpstreamProvider, "https://github.com/astral-sh/python-build-standalone/releases/download",       DelegateToUpstream},
@@ -49,4 +53,76 @@ pl_py_uv_python_build_prelude (void)
 
   // 中科大仅保留 Latest 且文件内含动态版本号, 使用模糊测速
   chef_set_provider_sm_accuracy (&Ustc, ROUGH);
+}
+
+
+void
+pl_uv_python_build_getsrc (char *option)
+{
+  char *uv_config = pl_py_find_uv_config (false);
+
+  if (!uv_config || !chsrc_check_file (uv_config))
+    {
+      if (!uv_config)
+        chsrc_error2 ("无法获取 uv 配置文件路径");
+      else
+        chsrc_error2 ("未找到 uv 配置文件");
+      return;
+    }
+
+  // uv.toml 与 pyproject.toml 均使用同一套受限 TOML 读取逻辑。
+  char *content = xy_read_file (xy_normalize_path (uv_config));
+  if (!content)
+    {
+      chsrc_error2 ("无法读取 uv 配置文件");
+      return;
+    }
+
+  bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
+  const char *parent_table = pyproject ? "[tool.uv]" : NULL;
+
+  char *mirror = uvh_get_value_in_table (content, "python-install-mirror", parent_table);
+  if (mirror)
+    {
+      println (mirror);
+    }
+  else
+    {
+      chsrc_note2 ("uv 中未配置 python-install-mirror，显示默认上游源：");
+      Source_t default_source = chsrc_yield_source (&pl_uv_python_build_target, "upstream");
+      println (default_source.url);
+    }
+}
+
+
+void
+pl_uv_python_build_setsrc (char *option)
+{
+  char *uv_config = pl_py_find_uv_config (true);
+  if (!uv_config)
+    {
+      chsrc_error2 ("无法获取 uv 配置文件路径");
+      return;
+    }
+
+  char *content = xy_read_file (xy_normalize_path (uv_config));
+  if (!content)
+    {
+      chsrc_error2 ("无法读取 uv 配置文件");
+      return false;
+    }
+
+
+  chsrc_use_this_source (pl_uv_python_build);
+
+  bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
+  const char *parent_table = pyproject ? "[tool.uv]" : NULL;
+
+  char *updated = uvh_replace_key_value (content, "python-install-mirror", source.url, parent_table);
+
+  chsrc_backup (uv_config);
+  chsrc_overwrite_file (updated, uv_config);
+
+  chsrc_determine_chgtype (ChgType_Auto);
+  chsrc_conclude (&source);
 }
