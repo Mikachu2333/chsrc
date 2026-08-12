@@ -4,7 +4,7 @@
 
 #include "rawstr4c.h"
 
-def_target(pl_python_group, "python/pypi/py");
+def_target(pl_py_group, "python/pypi/py");
 
 /**
  * @note 测速链接的这个前缀是 ${host}/pipi/web/pacakges/56/e4....
@@ -16,7 +16,7 @@ def_target(pl_python_group, "python/pypi/py");
  * 实际文件仍位于 /pypi-packages，需要特殊处理
  */
 static char *
-pl_python_speed_url_constructor (const char *url, const char *user_data)
+pl_py_speed_url_constructor (const char *url, const char *user_data)
 {
   char *str = xy_str_delete_suffix (url, "/simple");
   str = xy_2strcat (str, "/packages/fa/80/eb88edc2e2b11cd2dd2e56f1c80b5784d11d6e6b7f04a1145df64df40065/opencv_python-4.12.0.88-cp37-abi3-win_amd64.whl");
@@ -29,9 +29,9 @@ pl_python_speed_url_constructor (const char *url, const char *user_data)
 
 
 void
-pl_python_group_prelude (void)
+pl_py_group_prelude (void)
 {
-  chef_prep_this (pl_python_group, gsr);
+  chef_prep_this (pl_py_group, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-01");
@@ -75,11 +75,11 @@ pl_python_group_prelude (void)
   // {&Netease,       "https://mirrors.163.com/.help/pypi.html", NULL}
   def_sources_end()
 
-  chef_set_rest_smURL_with_func (this, pl_python_speed_url_constructor, NULL);
+  chef_set_rest_smURL_with_func (this, pl_py_speed_url_constructor, NULL);
 }
 
 void
-pl_python_check_unofficial_pkger (bool *poetry_exist, bool *pdm_exist, bool *uv_exist)
+pl_py_check_unofficial_pkger (bool *poetry_exist, bool *pdm_exist, bool *uv_exist)
 {
   *poetry_exist = chsrc_check_program ("poetry");
   *pdm_exist = chsrc_check_program ("pdm");
@@ -91,7 +91,7 @@ pl_python_check_unofficial_pkger (bool *poetry_exist, bool *pdm_exist, bool *uv_
  * @param[out] prog_name 返回 Python 的可用名，如果不可用，则返回 NULL
  */
 void
-pl_python_get_py_program_name (char **prog_name)
+pl_py_get_python_program_name (char **prog_name)
 {
   *prog_name = NULL;
 

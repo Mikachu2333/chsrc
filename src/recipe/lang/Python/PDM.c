@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_python_pdm, "pdm");
+def_target(pl_py_pdm, "pdm");
 
 void
-pl_python_pdm_prelude (void)
+pl_py_pdm_prelude (void)
 {
-  chef_prep_this (pl_python_pdm, gsr);
+  chef_prep_this (pl_py_pdm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-06-05");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -23,12 +23,12 @@ pl_python_pdm_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_python_group_target);
+  chef_use_other_target_sources (this, &pl_py_group_target);
 }
 
 
 void
-pl_python_pdm_getsrc (char *option)
+pl_py_pdm_getsrc (char *option)
 {
   // @HELP 不加 --global 时，会检测到本项目的配置吗？
   // 如果不行的话，就要分别改成 --global 和 --local
@@ -41,9 +41,9 @@ pl_python_pdm_getsrc (char *option)
  * @consult https://github.com/RubyMetric/chsrc/issues/19
  */
 void
-pl_python_pdm_setsrc (char *option)
+pl_py_pdm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_python_group_target, option);
+  Source_t source = chsrc_yield_source (&pl_py_group_target, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 
@@ -64,7 +64,7 @@ pl_python_pdm_setsrc (char *option)
 }
 
 void
-pl_python_pdm_resetsrc (char *option)
+pl_py_pdm_resetsrc (char *option)
 {
-  pl_python_pdm_setsrc (option);
+  pl_py_pdm_setsrc (option);
 }

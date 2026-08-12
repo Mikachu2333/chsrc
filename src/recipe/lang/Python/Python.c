@@ -9,38 +9,38 @@
  * ------------------------------------------------------------*/
 
 void
-pl_python_group_getsrc (char *option)
+pl_py_group_getsrc (char *option)
 {
   bool pdm_exist    = false,
        poetry_exist = false,
        uv_exist     = false;
 
-  pl_python_check_unofficial_pkger (&poetry_exist, &pdm_exist, &uv_exist);
+  pl_py_check_unofficial_pkger (&poetry_exist, &pdm_exist, &uv_exist);
 
   // 交给后面检查命令的存在性
-  pl_python_pip_getsrc (option);
+  pl_py_pip_getsrc (option);
   br();
 
   if (poetry_exist)
     {
-      pl_python_poetry_getsrc (option);
+      pl_py_poetry_getsrc (option);
       br();
     }
 
   if (pdm_exist)
     {
-      pl_python_pdm_getsrc (option);
+      pl_py_pdm_getsrc (option);
     }
 
   if (uv_exist)
     {
-      pl_python_uv_getsrc (option);
+      pl_py_uv_getsrc (option);
     }
 }
 
 
 void
-pl_python_group_setsrc (char *option)
+pl_py_group_setsrc (char *option)
 {
   {
     char *msg = ENGLISH ? "Three package managers will be replaced for you at the same time: "
@@ -54,31 +54,31 @@ pl_python_group_setsrc (char *option)
        poetry_exist = false,
        uv_exist     = false;
 
-  pl_python_check_unofficial_pkger (&poetry_exist, &pdm_exist, &uv_exist);
+  pl_py_check_unofficial_pkger (&poetry_exist, &pdm_exist, &uv_exist);
 
   chsrc_set_target_group_mode ();
 
-  chsrc_use_this_source (pl_python_group);
+  chsrc_use_this_source (pl_py_group);
 
 
   // 交给后面检查命令的存在性
-  pl_python_pip_setsrc (option);
+  pl_py_pip_setsrc (option);
   br();
 
   if (poetry_exist)
     {
-      pl_python_poetry_setsrc (option);
+      pl_py_poetry_setsrc (option);
       br();
     }
 
   if (pdm_exist)
     {
-      pl_python_pdm_setsrc (option);
+      pl_py_pdm_setsrc (option);
     }
 
   if (uv_exist)
     {
-      pl_python_uv_setsrc (option);
+      pl_py_uv_setsrc (option);
     }
 
   chsrc_determine_chgtype (ChgType_Auto);
@@ -87,7 +87,7 @@ pl_python_group_setsrc (char *option)
 
 
 void
-pl_python_group_resetsrc (char *option)
+pl_py_group_resetsrc (char *option)
 {
-  pl_python_group_setsrc (option);
+  pl_py_group_setsrc (option);
 }

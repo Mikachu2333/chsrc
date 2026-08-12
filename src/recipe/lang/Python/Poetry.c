@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_python_poetry, "poetry");
+def_target(pl_py_poetry, "poetry");
 
 void
-pl_python_poetry_prelude (void)
+pl_py_poetry_prelude (void)
 {
-  chef_prep_this (pl_python_poetry, gsr);
+  chef_prep_this (pl_py_poetry, gsr);
 
   chef_set_recipe_created_on   (this, "2024-08-08");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -24,11 +24,11 @@ pl_python_poetry_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_python_group_target);
+  chef_use_other_target_sources (this, &pl_py_group_target);
 }
 
 void
-pl_python_poetry_getsrc (char *option)
+pl_py_poetry_getsrc (char *option)
 {
   chsrc_note2 ("poetry换源情况: 请查看本项目 pyproject.toml 中 [[tool.poetry.source]]");
 }
@@ -38,9 +38,9 @@ pl_python_poetry_getsrc (char *option)
  * @consult https://python-poetry.org/docs/repositories/#project-configuration
  */
 void
-pl_python_poetry_setsrc (char *option)
+pl_py_poetry_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_python_group_target, option);
+  Source_t source = chsrc_yield_source (&pl_py_group_target, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 
@@ -56,7 +56,7 @@ pl_python_poetry_setsrc (char *option)
 
 
 void
-pl_python_poetry_resetsrc (char *option)
+pl_py_poetry_resetsrc (char *option)
 {
-  pl_python_poetry_setsrc (option);
+  pl_py_poetry_setsrc (option);
 }

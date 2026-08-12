@@ -2,16 +2,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_python_uv, "uv");
+def_target(pl_py_uv, "uv");
 
 #include "uv-helper.c"
 #include "uv-python-build.c"
 
 // 调整 `python-install-mirror` 相关配置应在 `uv-python-build.c` 中修改，本处仅为 uv 最常用的 `pypi` 镜像配置。
 void
-pl_python_uv_prelude (void)
+pl_py_uv_prelude (void)
 {
-  chef_prep_this (pl_python_uv, gsr);
+  chef_prep_this (pl_py_uv, gsr);
 
   chef_set_recipe_created_on   (this, "2024-12-11");
   chef_set_recipe_last_updated (this, "2026-08-11");
@@ -27,7 +27,7 @@ pl_python_uv_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_python_group_target);
+  chef_use_other_target_sources (this, &pl_py_group_target);
 
   // 挂载 源target
   chef_set_preludefn_for_sources_target (pl_py_uv_python_build);
@@ -48,21 +48,21 @@ pl_python_uv_prelude (void)
  * Unix 用户配置目录优先使用 $XDG_CONFIG_HOME/uv，未设置时回退到 ~/.config/uv。
  */
 
-#define PL_Python_uv_ConfigFile          "uv.toml"
-#define PL_Python_uv_PyprojectConfigFile "pyproject.toml"
+#define pl_py_uv_ConfigFile          "uv.toml"
+#define pl_py_uv_PyprojectConfigFile "pyproject.toml"
 // 注意: 不能以 "./" 开头 —— Windows 上 chsrc_backup 的 copy 命令无法处理
-#define PL_Python_uv_Local_ConfigPath    ""
-#define PL_Python_uv_User_ConfigPath     "~/.config"
+#define pl_py_uv_Local_ConfigPath    ""
+#define pl_py_uv_User_ConfigPath     "~/.config"
 
 static const char *
-pl_python_uv_user_config_path (void)
+pl_py_uv_user_config_path (void)
 {
   const char *xdg = getenv ("XDG_CONFIG_HOME");
-  return (xdg && *xdg) ? xdg : PL_Python_uv_User_ConfigPath;
+  return (xdg && *xdg) ? xdg : pl_py_uv_User_ConfigPath;
 }
 
 static Source_t
-pl_python_uv_yield_target_source (Target_t *target, char *option)
+pl_py_uv_yield_target_source (Target_t *target, char *option)
 {
   if (!target->inited) target->preludefn ();
 
@@ -77,7 +77,7 @@ pl_python_uv_yield_target_source (Target_t *target, char *option)
 }
 
 static char *
-pl_python_uv_read_config (const char *path)
+pl_py_uv_read_config (const char *path)
 {
   if (!xy_file_exist (path)) return xy_strdup ("");
 
@@ -101,16 +101,16 @@ pl_python_find_uv_config (bool mkdir)
   if (chsrc_in_project_scope_mode())
     {
       // uv.toml 与 pyproject.toml 并存时，uv 会忽略后者中的 [tool.uv]。
-      char *uv_toml = xy_2strcat (PL_Python_uv_Local_ConfigPath, PL_Python_uv_ConfigFile);
+      char *uv_toml = xy_2strcat (pl_py_uv_Local_ConfigPath, pl_py_uv_ConfigFile);
       if (xy_file_exist (uv_toml))
         return uv_toml;
       free (uv_toml);
 
-      char *pyproject = xy_2strcat (PL_Python_uv_Local_ConfigPath, PL_Python_uv_PyprojectConfigFile);
+      char *pyproject = xy_2strcat (pl_py_uv_Local_ConfigPath, pl_py_uv_PyprojectConfigFile);
       if (xy_file_exist (pyproject))
         return pyproject;
       free (pyproject);
-      return xy_2strcat (PL_Python_uv_Local_ConfigPath, PL_Python_uv_ConfigFile);
+      return xy_2strcat (pl_py_uv_Local_ConfigPath, pl_py_uv_ConfigFile);
     }
   else
     {
@@ -130,20 +130,20 @@ pl_python_find_uv_config (bool mkdir)
             {
               chsrc_ensure_dir (config_dir);
             }
-          char *result = xy_path_join (config_dir, PL_Python_uv_ConfigFile);
+          char *result = xy_path_join (config_dir, pl_py_uv_ConfigFile);
           free (config_dir);
           return result;
         }
       else
         {
           // config path on Linux or macOS
-          const char *config_path = pl_python_uv_user_config_path ();
+          const char *config_path = pl_py_uv_user_config_path ();
           char *config_dir = xy_path_join (config_path, "uv");
           if (mkdir)
             {
               chsrc_ensure_dir (config_dir);
             }
-          char *result = xy_path_join (config_dir, PL_Python_uv_ConfigFile);
+          char *result = xy_path_join (config_dir, pl_py_uv_ConfigFile);
           free (config_dir);
           return result;
         }
@@ -152,7 +152,7 @@ pl_python_find_uv_config (bool mkdir)
 
 
 void
-pl_python_uv_getsrc (char *option)
+pl_py_uv_getsrc (char *option)
 {
   char *uv_config = pl_python_find_uv_config (false);
 
@@ -167,7 +167,7 @@ pl_python_uv_getsrc (char *option)
     }
 
   // uv.toml 与 pyproject.toml 均使用同一套受限 TOML 读取逻辑。
-  char *content = pl_python_uv_read_config (uv_config);
+  char *content = pl_py_uv_read_config (uv_config);
   if (!content)
     {
       chsrc_error2 ("无法读取 uv 配置文件");
@@ -175,7 +175,7 @@ pl_python_uv_getsrc (char *option)
       return;
     }
 
-  bool pyproject = xy_str_end_with (uv_config, PL_Python_uv_PyprojectConfigFile);
+  bool pyproject = xy_str_end_with (uv_config, pl_py_uv_PyprojectConfigFile);
   const char *index_header = pyproject ? "[[tool.uv.index]]" : "[[index]]";
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
@@ -191,7 +191,7 @@ pl_python_uv_getsrc (char *option)
         chsrc_note2 ("No source configured in uv, showing default upstream source:");
       else
         chsrc_note2 ("uv 中未配置源，显示默认上游源：");
-      Source_t default_source = chsrc_yield_source (&pl_python_group_target, "upstream");
+      Source_t default_source = chsrc_yield_source (&pl_py_group_target, "upstream");
       say (default_source.url);
     }
 
@@ -212,16 +212,16 @@ pl_python_uv_getsrc (char *option)
  * 一次性完成uv配置文件的全部文件操作 (set 路径)
  */
 static bool
-pl_python_uv_write_all (const char *uv_config, const char *pypi_url, const char *py_dl_url)
+pl_py_uv_write_all (const char *uv_config, const char *pypi_url, const char *py_dl_url)
 {
-  char *content = pl_python_uv_read_config (uv_config);
+  char *content = pl_py_uv_read_config (uv_config);
   if (!content)
     {
       chsrc_error2 ("无法读取 uv 配置文件");
       return false;
     }
 
-  bool pyproject = xy_str_end_with (uv_config, PL_Python_uv_PyprojectConfigFile);
+  bool pyproject = xy_str_end_with (uv_config, pl_py_uv_PyprojectConfigFile);
   const char *index_header = pyproject ? "[[tool.uv.index]]" : "[[index]]";
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
@@ -248,7 +248,7 @@ pl_python_uv_write_all (const char *uv_config, const char *pypi_url, const char 
  * @consult https://docs.astral.sh/uv/reference/settings/#python-install-mirror
  */
 void
-pl_python_uv_setsrc (char *option)
+pl_py_uv_setsrc (char *option)
 {
   chsrc_ensure_program ("uv");
 
@@ -272,11 +272,11 @@ pl_python_uv_setsrc (char *option)
           return;
         }
 
-      Source_t default_pypi = pl_python_uv_yield_target_source (&pl_python_group_target, "upstream");
-      Source_t default_gh   = pl_python_uv_yield_target_source (&pl_py_uv_python_build_target, "upstream");
+      Source_t default_pypi = pl_py_uv_yield_target_source (&pl_py_group_target, "upstream");
+      Source_t default_gh   = pl_py_uv_yield_target_source (&pl_py_uv_python_build_target, "upstream");
 
       chsrc_backup (uv_config);
-      if (!pl_python_uv_write_all (uv_config, default_pypi.url, default_gh.url))
+      if (!pl_py_uv_write_all (uv_config, default_pypi.url, default_gh.url))
         {
           free (uv_config);
           return;
@@ -302,10 +302,10 @@ pl_python_uv_setsrc (char *option)
       for (int i = 0; i < pl_py_uv_python_build_target.sources_n; i++)
         if (xy_streql (pl_py_uv_python_build_target.sources[i].mirror->code, option))
           { gh_found = true; break; }
-      if (!pl_python_group_target.inited)
-        pl_python_group_target.preludefn ();
-      for (int i = 0; i < pl_python_group_target.sources_n; i++)
-        if (xy_streql (pl_python_group_target.sources[i].mirror->code, option))
+      if (!pl_py_group_target.inited)
+        pl_py_group_target.preludefn ();
+      for (int i = 0; i < pl_py_group_target.sources_n; i++)
+        if (xy_streql (pl_py_group_target.sources[i].mirror->code, option))
           { pypi_found = true; break; }
 
       if (gh_found && !pypi_found)
@@ -317,15 +317,15 @@ pl_python_uv_setsrc (char *option)
         gh_opt = option; // 共有 code: 两个 target 都使用同一 code
     }
 
-  Source_t source = chsrc_yield_source (&pl_python_group_target, pypi_opt);
+  Source_t source = chsrc_yield_source (&pl_py_group_target, pypi_opt);
   // 内部 target 不得复用 Python group leader 的数组下标。
-  Source_t gh_source = pl_python_uv_yield_target_source (&pl_py_uv_python_build_target, gh_opt);
+  Source_t gh_source = pl_py_uv_yield_target_source (&pl_py_uv_python_build_target, gh_opt);
 
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source (&source);
 
   chsrc_backup (uv_config);
-  if (!pl_python_uv_write_all (uv_config, source.url, gh_source.url))
+  if (!pl_py_uv_write_all (uv_config, source.url, gh_source.url))
     {
       free (uv_config);
       return;
@@ -341,7 +341,7 @@ pl_python_uv_setsrc (char *option)
 
 
 void
-pl_python_uv_resetsrc (char *option)
+pl_py_uv_resetsrc (char *option)
 {
-  pl_python_uv_setsrc (option);
+  pl_py_uv_setsrc (option);
 }

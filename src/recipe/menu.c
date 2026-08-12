@@ -155,12 +155,12 @@ chsrc_init_menu ()
 
 #define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preludefn = pl_##t##_prelude
   add (ruby);
-  add (python_group);
-  add (python_pip);
-  add (python_poetry);
-  add (python_pdm);
-  add (python_rye);
-  add (python_uv);
+  add (py_group);
+  add (py_pip);
+  add (py_poetry);
+  add (py_pdm);
+  add (py_rye);
+  add (py_uv);
   add (js_group);
   add (js_bun);
   add (js_npm);

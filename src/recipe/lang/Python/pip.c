@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_python_pip, "pip");
+def_target(pl_py_pip, "pip");
 
 void
-pl_python_pip_prelude (void)
+pl_py_pip_prelude (void)
 {
-  chef_prep_this (pl_python_pip, gsr);
+  chef_prep_this (pl_py_pip, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2025-09-12");
@@ -23,15 +23,15 @@ pl_python_pip_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_python_group_target);
+  chef_use_other_target_sources (this, &pl_py_group_target);
 }
 
 
 void
-pl_python_pip_getsrc (char *option)
+pl_py_pip_getsrc (char *option)
 {
   char *py_prog_name = NULL;
-  pl_python_get_py_program_name (&py_prog_name);
+  pl_py_get_python_program_name (&py_prog_name);
 
   char *cmd = xy_2strcat (py_prog_name, " -m pip config get global.index-url");
 
@@ -49,7 +49,7 @@ pl_python_pip_getsrc (char *option)
       else
         chsrc_note2 ("pip 中未配置源，显示默认上游源：");
 
-      Source_t default_source = chsrc_yield_source (&pl_python_group_target, "upstream");
+      Source_t default_source = chsrc_yield_source (&pl_py_group_target, "upstream");
       say (default_source.url);
     }
 }
@@ -59,7 +59,7 @@ pl_python_pip_getsrc (char *option)
  * @consult https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
  */
 void
-pl_python_pip_setsrc (char *option)
+pl_py_pip_setsrc (char *option)
 {
   // 对于不支持的情况，尽早结束
   if (chsrc_in_project_scope_mode())
@@ -71,12 +71,12 @@ pl_python_pip_setsrc (char *option)
       return;
     }
 
-  Source_t source = chsrc_yield_source (&pl_python_group_target, option);
+  Source_t source = chsrc_yield_source (&pl_py_group_target, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 
   char *py_prog_name = NULL;
-  pl_python_get_py_program_name (&py_prog_name);
+  pl_py_get_python_program_name (&py_prog_name);
 
   // 这里用的是 config --user，会写入用户目录（而不是项目目录）
   // https://github.com/RubyMetric/chsrc/issues/39
@@ -93,7 +93,7 @@ pl_python_pip_setsrc (char *option)
 
 
 void
-pl_python_pip_resetsrc (char *option)
+pl_py_pip_resetsrc (char *option)
 {
-  pl_python_pip_setsrc (option);
+  pl_py_pip_setsrc (option);
 }

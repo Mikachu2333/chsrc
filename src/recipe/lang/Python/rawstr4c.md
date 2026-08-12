@@ -12,7 +12,7 @@
 
 # rawstr4c input for Python
 
-- prefix = `RAWSTR_pl_python`
+- prefix = `RAWSTR_pl_py`
 - output = `:global-variable-only-header`
 - translate = `:hex`
 - no-postfix = `true`
