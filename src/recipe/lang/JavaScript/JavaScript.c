@@ -36,19 +36,19 @@ pl_js_group_getsrc (char *option)
 
   if (npm_exist)
     {
-      pl_js_npm_getsrc (option);
+      pl_npm_getsrc (option);
       br();
     }
 
   if (yarn_exist)
     {
-      pl_js_yarn_getsrc (option);
+      pl_yarn_getsrc (option);
       br();
     }
 
   if (pnpm_exist)
     {
-      pl_js_pnpm_getsrc (option);
+      pl_pnpm_getsrc (option);
       br();
     }
 }
@@ -74,19 +74,19 @@ pl_js_group_setsrc (char *option)
 
   if (npm_exist)
     {
-      pl_js_npm_setsrc (option);
+      pl_npm_setsrc (option);
       br();
     }
 
   if (yarn_exist)
     {
-      pl_js_yarn_setsrc (option);
+      pl_yarn_setsrc (option);
       br();
     }
 
   if (pnpm_exist)
     {
-      pl_js_pnpm_setsrc (option);
+      pl_pnpm_setsrc (option);
     }
 
   chsrc_determine_chgtype (ChgType_Auto);

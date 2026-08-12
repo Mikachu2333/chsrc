@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_py_pip, "pip/python/py");
+def_target(pl_pip, "pip/python/py");
 
 void
-pl_py_pip_prelude (void)
+pl_pip_prelude (void)
 {
-  chef_prep_this (pl_py_pip, gsr);
+  chef_prep_this (pl_pip, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-12");
@@ -112,7 +112,7 @@ pl_py_get_python_program_name (char **prog_name)
 
 
 void
-pl_py_pip_getsrc (char *option)
+pl_pip_getsrc (char *option)
 {
   char *py_prog_name = NULL;
   pl_py_get_python_program_name (&py_prog_name);
@@ -143,7 +143,7 @@ pl_py_pip_getsrc (char *option)
  * @consult https://mirrors.tuna.tsinghua.edu.cn/help/pypi/
  */
 void
-pl_py_pip_setsrc (char *option)
+pl_pip_setsrc (char *option)
 {
   // 对于不支持的情况，尽早结束
   if (chsrc_in_project_scope_mode())
@@ -172,7 +172,7 @@ pl_py_pip_setsrc (char *option)
 
 
 void
-pl_py_pip_resetsrc (char *option)
+pl_pip_resetsrc (char *option)
 {
-  pl_py_pip_setsrc (option);
+  pl_pip_setsrc (option);
 }

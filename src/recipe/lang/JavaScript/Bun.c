@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_js_bun, "bun");
+def_target(pl_bun, "bun");
 
 void
-pl_js_bun_prelude (void)
+pl_bun_prelude (void)
 {
-  chef_prep_this (pl_js_bun, gsr);
+  chef_prep_this (pl_bun, gsr);
 
   chef_set_recipe_created_on   (this, "2024-09-29");
   chef_set_recipe_last_updated (this, "2025-07-22");
@@ -30,7 +30,7 @@ pl_js_bun_prelude (void)
  * chsrc get bun
  */
 void
-pl_js_bun_getsrc (char *option)
+pl_bun_getsrc (char *option)
 {
   chsrc_view_file ("~/.bunfig.toml");
 }
@@ -44,12 +44,12 @@ pl_js_bun_getsrc (char *option)
  * chsrc set bun
  */
 void
-pl_js_bun_setsrc (char *option)
+pl_bun_setsrc (char *option)
 {
   // 用的是 npm Registry 的源
   Source_t source = chsrc_yield_source_and_confirm (&pl_js_group_target, option);
 
-  char *content = RAWSTR_pl_js_bun_config;
+  char *content = RAWSTR_pl_bun_config;
 
   content = xy_str_gsub (content, "@url@", source.url);
 
@@ -73,7 +73,7 @@ pl_js_bun_setsrc (char *option)
  * chsrc reset bun
  */
 void
-pl_js_bun_resetsrc (char *option)
+pl_bun_resetsrc (char *option)
 {
-  pl_js_bun_setsrc (option);
+  pl_bun_setsrc (option);
 }

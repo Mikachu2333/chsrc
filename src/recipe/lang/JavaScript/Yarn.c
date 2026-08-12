@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_js_yarn, "yarn");
+def_target(pl_yarn, "yarn");
 
 void
-pl_js_yarn_prelude (void)
+pl_yarn_prelude (void)
 {
-  chef_prep_this (pl_js_yarn, gsr);
+  chef_prep_this (pl_yarn, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -27,7 +27,7 @@ pl_js_yarn_prelude (void)
 }
 
 static double
-pl_js_yarn_get_yarn_version ()
+pl_yarn_get_yarn_version ()
 {
   char *ver = xy_run ("yarn --version", 0);
   double version = atof (ver);
@@ -36,10 +36,10 @@ pl_js_yarn_get_yarn_version ()
 
 
 void
-pl_js_yarn_getsrc (char *option)
+pl_yarn_getsrc (char *option)
 {
   // 最后一个版本应该是 v1.22.22
-  if (pl_js_yarn_get_yarn_version () >= 2)
+  if (pl_yarn_get_yarn_version () >= 2)
     // https://github.com/RubyMetric/chsrc/issues/53
     // 从 Yarn V2 开始，使用新的配置名
     chsrc_run ("yarn config get npmRegistryServer", RunOpt_No_Last_New_Line);
@@ -53,7 +53,7 @@ pl_js_yarn_getsrc (char *option)
  * @consult https://yarnpkg.com/cli/config/set
  */
 void
-pl_js_yarn_setsrc (char *option)
+pl_yarn_setsrc (char *option)
 {
   Source_t source = chsrc_yield_source (&pl_js_group_target, option);
   if (chsrc_in_standalone_mode())
@@ -62,7 +62,7 @@ pl_js_yarn_setsrc (char *option)
   char *cmd = NULL;
 
   // 从 Yarn V2 开始，使用新的配置名
-  if (pl_js_yarn_get_yarn_version () >= 2)
+  if (pl_yarn_get_yarn_version () >= 2)
     {
       if (chsrc_in_project_scope_mode()) // Yarn 默认情况下就是基于本项目换源
         cmd = xy_2strcat ("yarn config set npmRegistryServer ", source.url);
@@ -95,7 +95,7 @@ pl_js_yarn_setsrc (char *option)
 
 
 void
-pl_js_yarn_resetsrc (char *option)
+pl_yarn_resetsrc (char *option)
 {
-  pl_js_yarn_setsrc (option);
+  pl_yarn_setsrc (option);
 }

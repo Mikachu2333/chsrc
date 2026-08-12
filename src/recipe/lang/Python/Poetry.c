@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_py_poetry, "poetry");
+def_target(pl_poetry, "poetry");
 
 void
-pl_py_poetry_prelude (void)
+pl_poetry_prelude (void)
 {
-  chef_prep_this (pl_py_poetry, gsr);
+  chef_prep_this (pl_poetry, gsr);
 
   chef_set_recipe_created_on   (this, "2024-08-08");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -28,7 +28,7 @@ pl_py_poetry_prelude (void)
 }
 
 void
-pl_py_poetry_getsrc (char *option)
+pl_poetry_getsrc (char *option)
 {
   chsrc_note2 ("poetry换源情况: 请查看本项目 pyproject.toml 中 [[tool.poetry.source]]");
 }
@@ -38,7 +38,7 @@ pl_py_poetry_getsrc (char *option)
  * @consult https://python-poetry.org/docs/repositories/#project-configuration
  */
 void
-pl_py_poetry_setsrc (char *option)
+pl_poetry_setsrc (char *option)
 {
   Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
 
@@ -51,7 +51,7 @@ pl_py_poetry_setsrc (char *option)
 
 
 void
-pl_py_poetry_resetsrc (char *option)
+pl_poetry_resetsrc (char *option)
 {
-  pl_py_poetry_setsrc (option);
+  pl_poetry_setsrc (option);
 }

@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_py_pdm, "pdm");
+def_target(pl_pdm, "pdm");
 
 void
-pl_py_pdm_prelude (void)
+pl_pdm_prelude (void)
 {
-  chef_prep_this (pl_py_pdm, gsr);
+  chef_prep_this (pl_pdm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-06-05");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -28,7 +28,7 @@ pl_py_pdm_prelude (void)
 
 
 void
-pl_py_pdm_getsrc (char *option)
+pl_pdm_getsrc (char *option)
 {
   // @HELP 不加 --global 时，会检测到本项目的配置吗？
   // 如果不行的话，就要分别改成 --global 和 --local
@@ -41,7 +41,7 @@ pl_py_pdm_getsrc (char *option)
  * @consult https://github.com/RubyMetric/chsrc/issues/19
  */
 void
-pl_py_pdm_setsrc (char *option)
+pl_pdm_setsrc (char *option)
 {
   Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
 
@@ -59,7 +59,7 @@ pl_py_pdm_setsrc (char *option)
 }
 
 void
-pl_py_pdm_resetsrc (char *option)
+pl_pdm_resetsrc (char *option)
 {
-  pl_py_pdm_setsrc (option);
+  pl_pdm_setsrc (option);
 }

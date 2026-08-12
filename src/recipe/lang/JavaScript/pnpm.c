@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_js_pnpm, "pnpm");
+def_target(pl_pnpm, "pnpm");
 
 void
-pl_js_pnpm_prelude (void)
+pl_pnpm_prelude (void)
 {
-  chef_prep_this (pl_js_pnpm, gsr);
+  chef_prep_this (pl_pnpm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-04-18");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -28,7 +28,7 @@ pl_js_pnpm_prelude (void)
 
 
 void
-pl_js_pnpm_getsrc (char *option)
+pl_pnpm_getsrc (char *option)
 {
   chsrc_run ("pnpm config get registry", RunOpt_No_Last_New_Line);
 }
@@ -39,7 +39,7 @@ pl_js_pnpm_getsrc (char *option)
  * @consult https://pnpm.io/cli/config
  */
 void
-pl_js_pnpm_setsrc (char *option)
+pl_pnpm_setsrc (char *option)
 {
   Source_t source = chsrc_yield_source (&pl_js_group_target, option);
   if (chsrc_in_standalone_mode())
@@ -63,7 +63,7 @@ pl_js_pnpm_setsrc (char *option)
 
 
 void
-pl_js_pnpm_resetsrc (char *option)
+pl_pnpm_resetsrc (char *option)
 {
-  pl_js_pnpm_setsrc (option);
+  pl_pnpm_setsrc (option);
 }

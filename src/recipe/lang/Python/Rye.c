@@ -4,12 +4,12 @@
  * 由于Rye已经有后继uv了，所以我们不把该管理器纳入Python group中
  * ------------------------------------------------------------*/
 
-def_target(pl_py_rye, "rye");
+def_target(pl_rye, "rye");
 
 void
-pl_py_rye_prelude (void)
+pl_rye_prelude (void)
 {
-  chef_prep_this (pl_py_rye, gsr);
+  chef_prep_this (pl_rye, gsr);
 
   chef_set_recipe_created_on   (this, "2024-12-06");
   chef_set_recipe_last_updated (this, "2025-08-09");
@@ -40,7 +40,7 @@ pl_py_find_rye_config ()
 
 
 void
-pl_py_rye_getsrc (char *option)
+pl_rye_getsrc (char *option)
 {
   char *rye_config = pl_py_find_rye_config ();
   chsrc_note2 (xy_strcat (3, "请查看 ", rye_config, " 配置文件中的 [[sources]] 节内容"));
@@ -51,12 +51,12 @@ pl_py_rye_getsrc (char *option)
  * @consult https://github.com/RubyMetric/chsrc/issues/127
  */
 void
-pl_py_rye_setsrc (char *option)
+pl_rye_setsrc (char *option)
 {
   /* 并不在 Python group 中，所以不考虑 target group 情况，仅使用 Python group 提供的源 */
   Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
 
-  const char *content = RAWSTR_pl_py_rye_config;
+  const char *content = RAWSTR_pl_rye_config;
 
   content = xy_str_gsub (content, "@1@", source.mirror->abbr);
   content = xy_str_gsub (content, "@2@", source.url);
@@ -71,7 +71,7 @@ pl_py_rye_setsrc (char *option)
 
 
 void
-pl_py_rye_resetsrc (char *option)
+pl_rye_resetsrc (char *option)
 {
-  pl_py_rye_setsrc (option);
+  pl_rye_setsrc (option);
 }

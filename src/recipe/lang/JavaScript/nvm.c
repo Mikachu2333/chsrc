@@ -2,12 +2,12 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_js_nvm, "nvm");
+def_target(pl_nvm, "nvm");
 
 void
-pl_js_nvm_prelude (void)
+pl_nvm_prelude (void)
 {
-  chef_prep_this (pl_js_nvm, gsr);
+  chef_prep_this (pl_nvm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-09-23");
   chef_set_recipe_last_updated (this, "2025-06-19");
@@ -30,7 +30,7 @@ pl_js_nvm_prelude (void)
 
 
 void
-pl_js_nvm_getsrc (char *option)
+pl_nvm_getsrc (char *option)
 {
   chsrc_view_env ("NVM_NODEJS_ORG_MIRROR", NULL);
 }
@@ -44,7 +44,7 @@ pl_js_nvm_getsrc (char *option)
  * @note nvm 不支持 Fish
  */
 void
-pl_js_nvm_setsrc (char *option)
+pl_nvm_setsrc (char *option)
 {
   Source_t source = chsrc_yield_source_and_confirm (&pl_js_nodejs_binary_target, option);
 
@@ -64,9 +64,9 @@ pl_js_nvm_setsrc (char *option)
 
 
 void
-pl_js_nvm_resetsrc (char *option)
+pl_nvm_resetsrc (char *option)
 {
-  // pl_js_nvm_setsrc (ChgType_Reset);
+  // pl_nvm_setsrc (ChgType_Reset);
   chsrc_error ("暂不支持对 nvm 重置");
   exit (Exit_Unsupported);
 }

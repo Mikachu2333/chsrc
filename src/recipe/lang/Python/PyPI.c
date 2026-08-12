@@ -16,7 +16,7 @@ def_sources_target(pl_py_pypi, "pypi");
  * 实际文件仍位于 /pypi-packages，需要特殊处理
  */
 static char *
-pl_py_speed_url_constructor (const char *url, const char *user_data)
+pl_pypi_smURL_constructor (const char *url, const char *user_data)
 {
   char *str = xy_str_delete_suffix (url, "/simple");
   str = xy_2strcat (str, "/packages/fa/80/eb88edc2e2b11cd2dd2e56f1c80b5784d11d6e6b7f04a1145df64df40065/opencv_python-4.12.0.88-cp37-abi3-win_amd64.whl");
@@ -67,5 +67,5 @@ pl_py_pypi_prelude (void)
   // {&Netease,       "https://mirrors.163.com/.help/pypi.html", NULL}
   def_sources_end()
 
-  chef_set_rest_smURL_with_func (this, pl_py_speed_url_constructor, NULL);
+  chef_set_rest_smURL_with_func (this, pl_pypi_smURL_constructor, NULL);
 }
