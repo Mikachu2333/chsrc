@@ -13,12 +13,17 @@
 #include "lang/rawstr4c.h"
 
 #include "lang/Ruby/Ruby.c"
-#include "lang/Python/pypi.c"
+#include "lang/Python/PyPI.c"
   #include "lang/Python/pip.c"
   #include "lang/Python/Poetry.c"
   #include "lang/Python/PDM.c"
   #include "lang/Python/Rye.c"
-  #include "lang/Python/uv/uv.c"
+
+    #include "lang/Python/uv/common.h"
+    #include "lang/Python/uv/uv-toml-helper.c"
+      #include "lang/Python/uv/uv-pypi-index.c"
+      #include "lang/Python/uv/uv-python-build.c"
+    #include "lang/Python/uv/uv.c"
 
 #include "lang/JavaScript/common.h"
   #include "lang/JavaScript/npm.c"
@@ -154,17 +159,22 @@ chsrc_init_menu ()
 
 #define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preludefn = pl_##t##_prelude
   add (ruby);
+  // Python
   add (py_pip);
   add (py_poetry);
   add (py_pdm);
   add (py_rye);
-  add (py_uv);
+  add (uv_pypi_index);
+  add (uv_python_build);
+
+  // JavaScript
   add (js_group);
   add (js_bun);
   add (js_npm);
   add (js_yarn);
   add (js_pnpm);
   add (js_nvm);
+
   add (perl);
   add (php);
   add (lua);
