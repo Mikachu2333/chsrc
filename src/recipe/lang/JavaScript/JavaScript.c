@@ -2,106 +2,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_js_group, "js/javascript/node/nodejs");
+def_group_target(pl_js_group, "js/javascript/node/nodejs");
 
 void
 pl_js_group_prelude (void)
 {
-  chef_prep_this (pl_js_group, gsr);
+  chef_prep_this (pl_js_group, NOOP);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
   chef_set_recipe_last_updated (this, "2026-08-13");
 
   chef_set_sub_targets (this, 3, &pl_npm_target, &pl_yarn_target, &pl_pnpm_target);
-}
-
-
-void
-pl_js_group_check_cmd (bool *npm_exist, bool *yarn_exist, bool *pnpm_exist)
-{
-  *npm_exist  = chsrc_check_program ("npm");
-  *yarn_exist = chsrc_check_program ("yarn");
-  *pnpm_exist = chsrc_check_program ("pnpm");
-
-  if (!*npm_exist && !*yarn_exist && !*pnpm_exist)
-    {
-      char *msg = ENGLISH ? "No npm, yarn or pnpm command found, check if at least one is present"
-                          : "未找到 npm 或 yarn 或 pnpm 命令，请检查是否存在其一";
-      chsrc_error (msg);
-      exit (Exit_UserCause);
-    }
-}
-
-
-void
-pl_js_group_getsrc (char *option)
-{
-  bool npm_exist, yarn_exist, pnpm_exist;
-  pl_js_group_check_cmd (&npm_exist, &yarn_exist, &pnpm_exist);
-
-  hr();
-
-  if (npm_exist)
-    {
-      pl_npm_getsrc (option);
-      br();
-    }
-
-  if (yarn_exist)
-    {
-      pl_yarn_getsrc (option);
-      br();
-    }
-
-  if (pnpm_exist)
-    {
-      pl_pnpm_getsrc (option);
-    }
-}
-
-
-void
-pl_js_group_setsrc (char *option)
-{
-  {
-    char *msg = ENGLISH ? "Three package managers will be replaced for you at the same time: "
-                          "npm, pnpm, yarn. If you need to change the source independently, "
-                          "please run independently `chsrc set <pkg-manager>`"
-                        : "将同时更换3个包管理器 npm, pnpm, Yarn 的源，若需要独立换源，请独立运行 chsrc set <pkg-manager>";
-    chsrc_alert2 (msg);
-  }
-
-  bool npm_exist, yarn_exist, pnpm_exist;
-  pl_js_group_check_cmd (&npm_exist, &yarn_exist, &pnpm_exist);
-
-  chsrc_set_target_group_mode ();
-
-  chsrc_use_this_source (pl_js_group);
-
-  if (npm_exist)
-    {
-      pl_npm_setsrc (option);
-      br();
-    }
-
-  if (yarn_exist)
-    {
-      pl_yarn_setsrc (option);
-      br();
-    }
-
-  if (pnpm_exist)
-    {
-      pl_pnpm_setsrc (option);
-    }
-
-  chsrc_determine_chgtype (ChgType_Auto);
-  chsrc_conclude (&source);
-}
-
-
-void
-pl_js_group_resetsrc (char *option)
-{
-  pl_js_group_setsrc (option);
 }
