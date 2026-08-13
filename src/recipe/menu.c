@@ -21,7 +21,7 @@
   #include "lang/Python/Rye.c"
 
   #include "lang/Python/uv/common.h"
-  #include "lang/Python/uv/uv-toml-helper.c"
+  #include "lang/Python/uv/toml.c"
     #include "lang/Python/uv/uv-pypi-index.c"
     #include "lang/Python/uv/uv-python-build.c"
   #include "lang/Python/uv/uv.c"

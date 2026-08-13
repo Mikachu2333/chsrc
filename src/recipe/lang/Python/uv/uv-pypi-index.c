@@ -53,7 +53,7 @@ pl_uv_pypi_index_getsrc (char *option)
   bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
   const char *index_header = pyproject ? "[[tool.uv.index]]" : "[[index]]";
 
-  char *url = pl_uvth_get_index_url (content, index_header);
+  char *url = pl_uv_toml_get_index_url (content, index_header);
   if (url)
     {
       println (url);
@@ -97,7 +97,7 @@ pl_uv_pypi_index_setsrc (char *option)
   const char *index_header = pyproject ? "[[tool.uv.index]]" : "[[index]]";
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
-  char *updated = pl_uvth_replace_index_url (content, source.url, index_header, parent_table);
+  char *updated = pl_uv_toml_replace_index_url (content, source.url, index_header, parent_table);
 
   chsrc_backup (uv_config);
   chsrc_overwrite_file (updated, uv_config);

@@ -81,7 +81,7 @@ pl_uv_python_build_getsrc (char *option)
   bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
-  char *mirror = pl_uvth_get_value_in_table (content, "python-install-mirror", parent_table);
+  char *mirror = pl_uv_toml_get_value_in_table (content, "python-install-mirror", parent_table);
   if (mirror)
     {
       println (mirror);
@@ -118,7 +118,7 @@ pl_uv_python_build_setsrc (char *option)
   bool pyproject = xy_str_end_with (uv_config, PL_uv_PyprojectConfigFile);
   const char *parent_table = pyproject ? "[tool.uv]" : NULL;
 
-  char *updated = pl_uvth_replace_key_value (content, "python-install-mirror", source.url, parent_table);
+  char *updated = pl_uv_toml_replace_key_value (content, "python-install-mirror", source.url, parent_table);
 
   chsrc_backup (uv_config);
   chsrc_overwrite_file (updated, uv_config);

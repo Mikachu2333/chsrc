@@ -26,6 +26,7 @@
 #endif
 
 #include "xy.h"
+#include "mikachu-toml.h"
 #include "struct.h"
 #include "mirror.c"
 #include "helper.c"
