@@ -121,7 +121,7 @@ cli_print_all_mirror_sites ()
   println ("---------    --------------    -------------------------------------     ---------------------");
   }
 
-  for (int i=1; i<=xy_seq_len(ProgStore.mirror_sites); i++)
+  for (size_t i=0; i<xy_seq_len(ProgStore.mirror_sites); i++)
     {
       MirrorSite_t *mir = xy_seq_at(ProgStore.mirror_sites, i);
       printf ("  %-13s%-28s%-35s%s\n", mir->code, mir->abbr, mir->site, mir->name);
@@ -172,28 +172,25 @@ iterate_aliases (const char *aliases, bool (*callback)(const char *alias, void *
 
 
 /**
- * 用于 cli_print_targets_for_menu 的回调函数，打印每个别名
+ * 用于 cli_print_targets_for_menu() 的回调函数，打印每个别名
  */
 bool
-callback_print_alias (const char *alias, void *user_data)
+callback_print_alias (const char *alias, void *DUMMY)
 {
   printf ("%s  ", alias);
   return false; // 继续遍历，不停止
 }
 
 void
-callback_print_targets (void *data, void *DUMMY)
-{
-  Target_t *target = (Target_t *) data;
-  // 使用通用的别名遍历函数打印所有别名
-  iterate_aliases (target->aliases, callback_print_alias, NULL);
-  br(); // 每个target换行
-}
-
-void
 cli_print_targets_for_menu (XySeq_t *menu)
 {
-  xy_seq_each (menu, callback_print_targets, NULL);
+  for (size_t i=0; i<xy_seq_len(menu); i++)
+    {
+      Target_t *target = xy_seq_at (menu, i);
+      // 使用通用的别名遍历函数打印所有别名
+      iterate_aliases (target->aliases, callback_print_alias, NULL);
+      br(); // 每个target换行
+    }
   br(); // 最后额外换行
 }
 
@@ -265,7 +262,7 @@ cli_print_menu (char *menu)
 void
 cli_print_target_available_sources (Source_t sources[], size_t size)
 {
-  for (int i=0;i<size;i++)
+  for (int i=0; i<size; i++)
     {
       Source_t src = sources[i];
       const MirrorSite_t *mir = src.mirror;
@@ -448,9 +445,9 @@ cli_print_target_maintain_info (Target_t *target, const char *input_target_name)
     if (target->chefs && xy_seq_len(target->chefs) > 0)
       {
         printf ("%s", bdblue(msg));
-        for (size_t i = 1; i <= xy_seq_len(target->chefs); i++)
+        for (size_t i=0; i<xy_seq_len(target->chefs); i++)
           {
-            if (i > 1) printf (", ");
+            if (i > 0) printf (", ");
             Contributor_t *chef = xy_seq_at (target->chefs, i);
             printf ("%s <%s>",
                     chef->name  ? chef->name : "Unknown",
@@ -470,9 +467,9 @@ cli_print_target_maintain_info (Target_t *target, const char *input_target_name)
     if (target->sauciers && xy_seq_len(target->sauciers) > 0)
       {
         printf ("%s", bdblue(msg));
-        for (size_t i = 1; i <= xy_seq_len(target->sauciers); i++)
+        for (size_t i=0; i<xy_seq_len(target->sauciers); i++)
           {
-            if (i > 1) printf (", ");
+            if (i > 0) printf (", ");
             Contributor_t *saucier = xy_seq_at (target->sauciers, i);
             printf ("%s <%s>", saucier->name, saucier->email );
           }
@@ -708,7 +705,7 @@ get_target (const char *input, TargetOp code, char *option)
 
           chsrc_log (bdyellow(CHINESE ? zh_msg : en_msg));
 
-          for (size_t i = 1; i <= sub_count; i++)
+          for (size_t i=0; i<sub_count; i++)
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
               if (!sub_target->inited)

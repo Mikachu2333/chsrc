@@ -1759,7 +1759,7 @@ xy_seq_last (XySeq_t *seq)
 /**
  * @flavor Ruby: Array#at
  *
- * @note 序号从1开始
+ * @note 序号从0开始 (为了保持C语言的惯性)
  *
  * @return 如果seq中并没有第n个数据，则返回NULL
  *
@@ -1771,12 +1771,13 @@ xy_seq_at (XySeq_t *seq, int n)
 {
   xy_cant_be_null (seq);
 
-  if (0 == n) xy_throw ("The index must begin from 1, not 0");
+  if (n < 0) xy_throw ("The XySeq_t index must be non-negative");
+  if (n >= seq->length) xy_throw ("The XySeq_t index is out of range");
 
-  if (1 == n) return seq->first_item ? seq->first_item->data : NULL;
+  if (0 == n) return seq->first_item ? seq->first_item->data : NULL;
 
   XySeqItem_t *it = seq->first_item;
-  for (uint32_t i = 1; i < n && it; i++)
+  for (size_t i = 0; i < n && it; i++)
     {
       it = it->next;
     }

@@ -182,8 +182,9 @@ main (int argc, char const *argv[])
   XySeq_t *seq = xy_seq_new ();
   xy_seq_push (seq, "Hello");
   xy_seq_push (seq, "World");
-  assert_str ("Hello", xy_seq_at (seq, 1));
-  assert_str ("World", xy_seq_at (seq, 2));
+  assert_str ("Hello", xy_seq_at (seq, 0));
+  assert_str ("World", xy_seq_at (seq, 1));
+  // assert_str ("World", xy_seq_at (seq, 2)); // out-of-rage throw
   xy_seq_each (seq, callback_print_str_for_seq, NULL); br();
   xy_seq_pop (seq);
   assert (1 == xy_seq_len (seq));
