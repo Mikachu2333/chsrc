@@ -129,6 +129,24 @@ cli_print_all_mirror_sites ()
 }
 
 
+
+/**
+ * 由 chefs_handle_XXX() 里的 group target 递归时调用
+ */
+char *
+get_first_alias (Target_t *target)
+{
+  if (!target || !target->aliases || *target->aliases == '\0')
+    return NULL;
+
+  char *alias = xy_strdup (target->aliases);
+  char *separator = strchr (alias, '/');
+  if (separator)
+    *separator = '\0';
+  return alias;
+}
+
+
 /**
  * @brief 遍历以 / 为分隔符的别名字符串，对每个别名调用回调函数
  *
@@ -659,8 +677,218 @@ typedef enum {
   TargetCmd_Set_Source,
   TargetCmd_Reset_Source,
   TargetCmd_Measure_Source,
-  TargetCmd_List_Config
+  TargetCmd_List_Info
 } TargetCmd;
+
+
+/**
+ * 由 chefs_handle_user_command() 拆分而来
+ */
+void
+chefs_handle_List_Info (Target_t *target, const char *input, char *option)
+{
+  /* group target 仅展示维护信息 */
+  if (chef_has_sub_targets(target))
+    {
+      int sub_count = xy_seq_len (target->sub_targets);
+
+      char *zh_msg = xy_strcat (3,
+        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
+        bdpurple("sub-target"),
+        bdyellow("> 分别查看\n"));
+
+      char *en_msg = xy_strcat (3,
+        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc ls <")),
+        bdpurple("sub-target"),
+        bdyellow("> to view each\n"));
+
+      chsrc_log (CHINESE ? zh_msg : en_msg);
+
+      for (size_t i=0; i<sub_count; i++)
+        {
+          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          sub_target->preludefn();
+          println (bdpurple (sub_target->aliases));
+          cli_print_target_maintain_info (sub_target, input);
+          br();
+        }
+      return;
+    }
+
+  {
+  char *msg = ENGLISH ? "To specify a source, use chsrc set " : "指定使用某源，请使用 chsrc set ";
+  say (bdblue(xy_strcat (3, msg, input, " <code>\n")));
+  }
+
+  {
+  char *msg = ENGLISH ? "Available Sources: \n" : "可用源: \n";
+  say (bdgreen(msg));
+  }
+
+  {
+  char *msg1 = ENGLISH ? "Mirror abbr" : "镜像站简写";
+  char *msg2 = ENGLISH ? "Source URL"  : "换源链接";
+  char *msg3 = ENGLISH ? "Mirror Name" : "镜像站";
+  char *format = ENGLISH ? "  %-13s%-33s%-38s%s\n" : "  %-13s%-36s%-46s%s\n";
+  printf (format, "code", msg1, msg2, msg3);
+  say    ("---------    --------------    -----------------------------------------------    ---------------------");
+  }
+
+  cli_print_target_available_sources (target->sources, target->sources_n);
+  cli_print_target_features (target, input);
+
+  {
+  char *msg = ENGLISH ? "Maintainer Information:\n" : "维护信息:\n";
+  say (bdgreen(msg));
+  cli_print_target_maintain_info (target, input);
+  }
+}
+
+
+/**
+ * 由 chefs_handle_user_command() 拆分而来
+ */
+void
+chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
+{
+  /* group target 不测速，让用户自己分别测速 */
+  if (chef_has_sub_targets(target))
+    {
+      int sub_count = xy_seq_len (target->sub_targets);
+
+      char *zh_msg = xy_strcat (3,
+        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
+        bdpurple("sub-target"),
+        bdyellow("> 分别测速"));
+
+      char *en_msg = xy_strcat (3,
+        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc measure <")),
+        bdpurple("sub-target"),
+        bdyellow("> to measure each"));
+
+      chsrc_log (CHINESE ? zh_msg : en_msg);
+
+      for (size_t i=0; i<sub_count; i++)
+        {
+          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          sub_target->preludefn();
+          println (bdpurple (sub_target->aliases));
+        }
+    }
+  else
+    {
+      auto_select_mirror (target->sources, target->sources_n, input);
+      return;
+    }
+}
+
+
+/**
+ * 由 chefs_handle_user_command() 拆分而来
+ */
+void
+chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
+{
+  if (chef_has_sub_targets(target))
+    {
+      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+        {
+          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          sub_target->preludefn();
+          println (bdpurple(sub_target->aliases));
+          chefs_handle_Get_Source (sub_target, get_first_alias(sub_target), option);
+          br();
+        }
+      return;
+    }
+
+  if (target->getfn)
+    {
+      target->getfn("");
+    }
+  else
+    {
+      chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 get 功能，邀您帮助: chsrc issue"));
+    }
+}
+
+
+/**
+ * 由 chefs_handle_user_command() 拆分而来
+ */
+void
+chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
+{
+  if (chef_has_sub_targets(target))
+    {
+      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+        {
+          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          sub_target->preludefn();
+          println (bdpurple(sub_target->aliases));
+          chefs_handle_Set_Source (sub_target, get_first_alias(sub_target), option);
+          br();
+        }
+      return;
+    }
+
+  if (target->setfn)
+    {
+      /**
+       * Hook时机: 开始运行前可以在这里进行一些拦截操作，当前仅有的拦截为:
+       *
+       *    1. 检查用户要求设置的作用域，是否真的可以执行
+       *
+       * 而检查用户自己提供换源URL 与 target->can_user_define 的冲突，则是
+       * 在 `chsrc_yield_source()` 里完成的
+       */
+      if (chef_has_sub_targets(target))
+        {
+          /* group target 不要检查，留给后续 sub targets 检查 */
+          xy_noop();
+        }
+      else
+        {
+          chsrc_check_scope_capability (target);
+        }
+
+      target->setfn(option);
+    }
+  else
+    {
+      chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 set 功能，邀您帮助: chsrc issue"));
+    }
+}
+
+
+/**
+ * 由 chefs_handle_user_command() 拆分而来
+ */
+void
+chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
+{
+  if (chef_has_sub_targets(target))
+    {
+      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+        {
+          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          sub_target->preludefn();
+          println (bdpurple(sub_target->aliases));
+          chefs_handle_Reset_Source (sub_target, get_first_alias(sub_target), option);
+          br();
+        }
+      return;
+    }
+
+  if (target->resetfn)
+    {
+      target->resetfn(option);
+    }
+  else
+    {
+      chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 reset 功能，邀您帮助: chsrc issue"));
+    }
+}
 
 
 /**
@@ -673,139 +901,38 @@ typedef enum {
 void
 chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, char *option)
 {
+  if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
+    {
+      if (chef_has_sub_targets(target))
+        {
+          int sub_count = xy_seq_len(target->sub_targets);
+          char *zh_msg = bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成\n"));
+
+          char *en_msg = bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets\n"));
+
+          chsrc_log (CHINESE ? zh_msg : en_msg);
+        }
+    }
+
   if (TargetCmd_Set_Source==code)
     {
-      if (target->setfn)
-        {
-          /**
-           * Hook时机: 开始运行前可以在这里进行一些拦截操作，当前仅有的拦截为:
-           *
-           *    1. 检查用户要求设置的作用域，是否真的可以执行
-           *
-           * 而检查用户自己提供换源URL 与 target->can_user_define 的冲突，则是
-           * 在 `chsrc_yield_source()` 里完成的
-           */
-          if (chef_has_sub_targets(target))
-            {
-              /* group target 不要检查，留给后续 sub targets 检查 */
-              xy_noop();
-            }
-          else
-            {
-              chsrc_check_scope_capability (target);
-            }
-
-          target->setfn(option);
-        }
-      else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 set 功能，邀您帮助: chsrc issue"));
+      chefs_handle_Set_Source (target, input, option);
     }
   else if (TargetCmd_Reset_Source==code)
     {
-      if (target->resetfn)
-        {
-          target->resetfn(option);
-        }
-      else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 reset 功能，邀您帮助: chsrc issue"));
+      chefs_handle_Reset_Source (target, input, option);
     }
   else if (TargetCmd_Get_Source==code)
     {
-      if (target->getfn)
-        {
-          target->getfn("");
-        }
-      else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 get 功能，邀您帮助: chsrc issue"));
+      chefs_handle_Get_Source (target, input, option);
     }
-
-  else if (TargetCmd_List_Config==code)
+  else if (TargetCmd_List_Info==code)
     {
-      /* group target 仅展示维护信息 */
-      if (chef_has_sub_targets(target))
-        {
-          int sub_count = xy_seq_len (target->sub_targets);
-
-          char *zh_msg = xy_strcat (3,
-            bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
-            bdpurple("sub-target"),
-            bdyellow("> 分别查看\n"));
-
-          char *en_msg = xy_strcat (3,
-            bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc ls <")),
-            bdpurple("sub-target"),
-            bdyellow("> to view each\n"));
-
-          chsrc_log (CHINESE ? zh_msg : en_msg);
-
-          for (size_t i=0; i<sub_count; i++)
-            {
-              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-              sub_target->preludefn();
-              println (bdpurple (sub_target->aliases));
-              cli_print_target_maintain_info (sub_target, input);
-              br();
-            }
-          return;
-        }
-
-      {
-      char *msg = ENGLISH ? "To specify a source, use chsrc set " : "指定使用某源，请使用 chsrc set ";
-      say (bdblue(xy_strcat (3, msg, input, " <code>\n")));
-      }
-
-      {
-      char *msg = ENGLISH ? "Available Sources: \n" : "可用源: \n";
-      say (bdgreen(msg));
-      }
-
-      {
-      char *msg1 = ENGLISH ? "Mirror abbr" : "镜像站简写";
-      char *msg2 = ENGLISH ? "Source URL"  : "换源链接";
-      char *msg3 = ENGLISH ? "Mirror Name" : "镜像站";
-      char *format = ENGLISH ? "  %-13s%-33s%-38s%s\n" : "  %-13s%-36s%-46s%s\n";
-      printf (format, "code", msg1, msg2, msg3);
-      say    ("---------    --------------    -----------------------------------------------    ---------------------");
-      }
-
-      cli_print_target_available_sources (target->sources, target->sources_n);
-      cli_print_target_features (target, input);
-
-      {
-      char *msg = ENGLISH ? "Maintainer Information:\n" : "维护信息:\n";
-      say (bdgreen(msg));
-      cli_print_target_maintain_info (target, input);
-      }
+      chefs_handle_List_Info (target, input, option);
     }
-
   else if (TargetCmd_Measure_Source==code)
     {
-      /* group target 不测速，让用户自己分别测速 */
-      if (chef_has_sub_targets(target))
-        {
-          int sub_count = xy_seq_len (target->sub_targets);
-
-          char *zh_msg = xy_strcat (3,
-            bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
-            bdpurple("sub-target"),
-            bdyellow("> 分别测速"));
-
-          char *en_msg = xy_strcat (3,
-            bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc measure <")),
-            bdpurple("sub-target"),
-            bdyellow("> to measure each"));
-
-          chsrc_log (CHINESE ? zh_msg : en_msg);
-
-          for (size_t i=0; i<sub_count; i++)
-            {
-              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-              sub_target->preludefn();
-              println (bdpurple (sub_target->aliases));
-            }
-        }
-      else
-        {
-          auto_select_mirror (target->sources, target->sources_n, input);
-          return;
-        }
+      chefs_handle_Measure_Source (target, input, option);
     }
 
   /* 核心命令 get, set, reset 完成后需要简短显示维护信息 */
@@ -813,7 +940,6 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
     {
       if (chef_has_sub_targets(target))
         {
-          br();
           for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
@@ -1063,7 +1189,7 @@ main (int argc, char const *argv[])
             }
           else
             {
-              chefs_handle_user_command (the_found_target, TargetCmd_List_Config, target_name, NULL);
+              chefs_handle_user_command (the_found_target, TargetCmd_List_Info, target_name, NULL);
             }
         }
       return Exit_OK;
