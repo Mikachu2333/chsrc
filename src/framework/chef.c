@@ -5,7 +5,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @BingChunMoLi
  * Created On    : <2025-08-09>
- * Last Modified : <2026-08-12>
+ * Last Modified : <2026-08-13>
  *
  * chef DSL: for chefs (recipe makers) to define a target
  * ------------------------------------------------------------*/
@@ -493,6 +493,13 @@ chef_set_sub_targets (Target_t *target, uint32_t count, ...)
       xy_seq_push (target->sub_targets, sub_target);
     }
   va_end (args);
+}
+
+
+bool
+chef_has_sub_targets (Target_t *target)
+{
+  return (target->sub_targets && xy_seq_len(target->sub_targets) > 1);
 }
 
 

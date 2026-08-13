@@ -656,8 +656,24 @@ get_target (const char *input, TargetOp code, char *option)
     {
       if (target->setfn)
         {
-          /* Hook时机: 开始运行前可以在这里进行一些拦截操作 */
-          chsrc_check_scope_capability (target); /* 用户要求设置的作用域，真的能够执行吗？ */
+          /**
+           * Hook时机: 开始运行前可以在这里进行一些拦截操作，当前仅有的拦截为:
+           *
+           *    1. 检查用户要求设置的作用域，是否真的可以执行
+           *
+           * 而检查用户自己提供换源URL 与 target->can_user_define 的冲突，则是
+           * 在 `chsrc_yield_source()` 里完成的
+           */
+          if (chef_has_sub_targets(target))
+            {
+              /* group target 不要检查，留给后续 sub targets 检查 */
+              xy_noop();
+            }
+          else
+            {
+              chsrc_check_scope_capability (target);
+            }
+
           target->setfn(option);
         }
       else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 set 功能，邀您帮助: chsrc issue"));
@@ -681,14 +697,18 @@ get_target (const char *input, TargetOp code, char *option)
   else if (TargetOp_List_Config==code)
     {
       // group target 仅展示维护信息
-      if (target->sub_targets && xy_seq_len(target->sub_targets) > 1)
+      if (chef_has_sub_targets(target))
         {
-          int sub_counts = xy_seq_len (target->sub_targets);
+          int sub_count = xy_seq_len (target->sub_targets);
 
-          chsrc_log (bdyellow(
-            xy_strcat (4, input, " 由以下", xy_int_to_str(sub_counts), "个子目标组成，可使用 chsrc ls <target> 分别查看\n")));
+          char *zh_msg = xy_strcat (4, input, " 由以下", xy_int_to_str(sub_count),
+            "个子目标组成，可使用 chsrc ls <sub-target> 分别查看\n");
+          char *en_msg = xy_strcat (4, input, " consists of the following ", xy_int_to_str(sub_count),
+            " sub targets, you can use `chsrc ls <sub-target>` to view each\n");
 
-          for (size_t i = 1; i <= sub_counts; i++)
+          chsrc_log (bdyellow(CHINESE ? zh_msg : en_msg));
+
+          for (size_t i = 1; i <= sub_count; i++)
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
               if (!sub_target->inited)
