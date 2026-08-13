@@ -698,12 +698,17 @@ get_target (const char *input, TargetOp code, char *option)
         {
           int sub_count = xy_seq_len (target->sub_targets);
 
-          char *zh_msg = xy_strcat (4, input, " 由以下", xy_int2str(sub_count),
-            "个子目标组成，可使用 chsrc ls <sub-target> 分别查看\n");
-          char *en_msg = xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count),
-            " sub targets, you can use `chsrc ls <sub-target>` to view each\n");
+          char *zh_msg = xy_strcat (3,
+            bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
+            bdpurple("sub-target"),
+            bdyellow("> 分别查看\n"));
 
-          chsrc_log (bdyellow(CHINESE ? zh_msg : en_msg));
+          char *en_msg = xy_strcat (3,
+            bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc ls <")),
+            bdpurple("sub-target"),
+            bdyellow("> to view each\n"));
+
+          chsrc_log (CHINESE ? zh_msg : en_msg);
 
           for (size_t i=0; i<sub_count; i++)
             {
