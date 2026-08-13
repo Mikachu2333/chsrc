@@ -26,6 +26,8 @@
     #include "lang/Python/uv/uv-python-build.c"
   #include "lang/Python/uv/uv.c"
 
+  #include "lang/Python/Python.c"
+
 
 #include "lang/JavaScript/Node.js-binary.c"
   #include "lang/JavaScript/npm.c"
@@ -162,6 +164,7 @@ chsrc_init_menu ()
 #define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preludefn = pl_##t##_prelude
   add (ruby);
   // Python
+  add (py_group);
   add (pip);
   add (poetry);
   add (pdm);
