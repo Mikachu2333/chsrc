@@ -2,6 +2,13 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
+static MirrorSite_t NpmMirror =
+{
+  IS_DedicatedMirrorSite,
+  "npmmirror", "npmmirror", "npmmirror (阿里云赞助)", "https://npmmirror.com/",
+  {SKIP, NULL, NULL, NULL, ACCURATE}
+};
+
 def_sources_target(pl_nodejs_binary, "nodejs-binary");
 
 void

@@ -10,7 +10,7 @@ pl_npm_prelude (void)
   chef_prep_this (pl_npm, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
-  chef_set_recipe_last_updated (this, "2025-07-11");
+  chef_set_recipe_last_updated (this, "2026-08-12");
 
   chef_set_chefs (this, 1, "@ccmywish");
   chef_set_sauciers (this, 1, "@MrWillCom");
@@ -23,7 +23,15 @@ pl_npm_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_js_group_target);
+  def_sources_begin()
+  {&UpstreamProvider, "https://registry.npmjs.org/",    FeedByPrelude}, /* @note 根据 pnpm 官网，有最后的斜线 */
+  {&NpmMirror,        "https://registry.npmmirror.com", FeedByPrelude},
+  {&Huawei,           "https://mirrors.huaweicloud.com/repository/npm/", FeedByPrelude},
+  {&Tencent,          "https://mirrors.cloud.tencent.com/npm/", FeedByPrelude}
+  def_sources_end()
+
+  // 29MB 大小
+  chef_set_rest_smURL_with_postfix (this, "/@tensorflow/tfjs/-/tfjs-4.22.0.tgz");
 }
 
 
@@ -40,7 +48,7 @@ pl_npm_getsrc (char *option)
 void
 pl_npm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_js_group_target, option);
+  Source_t source = chsrc_yield_source (&pl_npm_target, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 
