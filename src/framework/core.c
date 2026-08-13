@@ -171,18 +171,18 @@ ProgStore =
 /* 多语句必须括起来，否则在不带 { } 的 if else 等语句中会出错 */
 #define chsrc_breakdown(reason) { xy_error(App_Name "(BREAKDOWN)",reason); exit(Exit_MaintainerCause); }
 
-#define faint(str)    xy_str_to_faint(str)
-#define red(str)      xy_str_to_red(str)
-#define blue(str)     xy_str_to_blue(str)
-#define green(str)    xy_str_to_green(str)
-#define yellow(str)   xy_str_to_yellow(str)
-#define purple(str)   xy_str_to_purple(str)
-#define bold(str)     xy_str_to_bold(str)
-#define bdred(str)    xy_str_to_bold(xy_str_to_red(str))
-#define bdblue(str)   xy_str_to_bold(xy_str_to_blue(str))
-#define bdgreen(str)  xy_str_to_bold(xy_str_to_green(str))
-#define bdyellow(str) xy_str_to_bold(xy_str_to_yellow(str))
-#define bdpurple(str) xy_str_to_bold(xy_str_to_purple(str))
+#define faint(str)    xy_str2faint(str)
+#define red(str)      xy_str2red(str)
+#define blue(str)     xy_str2blue(str)
+#define green(str)    xy_str2green(str)
+#define yellow(str)   xy_str2yellow(str)
+#define purple(str)   xy_str2purple(str)
+#define bold(str)     xy_str2bold(str)
+#define bdred(str)    xy_str2bold(xy_str2red(str))
+#define bdblue(str)   xy_str2bold(xy_str2blue(str))
+#define bdgreen(str)  xy_str2bold(xy_str2green(str))
+#define bdyellow(str) xy_str2bold(xy_str2yellow(str))
+#define bdpurple(str) xy_str2bold(xy_str2purple(str))
 
 /* 2系列都是带有括号的 */
 #define chsrc_succ2(str)    xy_succ_brkt(App_Name,ENGLISH?"SUCCEED":"成功",str)

@@ -44,20 +44,20 @@ main (int argc, char const *argv[])
   say (xy_strcat  (4, "水落鱼梁浅，", "天寒梦泽深。", "羊公碑字在，", "读罢泪沾襟。"));
   say (xy_strcat  (6, "楚山横地出，", "汉水接天回。", "冠盖非新里，", "章华即旧台。", "习池风景异，", "归路满尘埃。"));
 
-  print (xy_str_to_bold      ("粗体"));
-  print (xy_str_to_faint     ("浅体"));
-  print (xy_str_to_italic    ("斜体"));
-  print (xy_str_to_underline ("下划线"));
-  print (xy_str_to_blink     ("闪烁"));
-  print (xy_str_to_cross     ("删除线"));
+  print (xy_str2bold      ("粗体"));
+  print (xy_str2faint     ("浅体"));
+  print (xy_str2italic    ("斜体"));
+  print (xy_str2underline ("下划线"));
+  print (xy_str2blink     ("闪烁"));
+  print (xy_str2cross     ("删除线"));
 
-  print (xy_str_to_red     ("红色"));
-  print (xy_str_to_green   ("绿色"));
-  print (xy_str_to_yellow  ("黄色"));
-  print (xy_str_to_blue    ("蓝色"));
-  print (xy_str_to_magenta ("紫色"));
-  print (xy_str_to_purple  ("紫色"));
-  print (xy_str_to_cyan    ("青色"));
+  print (xy_str2red     ("红色"));
+  print (xy_str2green   ("绿色"));
+  print (xy_str2yellow  ("黄色"));
+  print (xy_str2blue    ("蓝色"));
+  print (xy_str2magenta ("紫色"));
+  print (xy_str2purple  ("紫色"));
+  print (xy_str2cyan    ("青色"));
   br();
 
   xy_log   ("普通", "输出普通内容");

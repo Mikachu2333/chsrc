@@ -545,12 +545,12 @@ xy_str2float (const char *str)
 #define _XY_Str_Blink     5
 #define _XY_Str_Cross     9
 
-#define xy_str_to_bold(str)      _xy_str_to_terminal_style (_XY_Str_Bold, str)
-#define xy_str_to_faint(str)     _xy_str_to_terminal_style (_XY_Str_Faint, str)
-#define xy_str_to_italic(str)    _xy_str_to_terminal_style (_XY_Str_Italic, str)
-#define xy_str_to_underline(str) _xy_str_to_terminal_style (_XY_Str_Underline, str)
-#define xy_str_to_blink(str)     _xy_str_to_terminal_style (_XY_Str_Blink, str)
-#define xy_str_to_cross(str)     _xy_str_to_terminal_style (_XY_Str_Cross, str)
+#define xy_str2bold(str)      _xy_str_to_terminal_style (_XY_Str_Bold, str)
+#define xy_str2faint(str)     _xy_str_to_terminal_style (_XY_Str_Faint, str)
+#define xy_str2italic(str)    _xy_str_to_terminal_style (_XY_Str_Italic, str)
+#define xy_str2underline(str) _xy_str_to_terminal_style (_XY_Str_Underline, str)
+#define xy_str2blink(str)     _xy_str_to_terminal_style (_XY_Str_Blink, str)
+#define xy_str2cross(str)     _xy_str_to_terminal_style (_XY_Str_Cross, str)
 
 #define _XY_Str_Red     31
 #define _XY_Str_Green   32
@@ -559,13 +559,13 @@ xy_str2float (const char *str)
 #define _XY_Str_Magenta 35
 #define _XY_Str_Cyan    36
 
-#define xy_str_to_red(str)     _xy_str_to_terminal_style (_XY_Str_Red, str)
-#define xy_str_to_green(str)   _xy_str_to_terminal_style (_XY_Str_Green, str)
-#define xy_str_to_yellow(str)  _xy_str_to_terminal_style (_XY_Str_Yellow, str)
-#define xy_str_to_blue(str)    _xy_str_to_terminal_style (_XY_Str_Blue, str)
-#define xy_str_to_magenta(str) _xy_str_to_terminal_style (_XY_Str_Magenta, str)
-#define xy_str_to_purple        xy_str_to_magenta
-#define xy_str_to_cyan(str)    _xy_str_to_terminal_style (_XY_Str_Cyan, str)
+#define xy_str2red(str)     _xy_str_to_terminal_style (_XY_Str_Red, str)
+#define xy_str2green(str)   _xy_str_to_terminal_style (_XY_Str_Green, str)
+#define xy_str2yellow(str)  _xy_str_to_terminal_style (_XY_Str_Yellow, str)
+#define xy_str2blue(str)    _xy_str_to_terminal_style (_XY_Str_Blue, str)
+#define xy_str2magenta(str) _xy_str_to_terminal_style (_XY_Str_Magenta, str)
+#define xy_str2purple        xy_str2magenta
+#define xy_str2cyan(str)    _xy_str_to_terminal_style (_XY_Str_Cyan, str)
 
 /**
  * @memory SAFE
@@ -951,20 +951,20 @@ _xy_log (int level, const char *prompt, const char *content)
     }
   else if (level & _XY_Log_Success)
     {
-      str = xy_strcat (3, prompt,  ": ", xy_str_to_green (content));
+      str = xy_strcat (3, prompt,  ": ", xy_str2green (content));
     }
   else if (level & _XY_Log_Info)
     {
-      str = xy_strcat (3, prompt,  ": ", xy_str_to_blue (content));
+      str = xy_strcat (3, prompt,  ": ", xy_str2blue (content));
     }
   else if (level & _XY_Log_Warn)
     {
-      str = xy_strcat (3, prompt,  ": ", xy_str_to_yellow (content));
+      str = xy_strcat (3, prompt,  ": ", xy_str2yellow (content));
       to_stderr = true;
     }
   else if (level & _XY_Log_Error)
     {
-      str = xy_strcat (3, prompt,  ": ", xy_str_to_red (content));
+      str = xy_strcat (3, prompt,  ": ", xy_str2red (content));
       to_stderr = true;
     }
   else
@@ -1036,7 +1036,7 @@ _xy_log_brkt (int level, const char *prompt1, const char *prompt2, const char *c
     {
       /* [app 成功]  [app success] */
       str = xy_strcat (6,
-        "[", xy_str_to_green (prompt1), " ", xy_str_to_bold (xy_str_to_green (prompt2)), "] ", xy_str_to_green (content));
+        "[", xy_str2green (prompt1), " ", xy_str2bold (xy_str2green (prompt2)), "] ", xy_str2green (content));
     }
   else if (level & _XY_Log_Info)
     {
@@ -1044,20 +1044,20 @@ _xy_log_brkt (int level, const char *prompt1, const char *prompt2, const char *c
          [app 提示]  [app notice]
       */
       str = xy_strcat (6,
-        "[", xy_str_to_blue (prompt1), " ", xy_str_to_bold (xy_str_to_blue (prompt2)), "] ", xy_str_to_blue (content));
+        "[", xy_str2blue (prompt1), " ", xy_str2bold (xy_str2blue (prompt2)), "] ", xy_str2blue (content));
     }
   else if (level & _XY_Log_Warn)
     {
       /* [app 警告]  [app warn] */
       str = xy_strcat (6,
-        "[", xy_str_to_yellow (prompt1), " ", xy_str_to_bold (xy_str_to_yellow (prompt2)), "] ", xy_str_to_yellow (content));
+        "[", xy_str2yellow (prompt1), " ", xy_str2bold (xy_str2yellow (prompt2)), "] ", xy_str2yellow (content));
       to_stderr = true;
     }
   else if (level & _XY_Log_Error)
     {
       /* [app 错误]  [app error] */
       str = xy_strcat (6,
-        "[", xy_str_to_red (prompt1), " ", xy_str_to_bold (xy_str_to_red (prompt2)), "] ", xy_str_to_red (content));
+        "[", xy_str2red (prompt1), " ", xy_str2bold (xy_str2red (prompt2)), "] ", xy_str2red (content));
       to_stderr = true;
     }
   else
