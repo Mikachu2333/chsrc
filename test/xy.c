@@ -104,6 +104,22 @@ main (int argc, char const *argv[])
   assert_str ("12345",      xy_int_to_str (12345));
   assert_str ("-2147483648", xy_int_to_str (INT_MIN));
 
+  assert (0       == xy_str2int (NULL));
+  assert (0       == xy_str2int (""));
+  assert (12345   == xy_str2int ("12345"));
+  assert (-12345  == xy_str2int ("-12345"));
+  assert (INT_MAX == xy_str2int ("2147483647"));
+  assert (INT_MIN == xy_str2int ("-2147483648"));
+  assert (0       == xy_str2int ("123abc"));
+
+  assert (0.0f == xy_str2float (NULL));
+  assert (0.0f == xy_str2float (""));
+  assert (3.1399f < xy_str2float ("3.14"));
+  assert (xy_str2float ("3.14") < 3.1401f);
+  assert (-3.1401f < xy_str2float ("-3.14"));
+  assert (xy_str2float ("-3.14") < -3.1399f);
+  assert (0.0f == xy_str2float ("3.14abc"));
+
   assert_str ("defdef",   xy_str_gsub ("abcdefabcdef", "abc", ""));    // 删除
   assert_str ("6def6def", xy_str_gsub ("abcdefabcdef", "abc", "6")); // 缩小
   assert_str ("XIANGdefXIANGdef",

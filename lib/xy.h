@@ -47,6 +47,8 @@
 
 #include <assert.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -474,6 +476,67 @@ xy_int_to_str (int value)
   snprintf (buffer, sizeof (buffer), "%d", value);
   return xy_strdup (buffer);
 }
+
+
+/**
+ * @brief 将十进制字符串转换为整数
+ *
+ * @param str 可为NULL
+ *
+ * @return 转换后的整数；输入无效或超出 int 范围时返回 0
+ */
+static int
+xy_str2int (const char *str)
+{
+  if (!str)
+    return 0;
+
+  /**
+   * strtol() 位于 <stdlib.h> 其能判断转换是否成功，而 atoi() 不能：
+   * atoi("abc") 返回 0，无法区分非法输入，而 atoi("123abc") 会静默返回 123。
+   * 数值超出范围时，atoi() 的行为不适合做可靠校验。
+   *
+   * strtol() 可以通过 endptr 检查是否完整转换，并通过 errno == ERANGE 检查溢出。
+   * strtol() 返回 long，所以额外检查 INT_MIN 和 INT_MAX，避免转换到 int 时溢出。
+   * 因此 xy_str2int() 可以明确拒绝 "123abc"、超范围数字和空字符串，而不是静默接受错误结果。
+   */
+
+  char *end = NULL;
+  errno = 0;
+  long value = strtol (str, &end, 10);
+
+  if (errno == ERANGE || end == str || *end != '\0'
+      || value < INT_MIN || value > INT_MAX)
+    return 0;
+
+  return (int) value;
+}
+
+
+/**
+ * @brief 将十进制字符串转换为浮点数
+ *
+ * @param str 可为NULL
+ *
+ * @return 转换后的浮点数；输入无效或转换溢出时返回 0.0f
+ */
+static float
+xy_str2float (const char *str)
+{
+  if (!str)
+    return 0.0f;
+
+  char *end = NULL;
+  errno = 0;
+  float value = strtof (str, &end);
+
+  if (errno == ERANGE || end == str || *end != '\0')
+    return 0.0f;
+
+  return value;
+}
+
+
 
 #define _XY_Str_Bold      1
 #define _XY_Str_Faint     2
