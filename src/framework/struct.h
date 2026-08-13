@@ -188,6 +188,7 @@ typedef struct Target_t
   void (*preludefn) (void);
   bool inited; /* 是否执行过了 preludefn() */
 
+  XySeq_t *sub_targets; /* 某些 target 为 group target，几乎完全由 sub targets 定义 */
 
   Source_t *sources;
        int  sources_n;
@@ -222,7 +223,7 @@ Target_t;
 
 #define def_target(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Target_t t##_target={aliases};
 
-/* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nvm 以及 pl_uv_pypi_index */
+/* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
 #define def_sources_target(t, name) Target_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
 
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
@@ -233,8 +234,7 @@ Target_t;
 #define chef_prep_this(t,op) Target_t *this = &t##_target; this->inited = true; chef_allow_##op(t);
 
 /* 简化 "源target" 的编写 */
-#define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t); \
-chef_deny_english(this);
+#define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t);
 
 /* 内部 "源target" 的 prelude 未通过 menu.c 的 add() 注册, 手动挂载 */
 #define chef_set_preludefn_for_sources_target(t) t##_target.preludefn = t##_prelude;

@@ -5,7 +5,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @BingChunMoLi
  * Created On    : <2025-08-09>
- * Last Modified : <2026-08-02>
+ * Last Modified : <2026-08-12>
  *
  * chef DSL: for chefs (recipe makers) to define a target
  * ------------------------------------------------------------*/
@@ -466,6 +466,31 @@ chef_set_sauciers (Target_t *target, uint32_t count, ...)
     {
       char *id = va_arg (args, char*);
       xy_seq_push (target->sauciers, chef_verify_contributor (id));
+    }
+  va_end (args);
+}
+
+
+
+void
+chef_set_sub_targets (Target_t *target, uint32_t count, ...)
+{
+  xy_cant_be_null (target);
+
+  target->sub_targets = xy_seq_new ();
+
+  if (count < 1)
+    {
+      chsrc_panic ("group target 必须至少有一个 sub target");
+    }
+
+  va_list args;
+  va_start (args, count);
+
+  for (uint32_t i = 0; i < count; i++)
+    {
+      Target_t *sub_target = va_arg (args, Target_t*);
+      xy_seq_push (target->sub_targets, sub_target);
     }
   va_end (args);
 }

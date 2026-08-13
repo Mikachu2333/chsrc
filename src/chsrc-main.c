@@ -680,6 +680,28 @@ get_target (const char *input, TargetOp code, char *option)
     }
   else if (TargetOp_List_Config==code)
     {
+      // group target 仅展示维护信息
+      if (target->sub_targets && xy_seq_len(target->sub_targets) > 1)
+        {
+          int sub_counts = xy_seq_len (target->sub_targets);
+
+          chsrc_log (bdyellow(
+            xy_strcat (4, input, " 由以下", xy_int_to_str(sub_counts), "个子目标组成，可使用 chsrc ls <target> 分别查看\n")));
+
+          for (size_t i = 1; i <= sub_counts; i++)
+            {
+              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+              if (!sub_target->inited)
+                {
+                  sub_target->preludefn();
+                }
+              println (bdpurple (sub_target->aliases));
+              cli_print_target_maintain_info (sub_target, input);
+              br();
+            }
+          return true;
+        }
+
       {
       char *msg = ENGLISH ? "To specify a source, use chsrc set " : "指定使用某源，请使用 chsrc set ";
       say (bdblue(xy_strcat (3, msg, input, " <code>\n")));
