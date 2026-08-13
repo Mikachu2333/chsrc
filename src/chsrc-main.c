@@ -709,8 +709,16 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
           sub_target->preludefn();
           println (bdpurple (sub_target->aliases));
-          cli_print_target_maintain_info (sub_target, input);
-          br();
+          /* 嵌套的 group target 的处理 */
+          if (chef_has_sub_targets(sub_target))
+            {
+              chefs_handle_List_Info (sub_target, get_first_alias(sub_target), option);
+            }
+          else
+            {
+              cli_print_target_maintain_info (sub_target, input);
+              br();
+            }
         }
       return;
     }
@@ -796,6 +804,7 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
           sub_target->preludefn();
           println (bdpurple(sub_target->aliases));
+          chsrc_set_target_group_mode();
           chefs_handle_Get_Source (sub_target, get_first_alias(sub_target), option);
           br();
         }
