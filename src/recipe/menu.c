@@ -7,7 +7,7 @@
  *                |
  * Created On     : <2023-09-01>
  * Major Revision :      6
- * Last Modified  : <2026-08-12>
+ * Last Modified  : <2026-08-13>
  * ------------------------------------------------------------*/
 
 #include "lang/rawstr4c.h"
@@ -241,6 +241,6 @@ chsrc_init_menu ()
   add (anaconda);
 #undef add
 
-  chef_set_preludefn_for_sources_target (pl_py_pypi);
+  chef_set_preludefn_for_sources_target (pl_pypi);
   chef_set_preludefn_for_sources_target (pl_nodejs_binary);
 }

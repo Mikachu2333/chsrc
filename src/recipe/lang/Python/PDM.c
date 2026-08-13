@@ -23,7 +23,7 @@ pl_pdm_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_py_pypi_target);
+  chef_use_other_target_sources (this, &pl_pypi_target);
 }
 
 
@@ -43,7 +43,7 @@ pl_pdm_getsrc (char *option)
 void
 pl_pdm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source_and_confirm (&pl_py_pypi_target, option);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_target, option);
 
   char *cmd = NULL;
 

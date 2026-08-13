@@ -23,7 +23,7 @@ pl_uv_pypi_index_prelude (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_py_pypi_target);
+  chef_use_other_target_sources (this, &pl_pypi_target);
 }
 
 
@@ -64,7 +64,7 @@ pl_uv_pypi_index_getsrc (char *option)
         chsrc_note2 ("No source configured in uv, showing default upstream source:");
       else
         chsrc_note2 ("uv 中未配置源，显示默认上游源：");
-      Source_t default_source = chsrc_yield_source (&pl_py_pypi_target, "upstream");
+      Source_t default_source = chsrc_yield_source (&pl_pypi_target, "upstream");
       println (default_source.url);
     }
 }

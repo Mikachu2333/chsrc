@@ -14,7 +14,7 @@ pl_uv_prelude (void)
 
   chef_set_sub_targets (this, 2, &pl_uv_pypi_index_target, &pl_uv_python_build_target);
 
-  chef_use_other_target_sources (this, &pl_py_pypi_target);
+  chef_use_other_target_sources (this, &pl_pypi_target);
 }
 
 

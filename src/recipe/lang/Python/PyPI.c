@@ -4,7 +4,7 @@
 
 #include "rawstr4c.h"
 
-def_sources_target(pl_py_pypi, "pypi");
+def_sources_target(pl_pypi, "pypi");
 
 /**
  * @note 测速链接的这个前缀是 ${host}/pipi/web/pacakges/56/e4....
@@ -29,9 +29,9 @@ pl_pypi_smURL_constructor (const char *url, const char *user_data)
 
 
 void
-pl_py_pypi_prelude (void)
+pl_pypi_prelude (void)
 {
-  chef_prep_sources_target (pl_py_pypi);
+  chef_prep_sources_target (pl_pypi);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-01");
