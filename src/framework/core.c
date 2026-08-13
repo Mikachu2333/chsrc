@@ -12,7 +12,7 @@
  *               | @NewbieXvwu
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-02>
+ * Last Modified : <2026-08-13>
  *
  * chsrc framework
  * ------------------------------------------------------------*/
@@ -684,23 +684,29 @@ measure_speed_for_url (void *url)
 double
 parse_and_say_curl_result (char *curl_buf)
 {
-  // 分隔两部分数据
+  /* 分隔两部分数据 */
   char *split = strchr (curl_buf, ' ');
   if (split) *split = '\0';
 
   // say(curl_buf); say(split+1);
-     int http_code = atoi (curl_buf);
-  double     speed = atof (split+1);
-    char *speedstr = to_human_readable_speed (speed);
+  int  http_code = xy_str2int (curl_buf);
+  double   speed = xy_str2float (split+1);
+  char *speedstr = to_human_readable_speed (speed);
 
-  if (200!=http_code)
+  /* xy_str2int() 可能会返回0，表示转换失败 */
+  if (0==http_code)
+    {
+      char *msg = ENGLISH ? "ERROR curl output: " : "错误 curl 输出: ";
+      println (red (xy_strcat (3, msg, curl_buf)));
+    }
+  else if (200!=http_code)
     {
       char *http_code_str = yellow (xy_2strcat ("HTTP码 ", curl_buf));
-      say (xy_strcat (3, speedstr, " | ",  http_code_str));
+      println (xy_strcat (3, speedstr, " | ",  http_code_str));
     }
   else
     {
-      say (speedstr);
+      println (speedstr);
     }
   return speed;
 }
@@ -1356,12 +1362,12 @@ chsrc_ensure_root ()
   if (NULL==euid)
     {
       char *buf = xy_run ("id -u", 0);
-      if (0!=atoi(buf)) goto not_root;
+      if (0!=xy_str2int(buf)) goto not_root;
       else return;
     }
   else
     {
-      if (0!=atoi(euid)) goto not_root;
+      if (0!=xy_str2int(euid)) goto not_root;
       else return;
     }
 

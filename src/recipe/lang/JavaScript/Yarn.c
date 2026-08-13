@@ -30,7 +30,7 @@ static double
 pl_yarn_get_yarn_version ()
 {
   char *ver = xy_run ("yarn --version", 0);
-  double version = atof (ver);
+  double version = xy_str2float (ver);
   return version;
 }
 

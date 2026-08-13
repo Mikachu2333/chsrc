@@ -75,7 +75,7 @@ ensure_debian_or_ubuntu_old_sourcelist (int debian_type)
 
   char *version_id = xy_run ("sed -nr 's/VERSION_ID=\"(.*)\"/\\1/p' " ETC_OS_RELEASE, 0);
 
-  double version = atof (version_id);
+  double version = xy_str2float (version_id);
 
   char *makeup = NULL;
 
