@@ -167,7 +167,7 @@ chef_set_smURL_with_func (
             }
           else
             {
-              chsrc_panic ("该函数基于已有的换源链接来生成测速链接，但该源的换源链接为空");
+              chsrc_breakdown ("该函数基于已有的换源链接来生成测速链接，但该源的换源链接为空");
             }
         }
     }
@@ -258,7 +258,7 @@ chef_use_other_target_sources (Target_t *this, Target_t *other)
       else
         {
           chef_debug_target (other);
-          chsrc_panic ("`other` 未定义 _prelude() !");
+          chsrc_breakdown ("`other` 未定义 _prelude() !");
         }
     }
 
@@ -305,7 +305,7 @@ chef_set_scope_cap (Target_t *target, Scope_t scope, ScopeCapability_t cap)
     }
   else
     {
-      chsrc_panic ("无效的 scope 参数");
+      chsrc_breakdown ("无效的 scope 参数");
     }
 }
 
@@ -336,13 +336,13 @@ chef_set_default_scope (Target_t *target, Scope_t scope)
     }
   else
     {
-      chsrc_panic ("无效的 scope 参数");
+      chsrc_breakdown ("无效的 scope 参数");
     }
 
   /* 防止 chef 们写错 */
   if (cap != ScopeCap_Able_And_Implemented)
     {
-      chsrc_panic ("该作用域未被明确支持，无法设置为默认作用域");
+      chsrc_breakdown ("该作用域未被明确支持，无法设置为默认作用域");
     }
 }
 
@@ -412,7 +412,7 @@ chef_verify_contributor (const char *id)
     {
       char error[256];
       snprintf (error, sizeof (error), "贡献者 %s 不存在, 是否写错？或请在 chsrc-main.c 中登记该贡献者", id);
-      chsrc_panic (error);
+      chsrc_breakdown (error);
     }
   return c;
 }
@@ -429,7 +429,7 @@ chef_set_chefs (Target_t *target, size_t count, ...)
 
   if (count == 0)
     {
-      chsrc_panic ("recipe 一定至少有1位主要作者(chefs)");
+      chsrc_breakdown ("recipe 一定至少有1位主要作者(chefs)");
       return;
     }
 
@@ -481,7 +481,7 @@ chef_set_sub_targets (Target_t *target, uint32_t count, ...)
 
   if (count < 1)
     {
-      chsrc_panic ("group target 必须至少有一个 sub target");
+      chsrc_breakdown ("group target 必须至少有一个 sub target");
     }
 
   va_list args;

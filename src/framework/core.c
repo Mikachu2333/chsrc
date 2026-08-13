@@ -168,7 +168,8 @@ ProgStore =
   #define chsrc_debug(dom,str)
 #endif
 #define chsrc_verbose(str) xy_info(App_Name "(VERBOSE)",str)
-#define chsrc_panic(reason) xy_error(App_Name "(PANIC)",reason); exit(Exit_MaintainerCause)
+/* 多语句必须括起来，否则在不带 { } 的 if else 等语句中会出错 */
+#define chsrc_breakdown(reason) { xy_error(App_Name "(BREAKDOWN)",reason); exit(Exit_MaintainerCause); }
 
 #define faint(str)    xy_str_to_faint(str)
 #define red(str)      xy_str_to_red(str)

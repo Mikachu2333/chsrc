@@ -588,7 +588,7 @@ callback_perform_all_prelude_for_menu (void *data, void *DUMMY)
   if (!target->preludefn)
     {
       chef_debug_target (target);
-      chsrc_panic ("未定义 _prelude() !");
+      chsrc_breakdown ("未定义 _prelude() !");
     }
 
   target->preludefn();
