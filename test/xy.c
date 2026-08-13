@@ -100,9 +100,9 @@ main (int argc, char const *argv[])
   assert_str ("abcdefg", xy_str_delete_prefix ("abcdefg", ""));
   assert_str ("defg",    xy_str_delete_prefix ("abcdefg", "abc"));
 
-  assert_str ("0",          xy_int_to_str (0));
-  assert_str ("12345",      xy_int_to_str (12345));
-  assert_str ("-2147483648", xy_int_to_str (INT_MIN));
+  assert_str ("0",          xy_int2str (0));
+  assert_str ("12345",      xy_int2str (12345));
+  assert_str ("-2147483648", xy_int2str (INT_MIN));
 
   assert (0       == xy_str2int (NULL));
   assert (0       == xy_str2int (""));

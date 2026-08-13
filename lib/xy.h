@@ -451,7 +451,7 @@ xy_strdup (const char *str)
  *   return caller-free
  */
 static char *
-xy_int_to_str (int value)
+xy_int2str (int value)
 {
   /**
    * sizeof (int) * CHAR_BIT
