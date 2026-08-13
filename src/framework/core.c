@@ -571,7 +571,7 @@ query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *inp
   if (!exist)
     {
       bool mirror_site_exist = false;
-      for (int i=1; i<=xy_seq_len(ProgStore.mirror_sites); i++)
+      for (int i=0; i<xy_seq_len(ProgStore.mirror_sites); i++)
         {
           MirrorSite_t *mir = xy_seq_at (ProgStore.mirror_sites, i);
           if (xy_streql_ic (mir->code, input))

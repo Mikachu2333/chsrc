@@ -523,7 +523,7 @@ cli_print_issues ()
 
 
 /**
- * @brief 用于 callback_find_target() 的回调函数，检查别名是否匹配用户输入
+ * @brief 用于 callback_is_one_of_target_aliases() 的回调函数，检查别名是否匹配用户输入
  */
 bool
 callback_match_alias (const char *alias, void *user_data)
@@ -541,7 +541,6 @@ callback_is_one_of_target_aliases (void *data, void *input)
   Target_t *target = (Target_t *) data;
   if (iterate_aliases (target->aliases, callback_match_alias, input))
     {
-      target->preludefn();
       return true;
     }
   else
@@ -550,7 +549,6 @@ callback_is_one_of_target_aliases (void *data, void *input)
 
 /**
  * 查询用户输入 `input` 是否与该 `menu` 中的某个 target 匹配
- * 若匹配将直接调用 prelude
  *
  * @param[in]   menu    menu
  * @param[in]   input   用户输入的目标名
@@ -566,7 +564,6 @@ iterate_menu (XySeq_t *menu, const char *input, Target_t **target)
   if (t)
     {
       *target = t;
-      t->preludefn();
       return true;
     }
   else
@@ -619,26 +616,24 @@ chsrc_op_epilogue ()
 
 
 
-typedef enum {
-  TargetOp_Get_Source = 1,
-  TargetOp_Set_Source,
-  TargetOp_Reset_Source,
-  TargetOp_Measure_Source,
-  TargetOp_List_Config
-} TargetOp;
-
 /**
- * 寻找target，并根据 `code` 执行相应的操作
+ * 寻找target，并填充其 recipe 信息
  *
  * @param  input   用户输入的目标
- * @param  code    对target要执行的操作
- * @param  option  额外的指示，可为NULL
  *
- * @return 找到目标返回true，未找到返回false
+ * @return 找到时返回 target 指针，否则返回 NULL
  */
-bool
-get_target (const char *input, TargetOp code, char *option)
+Target_t *
+find_target (const char *input)
 {
+  /**
+   * 由于具体需要某一个 target 时，才会表达贡献者信息，所以像
+   *
+   *   $ chsrc -v
+   *   $ chsrc issue
+   *
+   * 等命令不需要 target 时，就不需要注册贡献者信息，加快执行速度
+   */
   chsrc_register_contributors ();
 
   Target_t *target = NULL;
@@ -647,9 +642,38 @@ get_target (const char *input, TargetOp code, char *option)
   if (!matched) matched = iterate_menu (ProgStore.os, input, &target);
   if (!matched) matched = iterate_menu (ProgStore.wr, input, &target);
 
-  if (!matched) return false;
+  if (matched)
+    {
+      /* 按需加载 recipe 信息: 填充好该 recipe 所有信息，其他 recipe 信息不填充 */
+      target->preludefn();
+      return target;
+    }
+  else
+    {
+      return NULL;
+    }
+}
 
-  if (TargetOp_Set_Source==code)
+typedef enum {
+  TargetCmd_Get_Source = 1,
+  TargetCmd_Set_Source,
+  TargetCmd_Reset_Source,
+  TargetCmd_Measure_Source,
+  TargetCmd_List_Config
+} TargetCmd;
+
+
+/**
+ * 某一个 target 的 chefs(维护者) 们 开始处理用户的某个请求
+ *
+ * @param  code    对target要执行的操作
+ * @param  input   用户输入的原目标字符串(为了在提示中还原用户的输入)
+ * @param  option  额外的选项，可为NULL
+ */
+void
+chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, char *option)
+{
+  if (TargetCmd_Set_Source==code)
     {
       if (target->setfn)
         {
@@ -675,7 +699,7 @@ get_target (const char *input, TargetOp code, char *option)
         }
       else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 set 功能，邀您帮助: chsrc issue"));
     }
-  else if (TargetOp_Reset_Source==code)
+  else if (TargetCmd_Reset_Source==code)
     {
       if (target->resetfn)
         {
@@ -683,7 +707,7 @@ get_target (const char *input, TargetOp code, char *option)
         }
       else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 reset 功能，邀您帮助: chsrc issue"));
     }
-  else if (TargetOp_Get_Source==code)
+  else if (TargetCmd_Get_Source==code)
     {
       if (target->getfn)
         {
@@ -691,9 +715,10 @@ get_target (const char *input, TargetOp code, char *option)
         }
       else chsrc_error (xy_strcat (3, "暂未对 ", input, " 实现 get 功能，邀您帮助: chsrc issue"));
     }
-  else if (TargetOp_List_Config==code)
+
+  else if (TargetCmd_List_Config==code)
     {
-      // group target 仅展示维护信息
+      /* group target 仅展示维护信息 */
       if (chef_has_sub_targets(target))
         {
           int sub_count = xy_seq_len (target->sub_targets);
@@ -713,15 +738,12 @@ get_target (const char *input, TargetOp code, char *option)
           for (size_t i=0; i<sub_count; i++)
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-              if (!sub_target->inited)
-                {
-                  sub_target->preludefn();
-                }
+              sub_target->preludefn();
               println (bdpurple (sub_target->aliases));
               cli_print_target_maintain_info (sub_target, input);
               br();
             }
-          return true;
+          return;
         }
 
       {
@@ -752,19 +774,62 @@ get_target (const char *input, TargetOp code, char *option)
       cli_print_target_maintain_info (target, input);
       }
     }
-  else if (TargetOp_Measure_Source==code)
+
+  else if (TargetCmd_Measure_Source==code)
     {
-      auto_select_mirror (target->sources, target->sources_n, input);
-      return true;
+      /* group target 不测速，让用户自己分别测速 */
+      if (chef_has_sub_targets(target))
+        {
+          int sub_count = xy_seq_len (target->sub_targets);
+
+          char *zh_msg = xy_strcat (3,
+            bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
+            bdpurple("sub-target"),
+            bdyellow("> 分别测速"));
+
+          char *en_msg = xy_strcat (3,
+            bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc measure <")),
+            bdpurple("sub-target"),
+            bdyellow("> to measure each"));
+
+          chsrc_log (CHINESE ? zh_msg : en_msg);
+
+          for (size_t i=0; i<sub_count; i++)
+            {
+              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+              sub_target->preludefn();
+              println (bdpurple (sub_target->aliases));
+            }
+        }
+      else
+        {
+          auto_select_mirror (target->sources, target->sources_n, input);
+          return;
+        }
     }
 
-  /* 简短显示维护信息 */
-  if (TargetOp_Get_Source==code || TargetOp_Set_Source==code || TargetOp_Reset_Source==code)
+  /* 核心命令 get, set, reset 完成后需要简短显示维护信息 */
+  if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
-      cli_print_target_maintain_info_briefly (target, input);
+      if (chef_has_sub_targets(target))
+        {
+          br();
+          for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+            {
+              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+              /* 递归显示 sub targets 信息 */
+              sub_target->preludefn();
+              cli_print_target_maintain_info_briefly (sub_target, sub_target->aliases);
+              // chefs_handle_user_command (sub_target, code, input, option);
+            }
+        }
+      else
+        {
+          cli_print_target_maintain_info_briefly (target, input);
+        }
     }
 
-  if (TargetOp_Set_Source==code || TargetOp_Measure_Source==code)
+  if (TargetCmd_Set_Source==code || TargetCmd_Measure_Source==code)
     {
       // 2025-09-19: 已告知该消息给用户一个多月，我们不再告知
       // chsrc_op_epilogue ();
@@ -775,7 +840,7 @@ get_target (const char *input, TargetOp code, char *option)
   chsrc_perform_all_prelude ();
 #endif
 
-  return true;
+  return;
 }
 
 
@@ -796,11 +861,13 @@ main (int argc, char const *argv[])
 
   const char *command = argv[1];
 
-  // chsrc set target mirror
-  //        1    2      3
+  // chsrc set <target-name> <mirror-code>
+  //        1        2             3
   int cli_arg_Target_pos = 2;
   int cli_arg_Mirror_pos = cli_arg_Target_pos + 1;
-  const char *target = NULL;
+  const char *target_name = NULL;
+
+  Target_t *the_found_target = NULL;
 
   /**
    * (1)
@@ -909,9 +976,6 @@ main (int argc, char const *argv[])
         }
     }
 
-
-  bool matched = false;
-
   if (in_dry_run_mode())
     {
       char *dry_msg = ENGLISH ? "Enable [Dry Run] mode. "
@@ -956,44 +1020,51 @@ main (int argc, char const *argv[])
         }
       else
         {
-          target = argv[cli_arg_Target_pos];
-          if (   xy_streql (target, "mirrors")
-              || xy_streql (target, "mirror"))
+          target_name = argv[cli_arg_Target_pos];
+          if (   xy_streql (target_name, "mirrors")
+              || xy_streql (target_name, "mirror"))
             {
               cli_print_all_mirror_sites ();
               return Exit_OK;
             }
 
-          else if (   xy_streql (target, "targets")
-                   || xy_streql (target, "target"))
+          else if (   xy_streql (target_name, "targets")
+                   || xy_streql (target_name, "target"))
             {
               cli_print_supported_targets ();
               return Exit_OK;
             }
 
-          else if (xy_streql (target, "os"))
+          else if (xy_streql (target_name, "os"))
             {
               cli_print_menu ("os");
               return Exit_OK;
             }
 
-          else if (   xy_streql (target, "lang")
-                   || xy_streql (target, "pl")
-                   || xy_streql (target, "language"))
+          else if (   xy_streql (target_name, "lang")
+                   || xy_streql (target_name, "pl")
+                   || xy_streql (target_name, "language"))
             {
               cli_print_menu ("pl");
               return Exit_OK;
             }
 
-          else if (   xy_streql (target, "ware")
-                   || xy_streql (target, "software"))
+          else if (   xy_streql (target_name, "ware")
+                   || xy_streql (target_name, "software"))
             {
               cli_print_menu ("wr");
               return Exit_OK;
             }
 
-          matched = get_target (target, TargetOp_List_Config, NULL);
-          if (!matched) goto not_matched;
+          the_found_target = find_target (target_name);
+          if (!the_found_target)
+            {
+              goto not_found;
+            }
+          else
+            {
+              chefs_handle_user_command (the_found_target, TargetCmd_List_Config, target_name, NULL);
+            }
         }
       return Exit_OK;
   }
@@ -1017,9 +1088,17 @@ main (int argc, char const *argv[])
           return Exit_Unknown;
         }
       ProgMode.MeasureMode = true;
-      target = argv[cli_arg_Target_pos];
-      matched = get_target (target, TargetOp_Measure_Source, NULL);
-      if (!matched) goto not_matched;
+      target_name = argv[cli_arg_Target_pos];
+
+      the_found_target = find_target (target_name);
+      if (!the_found_target)
+        {
+          goto not_found;
+        }
+      else
+        {
+          chefs_handle_user_command (the_found_target, TargetCmd_Measure_Source, target_name, NULL);
+        }
       return Exit_OK;
     }
 
@@ -1035,9 +1114,16 @@ main (int argc, char const *argv[])
           chsrc_error (msg);
           return Exit_Unknown;
         }
-      target = argv[cli_arg_Target_pos];
-      matched = get_target (target, TargetOp_Get_Source, NULL);
-      if (!matched) goto not_matched;
+      target_name = argv[cli_arg_Target_pos];
+      the_found_target = find_target (target_name);
+      if (!the_found_target)
+        {
+          goto not_found;
+        }
+      else
+        {
+          chefs_handle_user_command (the_found_target, TargetCmd_Get_Source, target_name, NULL);
+        }
       return Exit_OK;
     }
 
@@ -1053,15 +1139,22 @@ main (int argc, char const *argv[])
           return Exit_Unknown;
         }
 
-      target = argv[cli_arg_Target_pos];
+      target_name = argv[cli_arg_Target_pos];
       char *mirrorCode_or_url = NULL;
       if (argc >= cli_arg_Mirror_pos)
         {
           mirrorCode_or_url = xy_strdup (argv[cli_arg_Mirror_pos]);
         }
 
-      matched = get_target (target, TargetOp_Set_Source, mirrorCode_or_url);
-      if (!matched) goto not_matched;
+      the_found_target = find_target (target_name);
+      if (!the_found_target)
+        {
+          goto not_found;
+        }
+      else
+        {
+          chefs_handle_user_command (the_found_target, TargetCmd_Set_Source, target_name, mirrorCode_or_url);
+        }
       return Exit_OK;
     }
 
@@ -1079,9 +1172,16 @@ main (int argc, char const *argv[])
         }
 
       ProgMode.ResetMode = true;
-      target = argv[cli_arg_Target_pos];
-      matched = get_target (target, TargetOp_Reset_Source, NULL);
-      if (!matched) goto not_matched;
+      target_name = argv[cli_arg_Target_pos];
+      the_found_target = find_target (target_name);
+      if (!the_found_target)
+        {
+          goto not_found;
+        }
+      else
+        {
+          chefs_handle_user_command (the_found_target, TargetCmd_Reset_Source, target_name, NULL);
+        }
       return Exit_OK;
     }
 
@@ -1103,8 +1203,8 @@ main (int argc, char const *argv[])
       return Exit_Unknown;
     }
 
-not_matched:
-  if (!matched)
+not_found:
+  if (!the_found_target)
     {
       char *msg = ENGLISH ? "Unknown target. "  MSG_EN_USE_LIST_TARGETS
                           : "暂不支持的换源目标。" MSG_CN_USE_LIST_TARGETS;

@@ -56,7 +56,6 @@ pl_js_group_getsrc (char *option)
   if (pnpm_exist)
     {
       pl_pnpm_getsrc (option);
-      br();
     }
 }
 
