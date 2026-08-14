@@ -12,5 +12,5 @@ pl_py_group_prepare (void)
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-13");
 
-  chef_set_sub_targets (this, 4, &pl_pip_target, &pl_pdm_target, &pl_poetry_target, &pl_uv_target);
+  chef_set_sub_dishes (this, 4, &pl_pip_target, &pl_pdm_target, &pl_poetry_target, &pl_uv_target);
 }

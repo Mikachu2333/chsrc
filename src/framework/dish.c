@@ -33,5 +33,5 @@ dish_get_first_alias (Target_t *target)
 bool
 dish_has_sub_dishes (Target_t *target)
 {
-  return (target->sub_targets && xy_seq_len(target->sub_targets) > 1);
+  return (target->sub_dishes && xy_seq_len(target->sub_dishes) > 1);
 }

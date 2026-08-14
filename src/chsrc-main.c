@@ -674,23 +674,23 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
   /* group target 仅展示维护信息 */
   if (dish_has_sub_dishes(target))
     {
-      int sub_count = xy_seq_len (target->sub_targets);
+      int sub_count = xy_seq_len (target->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
         bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
-        bdpurple("sub-target"),
+        bdpurple("sub-dish"),
         bdyellow("> 分别查看\n"));
 
       char *en_msg = xy_strcat (3,
-        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc ls <")),
-        bdpurple("sub-target"),
+        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub dishes, you can use `chsrc ls <")),
+        bdpurple("sub-dish"),
         bdyellow("> to view each\n"));
 
       chsrc_log (CHINESE ? zh_msg : en_msg);
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
           sub_target->preparefn();
           println (bdpurple (sub_target->aliases));
           /* 嵌套的 group target 的处理 */
@@ -746,23 +746,23 @@ chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
   /* group target 不测速，让用户自己分别测速 */
   if (dish_has_sub_dishes(target))
     {
-      int sub_count = xy_seq_len (target->sub_targets);
+      int sub_count = xy_seq_len (target->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
         bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
-        bdpurple("sub-target"),
+        bdpurple("sub-dish"),
         bdyellow("> 分别测速"));
 
       char *en_msg = xy_strcat (3,
-        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets, you can use `chsrc measure <")),
-        bdpurple("sub-target"),
+        bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub dishes, you can use `chsrc measure <")),
+        bdpurple("sub-dish"),
         bdyellow("> to measure each"));
 
       chsrc_log (CHINESE ? zh_msg : en_msg);
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
           sub_target->preparefn();
           println (bdpurple (sub_target->aliases));
         }
@@ -783,9 +783,9 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chsrc_set_target_group_mode();
@@ -814,9 +814,9 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chefs_handle_Set_Source (sub_target, dish_get_first_alias(sub_target), option);
@@ -837,7 +837,7 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
        */
       if (dish_has_sub_dishes(target))
         {
-          /* group target 不要检查，留给后续 sub targets 检查 */
+          /* group target 不要检查，留给后续 sub dishes 检查 */
           xy_noop();
         }
       else
@@ -862,9 +862,9 @@ chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chefs_handle_Reset_Source (sub_target, dish_get_first_alias(sub_target), option);
@@ -898,13 +898,13 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
     {
       if (dish_has_sub_dishes(target))
         {
-          int sub_count = xy_seq_len(target->sub_targets);
+          int sub_count = xy_seq_len(target->sub_dishes);
           char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子目标组成: "));
-          char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub targets\n"));
+          char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub dishes\n"));
 
           for (size_t i=0; i<sub_count; i++)
             {
-              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+              Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
               zh_msg = xy_strcat (3, zh_msg, bdpurple(dish_get_first_alias(sub_target)),
                 (i < sub_count-1) ? ", " : "");
             }
@@ -940,10 +940,10 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
     {
       if (dish_has_sub_dishes(target))
         {
-          for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
+          for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
             {
-              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-              /* 递归显示 sub targets 信息 */
+              Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
+              /* 递归显示 sub dishes 信息 */
               sub_target->preparefn();
               cli_print_target_maintain_info_briefly (sub_target, sub_target->aliases);
               // chefs_handle_user_command (sub_target, code, input, option);

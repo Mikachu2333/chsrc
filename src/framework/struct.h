@@ -188,7 +188,7 @@ typedef struct Target_t
   void (*preparefn) (void);
   bool inited; /* 是否执行过了 preparefn() */
 
-  XySeq_t *sub_targets; /* 某些 target 为 group target，几乎完全由 sub targets 定义 */
+  XySeq_t *sub_dishes; /* 某些 target 为 group target，几乎完全由 sub dishes 定义 */
 
   Source_t *sources;
        int  sources_n;

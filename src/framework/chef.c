@@ -473,15 +473,15 @@ chef_set_sauciers (Target_t *target, uint32_t count, ...)
 
 
 void
-chef_set_sub_targets (Target_t *target, uint32_t count, ...)
+chef_set_sub_dishes (Target_t *target, uint32_t count, ...)
 {
   xy_cant_be_null (target);
 
-  target->sub_targets = xy_seq_new ();
+  target->sub_dishes = xy_seq_new ();
 
   if (count < 1)
     {
-      chsrc_breakdown ("group target 必须至少有一个 sub target");
+      chsrc_breakdown ("group target 必须至少有一个 sub dish");
     }
 
   va_list args;
@@ -490,7 +490,7 @@ chef_set_sub_targets (Target_t *target, uint32_t count, ...)
   for (uint32_t i = 0; i < count; i++)
     {
       Target_t *sub_target = va_arg (args, Target_t*);
-      xy_seq_push (target->sub_targets, sub_target);
+      xy_seq_push (target->sub_dishes, sub_target);
     }
   va_end (args);
 }
