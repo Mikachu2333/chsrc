@@ -7,7 +7,7 @@ def_dish(pl_pdm, "pdm");
 void
 pl_pdm_prepare (void)
 {
-  chef_prep_this (pl_pdm, gsr);
+  chef_prep_this_dish (pl_pdm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-06-05");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -23,7 +23,7 @@ pl_pdm_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_pypi_dish);
+  chef_use_other_dish_sources (this, &pl_pypi_dish);
 }
 
 

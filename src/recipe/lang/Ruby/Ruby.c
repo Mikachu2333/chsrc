@@ -14,7 +14,7 @@ def_dish(pl_ruby, "gem/ruby/rb/rubygem/rubygems/bundler");
 void
 pl_ruby_prepare (void)
 {
-  chef_prep_this (pl_ruby, gsr);
+  chef_prep_this_dish (pl_ruby, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-29");
   chef_set_recipe_last_updated (this, "2026-08-02");

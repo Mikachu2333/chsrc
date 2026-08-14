@@ -7,7 +7,7 @@ def_dish(pl_nvm, "nvm");
 void
 pl_nvm_prepare (void)
 {
-  chef_prep_this (pl_nvm, gsr);
+  chef_prep_this_dish (pl_nvm, gsr);
 
   chef_set_recipe_created_on   (this, "2024-09-23");
   chef_set_recipe_last_updated (this, "2025-06-19");
@@ -25,7 +25,7 @@ pl_nvm_prepare (void)
 
   chef_set_note (this, "nvm 不支持 Fish shell", "nvm does not support Fish");
 
-  chef_use_other_target_sources (this, &pl_nodejs_binary_dish);
+  chef_use_other_dish_sources (this, &pl_nodejs_binary_dish);
 }
 
 

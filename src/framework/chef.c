@@ -13,30 +13,30 @@
 #pragma once
 
 void
-chef_debug_target (Dish_t *target)
+chef_debug_dish (Dish_t *dish)
 {
 #ifdef XY_DEBUG
-  if (!target)
+  if (!dish)
     {
-      chsrc_debug2 ("target", "Target is NULL");
+      chsrc_debug2 ("dish", "Dish is NULL");
       return;
     }
 
-  say ("DEBUG Target Information:");
-  printf ("  Aliases: %s\n", target->aliases);
+  say ("DEBUG Dish Information:");
+  printf ("  Aliases: %s\n", dish->aliases);
 
-  printf ("  Get Function: %p\n", target->getfn);
-  printf ("  Set Function: %p\n", target->setfn);
-  printf ("  Reset Function: %p\n", target->resetfn);
-  printf ("  Prepare Function: %p\n", target->preparefn);
+  printf ("  Get Function: %p\n", dish->getfn);
+  printf ("  Set Function: %p\n", dish->setfn);
+  printf ("  Reset Function: %p\n", dish->resetfn);
+  printf ("  Prepare Function: %p\n", dish->preparefn);
 
-  printf ("  Inited?: %d\n", target->inited);
+  printf ("  Inited?: %d\n", dish->inited);
 
-  printf ("  Sources: %p\n", target->sources);
-  printf ("  Sources Count: %d\n", target->sources_n);
+  printf ("  Sources: %p\n", dish->sources);
+  printf ("  Sources Count: %d\n", dish->sources_n);
 
-  printf ("  Chefs Count: %d\n", xy_seq_len(target->chefs));
-  printf ("  Sauciers Count: %d\n", xy_seq_len(target->sauciers));
+  printf ("  Chefs Count: %d\n", xy_seq_len(dish->chefs));
+  printf ("  Sauciers Count: %d\n", xy_seq_len(dish->sauciers));
 #endif
 }
 
@@ -119,15 +119,15 @@ chef_set_provider_sm_accuracy (SourceProvider_t *provider, bool accuracy)
  * @example 见 os_ubuntu_resetsrc() 中对非 x86_64 架构源地址的修改
  */
 void
-chef_set_repoURL (Dish_t *target, SourceProvider_t *provider, char *url)
+chef_set_repoURL (Dish_t *dish, SourceProvider_t *provider, char *url)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
   xy_cant_be_null (provider);
   xy_cant_be_null (url);
 
-  for (int i=0; i < target->sources_n; i++)
+  for (int i=0; i < dish->sources_n; i++)
     {
-      Source_t *src = &target->sources[i];
+      Source_t *src = &dish->sources[i];
       SourceProvider_t *p = src->provider;
       if (p == provider)
         {
@@ -145,18 +145,18 @@ chef_set_repoURL (Dish_t *target, SourceProvider_t *provider, char *url)
  */
 void
 chef_set_smURL_with_func (
-  Dish_t *target,
+  Dish_t *dish,
   SourceProvider_t *provider,
   char *(*func)(const char *url, const char *user_data),
   char *user_data)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
   xy_cant_be_null (provider);
   xy_cant_be_null (func);
 
-  for (int i=0; i < target->sources_n; i++)
+  for (int i=0; i < dish->sources_n; i++)
     {
-      Source_t *src = &target->sources[i];
+      Source_t *src = &dish->sources[i];
       SourceProvider_t *p = src->provider;
       if (p == provider)
         {
@@ -180,9 +180,9 @@ chef_set_smURL_with_func (
  * @brief 给 "换源链接" 增加一个后缀来构造和填充专用测速链接
  */
 void
-chef_set_smURL_with_postfix (Dish_t *target, SourceProvider_t *provider, char *postfix)
+chef_set_smURL_with_postfix (Dish_t *dish, SourceProvider_t *provider, char *postfix)
 {
-  chef_set_smURL_with_func (target, provider, xy_2strcat, postfix);
+  chef_set_smURL_with_func (dish, provider, xy_2strcat, postfix);
 }
 
 
@@ -199,9 +199,9 @@ _chef_strdup_2nd_argument (const char *DUMMY, const char *str)
  * @breif 设置 或 修改 某个镜像站的 *精准*测速链接，即修改 Source_t.speed_measure_url
  */
 void
-chef_set_smURL (Dish_t *target, SourceProvider_t *provider, char *url)
+chef_set_smURL (Dish_t *dish, SourceProvider_t *provider, char *url)
 {
-  chef_set_smURL_with_func (target, provider, _chef_strdup_2nd_argument, url);
+  chef_set_smURL_with_func (dish, provider, _chef_strdup_2nd_argument, url);
 }
 
 
@@ -210,14 +210,14 @@ chef_set_smURL (Dish_t *target, SourceProvider_t *provider, char *url)
  */
 void
 chef_set_rest_smURL_with_func (
-  Dish_t *target,
+  Dish_t *dish,
   char *(*func)(const char *url, const char *user_data),
   char *user_data)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  Source_t *sources = target->sources;
-  int n = target->sources_n;
+  Source_t *sources = dish->sources;
+  int n = dish->sources_n;
 
   for (int i=0; i<n; i++)
     {
@@ -239,17 +239,17 @@ chef_set_rest_smURL_with_func (
  * @brief 针对每一个剩下的还未设置专用测速链接的源，对其 "换源链接" 增加一个后缀来生成专用测速链接
  */
 void
-chef_set_rest_smURL_with_postfix (Dish_t *target, char *postfix)
+chef_set_rest_smURL_with_postfix (Dish_t *dish, char *postfix)
 {
-  chef_set_rest_smURL_with_func (target, xy_2strcat, postfix);
+  chef_set_rest_smURL_with_func (dish, xy_2strcat, postfix);
 }
 
 
 /**
- * @note 用于: 组中的 item target 在 standalone 模式时正确填充源信息
+ * @note 用于: 组中的 sub dish 在 standalone 模式时正确填充源信息
  */
 void
-chef_use_other_target_sources (Dish_t *this, Dish_t *other)
+chef_use_other_dish_sources (Dish_t *this, Dish_t *other)
 {
   if (!other->inited)
     {
@@ -257,7 +257,7 @@ chef_use_other_target_sources (Dish_t *this, Dish_t *other)
         other->preparefn();
       else
         {
-          chef_debug_target (other);
+          chef_debug_dish (other);
           chsrc_breakdown ("`other` 未定义 _prepare() !");
         }
     }
@@ -268,40 +268,40 @@ chef_use_other_target_sources (Dish_t *this, Dish_t *other)
 
 
 void
-chef_allow_english (Dish_t *target)
+chef_allow_english (Dish_t *dish)
 {
-  xy_cant_be_null (target);
-  target->can_english = true;
+  xy_cant_be_null (dish);
+  dish->can_english = true;
 }
 
 void
-chef_deny_english (Dish_t *target)
+chef_deny_english (Dish_t *dish)
 {
-  xy_cant_be_null (target);
-  target->can_english = false;
+  xy_cant_be_null (dish);
+  dish->can_english = false;
 }
 
 
 /**
- * @brief 设置该 target 的作用域能力
+ * @brief 设置该 dish 的作用域能力
  */
 void
-chef_set_scope_cap (Dish_t *target, Scope_t scope, ScopeCapability_t cap)
+chef_set_scope_cap (Dish_t *dish, Scope_t scope, ScopeCapability_t cap)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
   /* 我们在这里固定好索引的位置，而不是直接用 enum 的值，防止以后顺序或者新增枚举值 */
   if (scope == ProjectScope)
     {
-      target->scope_caps[ScopeCap_Slot_Project] = cap;
+      dish->scope_caps[ScopeCap_Slot_Project] = cap;
     }
   else if (scope == UserScope)
     {
-      target->scope_caps[ScopeCap_Slot_User] = cap;
+      dish->scope_caps[ScopeCap_Slot_User] = cap;
     }
   else if (scope == SystemScope)
     {
-      target->scope_caps[ScopeCap_Slot_System] = cap;
+      dish->scope_caps[ScopeCap_Slot_System] = cap;
     }
   else
     {
@@ -311,24 +311,24 @@ chef_set_scope_cap (Dish_t *target, Scope_t scope, ScopeCapability_t cap)
 
 
 /**
- * @brief 设置该 target 的默认作用域
+ * @brief 设置该 dish 的默认作用域
  *
  * @note 该函数必须在 chef_set_scope_cap() 之后调用，以确保默认作用域的能力已经被明确了
  */
 void
-chef_set_default_scope (Dish_t *target, Scope_t scope)
+chef_set_default_scope (Dish_t *dish, Scope_t scope)
 {
-  xy_cant_be_null (target);
-  target->default_scope = scope;
+  xy_cant_be_null (dish);
+  dish->default_scope = scope;
 
   ScopeCapability_t cap = ScopeCap_Unknown;
 
   if (scope == ProjectScope)
-    cap = target->scope_caps[ScopeCap_Slot_Project];
+    cap = dish->scope_caps[ScopeCap_Slot_Project];
   else if (scope == UserScope)
-    cap = target->scope_caps[ScopeCap_Slot_User];
+    cap = dish->scope_caps[ScopeCap_Slot_User];
   else if (scope == SystemScope)
-    cap = target->scope_caps[ScopeCap_Slot_System];
+    cap = dish->scope_caps[ScopeCap_Slot_System];
   else if (scope == ImplementationDefinedScope)
     {
       /* ImplementationDefinedScope 即由 chsrc 根据实际情况来决定，因此我们不对它检查 */
@@ -348,53 +348,53 @@ chef_set_default_scope (Dish_t *target, Scope_t scope)
 
 
 /**
- * @brief 由于操作系统相关的 target 换源都是系统级，所以 scope 都是固定的，我们提供此快捷函数来设置
+ * @brief 由于操作系统相关的 dish 换源都是系统级，所以 scope 都是固定的，我们提供此快捷函数来设置
  */
 void
-chef_set_os_scope (Dish_t *target)
+chef_set_os_scope (Dish_t *dish)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  chef_set_scope_cap (target, ProjectScope, ScopeCap_Unable);
-  chef_set_scope_cap (target, UserScope,    ScopeCap_Unable);
-  chef_set_scope_cap (target, SystemScope,  ScopeCap_Able_And_Implemented);
+  chef_set_scope_cap (dish, ProjectScope, ScopeCap_Unable);
+  chef_set_scope_cap (dish, UserScope,    ScopeCap_Unable);
+  chef_set_scope_cap (dish, SystemScope,  ScopeCap_Able_And_Implemented);
 
-  chef_set_default_scope (target, SystemScope);
+  chef_set_default_scope (dish, SystemScope);
 }
 
 
 
 void
-chef_allow_user_define (Dish_t *target)
+chef_allow_user_define (Dish_t *dish)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  target->can_user_define = true;
-  target->can_user_define_explain = NULL;
+  dish->can_user_define = true;
+  dish->can_user_define_explain = NULL;
 }
 
 void
-chef_deny_user_define (Dish_t *target)
+chef_deny_user_define (Dish_t *dish)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  target->can_user_define = false;
+  dish->can_user_define = false;
 
   char *reason = CHINESE ? "URL将会根据内部实现重写，因此不能自定义"
                          : "The URL will be rewritten based on internal implementation, so it cannot be customized";
-  target->can_user_define_explain = reason;
+  dish->can_user_define_explain = reason;
 }
 
 
 void
-chef_set_note (Dish_t *target, const char *note_zh, const char *note_en)
+chef_set_note (Dish_t *dish, const char *note_zh, const char *note_en)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
   const char *msg = CHINESE ? note_zh : note_en;
 
   if (msg)
-    target->note = xy_strdup (msg);
+    dish->note = xy_strdup (msg);
 }
 
 
@@ -423,9 +423,9 @@ chef_verify_contributor (const char *id)
  * @brief 设置 Chefs (recipe 主要作者)
  */
 void
-chef_set_chefs (Dish_t *target, size_t count, ...)
+chef_set_chefs (Dish_t *dish, size_t count, ...)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
   if (count == 0)
     {
@@ -436,23 +436,23 @@ chef_set_chefs (Dish_t *target, size_t count, ...)
   va_list args;
   va_start (args, count);
 
-  target->chefs = xy_seq_new ();
+  dish->chefs = xy_seq_new ();
 
   for (size_t i = 0; i < count; i++)
     {
       char *id = va_arg (args, char*);
-      xy_seq_push (target->chefs, chef_verify_contributor (id));
+      xy_seq_push (dish->chefs, chef_verify_contributor (id));
     }
 
   va_end (args);
 }
 
 void
-chef_set_sauciers (Dish_t *target, uint32_t count, ...)
+chef_set_sauciers (Dish_t *dish, uint32_t count, ...)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  target->sauciers = xy_seq_new ();
+  dish->sauciers = xy_seq_new ();
 
   if (count == 0)
     {
@@ -465,7 +465,7 @@ chef_set_sauciers (Dish_t *target, uint32_t count, ...)
   for (uint32_t i = 0; i < count; i++)
     {
       char *id = va_arg (args, char*);
-      xy_seq_push (target->sauciers, chef_verify_contributor (id));
+      xy_seq_push (dish->sauciers, chef_verify_contributor (id));
     }
   va_end (args);
 }
@@ -473,15 +473,15 @@ chef_set_sauciers (Dish_t *target, uint32_t count, ...)
 
 
 void
-chef_set_sub_dishes (Dish_t *target, uint32_t count, ...)
+chef_set_sub_dishes (Dish_t *dish, uint32_t count, ...)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
 
-  target->sub_dishes = xy_seq_new ();
+  dish->sub_dishes = xy_seq_new ();
 
   if (count < 1)
     {
-      chsrc_breakdown ("group target 必须至少有一个 sub dish");
+      chsrc_breakdown ("combo dish 必须至少有一个 sub dish");
     }
 
   va_list args;
@@ -490,7 +490,7 @@ chef_set_sub_dishes (Dish_t *target, uint32_t count, ...)
   for (uint32_t i = 0; i < count; i++)
     {
       Dish_t *sub_dish = va_arg (args, Dish_t*);
-      xy_seq_push (target->sub_dishes, sub_dish);
+      xy_seq_push (dish->sub_dishes, sub_dish);
     }
   va_end (args);
 }
@@ -498,28 +498,28 @@ chef_set_sub_dishes (Dish_t *target, uint32_t count, ...)
 
 
 void
-chef_set_recipe_created_on (Dish_t *target, char *date)
+chef_set_recipe_created_on (Dish_t *dish, char *date)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
   xy_cant_be_null (date);
 
-  target->created_on = xy_strdup (date);
+  dish->created_on = xy_strdup (date);
 }
 
 
 void
-chef_set_recipe_last_updated (Dish_t *target, char *date)
+chef_set_recipe_last_updated (Dish_t *dish, char *date)
 {
-  xy_cant_be_null (target);
+  xy_cant_be_null (dish);
   xy_cant_be_null (date);
 
-  target->last_updated = xy_strdup (date);
+  dish->last_updated = xy_strdup (date);
 }
 
 
 
 /**
- * @note 某些 target 需要修改 User-Agent
+ * @note 某些 dish 需要修改 User-Agent
  * 由于单独测速 (chsrc measure) 的时候也需要进行此项修改，
  * 所以该函数不能仅仅放在 _setsrc() 里，而是应当放在 _prepare() 里
  */

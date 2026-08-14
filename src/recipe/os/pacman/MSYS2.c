@@ -7,7 +7,7 @@ def_dish(os_msys2, "msys2/msys");
 void
 os_msys2_prepare ()
 {
-  chef_prep_this (os_msys2, s);
+  chef_prep_this_dish (os_msys2, s);
 
   chef_set_recipe_created_on   (this, "2023-09-06");
   chef_set_recipe_last_updated (this, "2026-07-22");

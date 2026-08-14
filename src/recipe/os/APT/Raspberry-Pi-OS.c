@@ -9,7 +9,7 @@ def_dish(os_raspberrypi, "raspi/raspberrypi");
 void
 os_raspberrypi_prepare ()
 {
-  chef_prep_this (os_raspberrypi, gsr);
+  chef_prep_this_dish (os_raspberrypi, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-29");
   chef_set_recipe_last_updated (this, "2025-08-10");

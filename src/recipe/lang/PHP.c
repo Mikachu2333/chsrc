@@ -7,7 +7,7 @@ def_dish(pl_php, "php/composer");
 void
 pl_php_prepare ()
 {
-  chef_prep_this (pl_php, gs);
+  chef_prep_this_dish (pl_php, gs);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
   chef_set_recipe_last_updated (this, "2025-08-24");

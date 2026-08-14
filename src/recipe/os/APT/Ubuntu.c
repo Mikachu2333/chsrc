@@ -8,7 +8,7 @@ def_dish(os_ubuntu, "ubuntu/zorinos");
 void
 os_ubuntu_prepare ()
 {
-  chef_prep_this (os_ubuntu, gsr);
+  chef_prep_this_dish (os_ubuntu, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
   chef_set_recipe_last_updated (this, "2026-06-26");

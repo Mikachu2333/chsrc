@@ -7,7 +7,7 @@ def_dish(pl_rust_cargo, "rust/cargo/crate/crates");
 void
 pl_rust_cargo_prepare (void)
 {
-  chef_prep_this (pl_rust_cargo, gsr);
+  chef_prep_this_dish (pl_rust_cargo, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
   chef_set_recipe_last_updated (this, "2026-03-21");

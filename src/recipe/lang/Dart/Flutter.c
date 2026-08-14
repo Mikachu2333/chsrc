@@ -7,7 +7,7 @@ def_dish(pl_dart_flutter, "flutter");
 void
 pl_dart_flutter_prepare (void)
 {
-  chef_prep_this (pl_dart_flutter, gsr);
+  chef_prep_this_dish (pl_dart_flutter, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-10");
   chef_set_recipe_last_updated (this, "2025-07-11");

@@ -7,7 +7,7 @@ def_dish(pl_clojure, "clojure/clojars/cloj/lein");
 void
 pl_clojure_prepare ()
 {
-  chef_prep_this (pl_clojure, s);
+  chef_prep_this_dish (pl_clojure, s);
 
   chef_set_recipe_created_on   (this, "2023-09-10");
   chef_set_recipe_last_updated (this, "2026-02-24");

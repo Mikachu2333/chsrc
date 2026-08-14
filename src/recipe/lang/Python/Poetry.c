@@ -7,7 +7,7 @@ def_dish(pl_poetry, "poetry");
 void
 pl_poetry_prepare (void)
 {
-  chef_prep_this (pl_poetry, gsr);
+  chef_prep_this_dish (pl_poetry, gsr);
 
   chef_set_recipe_created_on   (this, "2024-08-08");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -24,7 +24,7 @@ pl_poetry_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_pypi_dish);
+  chef_use_other_dish_sources (this, &pl_pypi_dish);
 }
 
 void

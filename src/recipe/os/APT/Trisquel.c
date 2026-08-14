@@ -9,7 +9,7 @@ def_dish(os_trisquel, "trisquel");
 void
 os_trisquel_prepare ()
 {
-  chef_prep_this (os_trisquel, gsr);
+  chef_prep_this_dish (os_trisquel, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-29");
   chef_set_recipe_last_updated (this, "2025-08-10");

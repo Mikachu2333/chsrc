@@ -10,7 +10,7 @@ def_dish(pl_rust_rustup, "rustup");
 void
 pl_rust_rustup_prepare (void)
 {
-  chef_prep_this (pl_rust_rustup, gsr);
+  chef_prep_this_dish (pl_rust_rustup, gsr);
 
   chef_set_recipe_created_on   (this, "2024-10-02");
   chef_set_recipe_last_updated (this, "2025-08-07");

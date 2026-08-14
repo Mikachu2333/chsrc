@@ -7,7 +7,7 @@ def_dish(pl_npm, "npm");
 void
 pl_npm_prepare (void)
 {
-  chef_prep_this (pl_npm, gsr);
+  chef_prep_this_dish (pl_npm, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
   chef_set_recipe_last_updated (this, "2026-08-12");

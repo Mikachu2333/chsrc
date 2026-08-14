@@ -26,7 +26,7 @@ just test-cli         # CLI 集成测试 (Perl)
 just fastcheck        # CLI 快速检查 (test/cli.pl fastcheck)
 ```
 
-DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日志和 `chef_debug_target()` 调试信息，并在每次 Get/Set/Reset 操作后重跑所有 `_prepare()` 以验证其可重复执行且不会崩溃（见 `src/chsrc-main.c` 中的 `chsrc_perform_all_prepare()`）。
+DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日志和 `chef_debug_dish()` 调试信息，并在每次 Get/Set/Reset 操作后重跑所有 `_prepare()` 以验证其可重复执行且不会崩溃（见 `src/chsrc-main.c` 中的 `chsrc_perform_all_prepare()`）。
 
 原生 Windows 上 `just br` 会先用 `windres` 编译 `src/resource/chsrc.rc` 生成 `chsrc.res` 再链接。开发与 PR 请使用 `dev` 分支（CI 仅在 PR 目标为 `dev` 时运行测试，见 `doc/01-开发与构建.md`）。
 
@@ -67,22 +67,22 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 - **`Scope_t`** — 作用域：`ProjectScope`/`UserScope`/`SystemScope`，外加特殊的 `ImplementationDefinedScope`（由 recipe 按实际情况决定；多数 recipe 的 `default_scope` 设为它）。
 - **`SourceProvider_t` / `MirrorSite_t`** — 镜像站或上游源提供者。类型：`IS_GeneralMirrorSite`（通用镜像站）、`IS_DedicatedMirrorSite`（专用镜像站）、`IS_UpstreamProvider`（上游默认源）、`IS_UserDefinedProvider`（用户自定义源）。
 - **Chef DSL** — 宏与函数的混合 API，供 recipe 作者使用：
-  - 宏：`def_dish()`、`chef_prep_this()`、`chef_allow_gsr()/s()/sr()/gs()/NOOP()`、`def_sources_begin()/end()`、`chsrc_use_this_source()`。
-  - 函数：贡献者 `chef_set_chefs()`/`chef_set_sauciers()`；作用域 `chef_set_scope_cap()`/`chef_set_default_scope()`；换源与测速链接 `chef_set_repoURL()`、`chef_set_smURL()`、`chef_set_smURL_with_postfix()`、`chef_set_smURL_with_func()`、`chef_set_provider_smURL()`；特性 `chef_allow_english()`/`chef_deny_english()`、`chef_allow_user_define()`/`chef_deny_user_define()`；其他 `chef_set_note()`、`chef_use_other_target_sources()`、`chef_verify_contributor()`。
+  - 宏：`def_dish()`、`chef_prep_this_dish()`、`chef_allow_gsr()/s()/sr()/gs()/NOOP()`、`def_sources_begin()/end()`、`chsrc_use_this_source()`。
+  - 函数：贡献者 `chef_set_chefs()`/`chef_set_sauciers()`；作用域 `chef_set_scope_cap()`/`chef_set_default_scope()`；换源与测速链接 `chef_set_repoURL()`、`chef_set_smURL()`、`chef_set_smURL_with_postfix()`、`chef_set_smURL_with_func()`、`chef_set_provider_smURL()`；特性 `chef_allow_english()`/`chef_deny_english()`、`chef_allow_user_define()`/`chef_deny_user_define()`；其他 `chef_set_note()`、`chef_use_other_dish_sources()`、`chef_verify_contributor()`。
 - **xy.h** — 跨平台运行时：`xy_on_windows`、字符串操作（`xy_str_gsub`、`xy_2strcat`）、`XySeq_t`（链表）、`XyMap_t`（哈希表）、命令执行、文件 I/O。内存约定：`return caller-free` 表示调用方必须释放返回值。
 
 ### 执行流程
 
-1. `main()` → `chsrc_init_framework()` → `chsrc_init_menu()`（填充 target 列表），并调用 `chsrc_register_contributors()` 把所有贡献者登记到代码中
-2. 解析 CLI → 在 `pl`/`os`/`wr` 三个菜单中搜索匹配的 target → 调用 `preparefn()` → 按 `TargetOp`（Get/Set/Reset/Measure/List_Config）分派到 `getfn`/`setfn`/`resetfn` 等
+1. `main()` → `chsrc_init_framework()` → `chsrc_init_menu()`（填充 dish 列表），并调用 `chsrc_register_contributors()` 把所有贡献者登记到代码中
+2. 解析 CLI → 在 `pl`/`os`/`wr` 三个菜单中搜索匹配的 dish → 调用 `preparefn()` → 按 `dishOp`（Get/Set/Reset/Measure/List_Config）分派到 `getfn`/`setfn`/`resetfn` 等
 3. 执行 `set` 时：通过系统 `curl` 自动测量镜像站速度（精准/粗略测速，见 `doc/11-如何设置换源链接与测速链接.md`），选择最快的，recipe 的 `_setsrc()` 执行换源
 
 ### Recipe 模式
 
-每个 target 由 `.c` 文件实现（一个文件可包含多个 target），包含：
+每个 dish 由 `.c` 文件实现（一个文件可包含多个 dish），包含：
 
 - `_prepare()` — **必需。** 通过 Chef DSL 初始化元数据和源列表。
-- `_setsrc()` — **必需。** 执行换源操作。必须调用 `chsrc_use_this_source (target)` 注入选中的源。
+- `_setsrc()` — **必需。** 执行换源操作。必须调用 `chsrc_use_this_source (dish)` 注入选中的源。
 - `_getsrc()` / `_resetsrc()` — 可选。
 
 新 recipe 还必须在 `src/recipe/menu.c` 中注册（`#include` 该文件，然后用 `add()` 将其加入对应的 `pl`/`os`/`wr` 列表）；未注册的 recipe 文件不会出现在任何菜单中。
@@ -137,4 +137,4 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 9. **不充分的错误处理** — 静默失败、对可能失败的操作缺少 NULL 检查。
 10. **未定义行为** — 整数溢出、越界访问、使用未初始化内存、严格别名违反。
 11. **兼容性** — 必须能在 Linux（GCC/Clang）、macOS（Clang）、Windows（MinGW）上编译。不得使用 C11 不兼容的构造。
-12. **构建与测试验证** — 改动后至少本地运行 `just test`（或 `make test`）与 `just test-cli`（或 `make test-cli`）；修改 `*.{c,h}` 后运行 `just bd && ./chsrc-debug get <受影响target>` 确认不崩溃（lefthook 提交时会自动执行同样检查）。
+12. **构建与测试验证** — 改动后至少本地运行 `just test`（或 `make test`）与 `just test-cli`（或 `make test-cli`）；修改 `*.{c,h}` 后运行 `just bd && ./chsrc-debug get <受影响dish>` 确认不崩溃（lefthook 提交时会自动执行同样检查）。

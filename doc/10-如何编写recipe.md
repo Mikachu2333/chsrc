@@ -40,17 +40,17 @@
 
 ## 基本概念
 
-- `target`: 所要换源的目标
-- `target group`: 一个 `target` 包含了多个子 `target`，比如 `Python group` 包含了该语言的多个包管理器
+- `dish`: 所要换源的目标
+- `dish group`: 一个 `dish` 包含了多个子 `dish`，比如 `Python group` 包含了该语言的多个包管理器
 
-- `category`: 是 `target category` 的简写，即 `target` 所属的类别，可以是 **编程语言**，**操作系统**，**软件** 三类之一
+- `category`: 是 `dish category` 的简写，即 `dish` 所属的类别，可以是 **编程语言**，**操作系统**，**软件** 三类之一
 
     1. 在目录中，三者分别为 `lang`, `os`, `ware`
     2. 在代码中，三者前缀分别为 `pl`, `os`, `wr`
 
 - `mirror`: 是 `mirror site` 的简写，指镜像站，如清华大学开源软件镜像站
-- `source`: 该 `target` 所能换的具体的源，由 `mirror` 提供服务，往往一个 `mirror` 会提供许多 `source`
-- `recipe`: 是为一个 `target` 定义的具体换源方法，请参考 `src` 目录中的 `recipe` 目录
+- `source`: 该 `dish` 所能换的具体的源，由 `mirror` 提供服务，往往一个 `mirror` 会提供许多 `source`
+- `recipe`: 是为一个 `dish` 定义的具体换源方法，请参考 `src` 目录中的 `recipe` 目录
 
 - `chef DSL`：是 `chef Domain Specific Language` 的简写，这是一组以 `chef_` 开头的函数，用来定义维护者信息、可用源等元信息
 
@@ -60,7 +60,7 @@
     1. 在代码中，测速链接一般使用 `smURL` (即 `speed measure URL`) 或 `speed_measure_url` 来指代
     2. 在代码中，换源链接一般使用 `repoURL` (即 `repository URL`) 或直接用 `url` 来指代
 
-        - 为什么不用 `regurl`，因为使用术语 `repository` 的 target 远多于使用术语 `registry` 的。
+        - 为什么不用 `regurl`，因为使用术语 `repository` 的 dish 远多于使用术语 `registry` 的。
         - 为什么莫名其妙使用了大小写混合的API? 因为 `smurl` 和 `repourl` 的可读性太差
 
 - **镜像源**: 为了方便，**偶尔**我们将直接称`mirror`和/或`source`为**镜像源**，这只是一种方便性的称呼，可以统称二者，也可以根据上下文指代二者之一
@@ -69,7 +69,7 @@
 
 ## 编写 `recipe` 步骤
 
-1. 确定你要编写的 `target` 的标准名称，创建 `Target-Name.c` 文件
+1. 确定你要编写的 `dish` 的标准名称，创建 `dish-Name.c` 文件
 
     大小写需严格按官方，若名称包含空格，需使用 `-` 代替空格
 
@@ -87,7 +87,7 @@
 
 6. 使用 chef DSL 定义 `_prepare()` 函数
 
-    该函数将填充 target 所有的必要信息，包括维护信息、换源信息
+    该函数将填充 `dish` 所有的必要信息，包括维护信息、换源信息
 
 7. [设置/修改 "换源链接" 和 "测速链接" (how?)](./11-如何设置换源链接与测速链接.md)
 
@@ -96,11 +96,12 @@
     1. `framework/core.c` 中以 `chsrc_` 开头的所有函数或宏
     2. `xy.h` 中以 `xy_` 开头的所有函数或宏
     3. `chec.c` 中以 `chef_` 开头的所有函数或宏
-    4. `helper.c` 中以 `hp_` 开头的所有函数或宏
+    4. `dish.c` 中以 `dish_` 开头的所有函数或宏
+    5. `helper.c` 中以 `hp_` 开头的所有函数或宏
 
     一个简单的方法是，在 VS Code 中按快捷键 `Ctrl-T` 搜索上述三种前缀
 
-9. 在 `recipe/menu.c` 中登记此 target
+9. 在 `recipe/menu.c` 中登记此 `dish`
 
 10. [编译、运行、测试 (how?)](./01-开发与构建.md)，若无问题可提交 Pull Request
 

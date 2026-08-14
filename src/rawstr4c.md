@@ -5,7 +5,7 @@
  ! Config Authors: @ccmywish
  ! Contributors  : Nil Null <nil@null.org>
  ! Created On    : <2025-07-22>
- ! Last Modified : <2026-08-11>
+ ! Last Modified : <2026-08-14>
  ! ---------------------------------------------------------- -->
 
 # [rawstr4c] input for chsrc
@@ -40,35 +40,42 @@
    @ver@
 
 使用:
-   chsrc <command> [options] [target] [mirror]
+   chsrc <command> [options] [dish] [mirror]
 
 命令:
-   help,  h                   打印此帮助，或 -h, --help
-   issue, i                   查看相关issue
+   help,  h                 打印此帮助，或 -h, --help
+   issue, i                 查看相关issue
 
-   list, ls, l                列出可用镜像站和可换源目标
-   list  mirror|target        列出支持的: 镜像站/换源目标
-   list  os|lang|ware         列出支持的: 操作系统/编程语言/软件
-   list   <target>            查看该目标可用源与支持功能
+   list, ls, l              列出可用镜像站和可换源菜品
+   list  mirror|dish        列出支持的: 镜像站/换源菜品
+   list  os|lang|ware       列出支持的: 操作系统/编程语言/软件
+   list   <dish>            查看该菜品可用源与支持功能
 
-   measure, m, cesu <target>  对该目标所有源测速
+   measure, m, cesu <dish>  对该菜品所有源测速
 
-   get, g <target>            查看该目标当前源的使用情况
+   get, g <dish>            查看该菜品当前源的使用情况
 
-   set, s <target>            换源，自动测速后挑选最快源
-   set    <target>  first     换源，使用维护团队测速第一的源
-   set    <target> <mirror>   换源，指定使用某镜像站 (通过list <target>查看)
-   set    <target>  <URL>     换源，用户自定义源URL
-   reset  <target>            重置，使用上游默认使用的源
+   set, s <dish>            换源，自动测速后挑选最快源
+   set    <dish>  first     换源，使用维护团队测速第一的源
+   set    <dish> <mirror>   换源，指定使用某镜像站 (通过list <dish>查看)
+   set    <dish>  <URL>     换源，用户自定义源URL
+   reset  <dish>            重置，使用上游默认使用的源
 
 选项:
    -dry                       Dry Run，模拟换源过程，命令仅打印并不运行
-   -scope=project|user|system 仅对本项目换源 / 用户级换源 / 系统级换源 (通过ls <target>查看)
+   -scope=project|user|system 仅对本项目换源 / 用户级换源 / 系统级换源 (通过ls <dish>查看)
    -ipv6                      使用IPv6测速
    -en(glish)                 使用英文输出
    -no-color                  无颜色输出
 
 维护:
+   chsrc 尊重贡献者，我们甚至拥有 贡献者(Contributor_t) 这个结构体，所有贡献者的
+   信息直接进入运行时流动，永远不会仅作为注释被编译器抹去。
+
+   chsrc 的代码是有趣的，"餐厅比喻" 贯穿了整个程序，chsrc 作为服务员接受用户对于某个
+   菜品(dish)的请求(get,set,ls)，后厨按需备菜(prepare)，主厨(chef)和调味师(saucier)
+   依据菜谱(recipe)出餐。换源(source)，就是切换该菜品食材的供应商(provider/mirror)
+
    源代码地址: https://github.com/RubyMetric/chsrc
 ```
 
@@ -88,36 +95,45 @@ VERSION:
    @ver@
 
 USAGE:
-   chsrc <command> [options] [target] [mirror]
+   chsrc <command> [options] [dish] [mirror]
 
 COMMANDS:
-   help,  h                   Print this help, or -h, --help
-   issue, i                   See related issues
+   help,  h                 Print this help, or -h, --help
+   issue, i                 See related issues
 
-   list, ls, l                List available mirror sites and supported targets
-   list  mirror|target        List supported:  mirror sites/supported targets
-   list  os|lang|ware         List supported: OSes/Programming Languages/Softwares
-   list   <target>            View available sources and supporting features for <target>
+   list, ls, l              List available mirror sites and supported dishes
+   list  mirror|dish        List supported:  mirror sites/supported dishes
+   list  os|lang|ware       List supported: OSes/Programming Languages/Softwares
+   list   <dish>            View available sources and supporting features for <dish>
 
-   measure, m, cesu <target>  Measure velocity of all sources of <target>
+   measure, m, cesu <dish>  Measure velocity of all sources of <dish>
 
-   get, g <target>            View the current source state for <target>
+   get, g <dish>            View the current source state for <dish>
 
-   set, s <target>            Change source, select the fastest source by automatic speed measurement
-   set    <target>  first     Change source, select the fastest source measured by the maintainers team
-   set    <target> <mirror>   Change source, specify a mirror site (Via `list <target>`)
-   set    <target>  <URL>     Change source, using user-defined source URL
-   reset  <target>            Reset  source to the upstream's default
+   set, s <dish>            Change source, select the fastest source by automatic speed measurement
+   set    <dish>  first     Change source, select the fastest source measured by the maintainers team
+   set    <dish> <mirror>   Change source, specify a mirror site (Via `list <dish>`)
+   set    <dish>  <URL>     Change source, using user-defined source URL
+   reset  <dish>            Reset  source to the upstream's default
 
 OPTIONS:
    -dry                       Dry Run. Simulate the source changing process, command only prints, not run
-   -scope=project|user|system Change source only for this project / user level / system level (Via `ls <target>`)
+   -scope=project|user|system Change source only for this project / user level / system level (Via `ls <dish>`)
    -ipv6                      Speed measurement using IPv6
    -en(glish)                 Output in English
    -no-color                  Output without color
 
 MAINTAIN:
-   Source Code:               https://github.com/RubyMetric/chsrc
+   chsrc respects contributors. We even have the "Contributor_t" struct. All the info of
+   them flows into runtime, and will never be erased by the compiler merely as comments.
+
+   chsrc is interesting. The "restaurant metaphor" runs through the entire program. chsrc
+   acts as a waiter, accepting users' requests (get, set, ls) for a certain "dish". The
+   kitchen "prepare"s the ingredients as needed. The "chef" and the "saucier" follow the
+   "recipe" to serve the dish. Changing "source"s means changing the "provider" of the
+   ingredients for that dish.
+
+   Source Code: https://github.com/RubyMetric/chsrc
 ```
 
 <br>
@@ -136,7 +152,7 @@ Copyright (C) 2023-2026 曾奥然, 郭恒
 这是自由软件：您可以自由修改和分发它。
 在法律允许的最大范围内，本软件按'原样'提供，不作任何明示或暗示的保证。
 
-由作者：曾奥然、郭恒，协作者：Mikachu2333、Happy Game 以及各位贡献者开发。(详见 chsrc-main.c, 或 `chsrc ls <target>`)
+由作者：曾奥然、郭恒，协作者：Mikachu2333、Happy Game 以及各位贡献者开发。(详见 chsrc-main.c, 或 `chsrc ls <dish>`)
 ```
 
 <br>
@@ -155,7 +171,7 @@ License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
 
-Written by authors: Aoran Zeng, Heng Guo, collaborators: Mikachu2333, Happy Game, and contributors. (See chsrc-main.c, or `chsrc ls <target>`)
+Written by authors: Aoran Zeng, Heng Guo, collaborators: Mikachu2333, Happy Game, and contributors. (See chsrc-main.c, or `chsrc ls <dish>`)
 ```
 
 <br>

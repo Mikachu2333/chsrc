@@ -9,7 +9,7 @@ def_dish(pl_rye, "rye");
 void
 pl_rye_prepare (void)
 {
-  chef_prep_this (pl_rye, gsr);
+  chef_prep_this_dish (pl_rye, gsr);
 
   chef_set_recipe_created_on   (this, "2024-12-06");
   chef_set_recipe_last_updated (this, "2025-08-09");
@@ -25,7 +25,7 @@ pl_rye_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_pypi_dish);
+  chef_use_other_dish_sources (this, &pl_pypi_dish);
 }
 
 char *
@@ -53,7 +53,7 @@ pl_rye_getsrc (char *option)
 void
 pl_rye_setsrc (char *option)
 {
-  /* 并不在 Python group 中，所以不考虑 target group 情况，仅使用 Python group 提供的源 */
+  /* 并不在 Python combo 中，所以不考虑 dish group mode 情况，仅使用 PyPI 提供的源 */
   Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_dish, option);
 
   const char *content = RAWSTR_pl_rye_config;

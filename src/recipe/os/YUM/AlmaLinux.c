@@ -7,7 +7,7 @@ def_dish(os_almalinux, "alma/almalinux");
 void
 os_almalinux_prepare ()
 {
-  chef_prep_this (os_almalinux, s);
+  chef_prep_this_dish (os_almalinux, s);
 
   chef_set_recipe_created_on   (this, "2024-06-12");
   chef_set_recipe_last_updated (this, "2025-08-22");

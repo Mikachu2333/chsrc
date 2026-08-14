@@ -7,7 +7,7 @@ def_dish(os_rockylinux, "rocky/rockylinux");
 void
 os_rockylinux_prepare ()
 {
-  chef_prep_this (os_rockylinux, sr);
+  chef_prep_this_dish (os_rockylinux, sr);
 
   chef_set_recipe_created_on   (this, "2023-09-24");
   chef_set_recipe_last_updated (this, "2025-08-10");

@@ -7,7 +7,7 @@ def_dish(os_netbsd, "netbsd");
 void
 os_netbsd_prepare ()
 {
-  chef_prep_this (os_netbsd, gs);
+  chef_prep_this_dish (os_netbsd, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-05");
   chef_set_recipe_last_updated (this, "2025-08-10");

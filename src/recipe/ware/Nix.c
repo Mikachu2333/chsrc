@@ -25,7 +25,7 @@ wr_nix_is_multi_user_installation_mode ()
 void
 wr_nix_prepare ()
 {
-  chef_prep_this (wr_nix, s);
+  chef_prep_this_dish (wr_nix, s);
 
   chef_set_recipe_created_on   (this, "2023-09-26");
   chef_set_recipe_last_updated (this, "2026-03-25");

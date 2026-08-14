@@ -7,7 +7,7 @@ def_dish(os_debian, "debian");
 void
 os_debian_prepare ()
 {
-  chef_prep_this (os_debian, gsr);
+  chef_prep_this_dish (os_debian, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-02");
   chef_set_recipe_last_updated (this, "2026-08-11");

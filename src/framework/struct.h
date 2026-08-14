@@ -114,7 +114,7 @@ Source_t;
  * 分别是 ProjectScope、UserScope 和 SystemScope，分别对应项目级、用户级和系统级的换源配置
  *
  * 还有一个叫 ImplementationDefinedScope 的作用域，它不是一种新类型，而是表示根据实际情况决定的作用域。
- * chsrc 将根据该 target 的实际情况来选择最合适的作用域来进行换源配置。最好的情况下，ImplementationDefinedScope 是三者之一，
+ * chsrc 将根据该 dish 的实际情况来选择最合适的作用域来进行换源配置。最好的情况下，ImplementationDefinedScope 是三者之一，
  * 这也是这里设计的初衷。然而现在有些 recipe 的换源行为，会在某种 Scope 不能够成功时退而求其次地使用另一个 Scope
  * 来进行换源配置，这时就只能用 ImplementationDefinedScope 来表示。
  */
@@ -126,7 +126,7 @@ Source_t;
   SystemScope,
 
   /**
-   * 这是 target 默认的作用域，一种特殊的作用域，即根据 target 的实际情况来决定的。
+   * 这是 dish 默认的作用域，一种特殊的作用域，即根据 dish 的实际情况来决定的。
    * 它不是一种真正的类型，因为最终换源后，用户看到的作用域依然是 ProjectScope、UserScope 或 SystemScope 中的一个
    */
   ImplementationDefinedScope,
@@ -139,7 +139,7 @@ Scope_t;
 
 typedef enum ScopeCapability_t
 {
-  ScopeCap_Unknown,                  /* 未知，缺乏对该 target 的细致了解 */
+  ScopeCap_Unknown,                  /* 未知，缺乏对该 dish 的细致了解 */
   ScopeCap_Unable,                   /* 不支持该作用域 */
   ScopeCap_Able_But_Not_Implemented, /* 支持但chsrc尚未实现 */
   ScopeCap_Able_And_Implemented      /* 支持且chsrc已经实现 */
@@ -183,12 +183,12 @@ typedef struct Dish_t
    * 身的函数地址不可能由自己初始化，所以需要额外的位置初始化:
    *
    *   1. menu.c 中通过 add() 注册
-   *   2. recipe 内部手动调用，如 "源target"
+   *   2. recipe 内部手动调用，如 "源dish"
    */
   void (*preparefn) (void);
   bool inited; /* 是否执行过了 preparefn() */
 
-  XySeq_t *sub_dishes; /* 某些 target 为 group target，几乎完全由 sub dishes 定义 */
+  XySeq_t *sub_dishes; /* 某些 dish 为 combo dish，完全由 sub dishes 定义 */
 
   Source_t *sources;
        int  sources_n;
@@ -223,24 +223,24 @@ Dish_t;
 
 #define def_dish(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Dish_t t##_dish={aliases};
 
-/* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
-#define def_sources_dish(t, name) Dish_t t##_dish={"__internal_target_only_for_storing_sources__" name "__"}
+/* 仅内部使用的 "源dish"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
+#define def_sources_dish(t, name) Dish_t t##_dish={"__internal_dish_only_for_storing_sources__" name "__"}
 
-/* group target 不需要实现任何操作(除了preparefn)即可使用 */
-#define def_group_dish(t, aliases) Dish_t t##_dish={aliases};
+/* combo dish 不需要实现任何操作(除了preparefn)即可使用 */
+#define def_combo_dish(t, aliases) Dish_t t##_dish={aliases};
 
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_s(t)   this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_sr(t)  this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_gs(t)  this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_NOOP(t)
-#define chef_prep_this(t,op) Dish_t *this = &t##_dish; this->inited = true; chef_allow_##op(t);
+#define chef_prep_this_dish(t,op) Dish_t *this = &t##_dish; this->inited = true; chef_allow_##op(t);
 
-/* 简化 "源target" 的编写 */
-#define chef_prep_sources_target(t) Dish_t *this = &t##_dish; this->inited = true; chef_allow_NOOP(t);
+/* 简化 "源dish" 的编写 */
+#define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->inited = true; chef_allow_NOOP(t);
 
-/* 内部 "源target" 的 prepare 未通过 menu.c 的 add() 注册, 手动挂载 */
-#define chef_set_preparefn_for_sources_target(t) t##_dish.preparefn = t##_prepare;
+/* 内部 "源dish" 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
+#define chef_set_preparefn_for_sources_dish(t) t##_dish.preparefn = t##_prepare;
 
 
 #define chef_use_this(t) Dish_t *this = &t##_dish;

@@ -105,7 +105,7 @@ cli_print_all_mirror_sites ()
 {
   {
   char *msg = ENGLISH ? "To specify a source, use chsrc set " : "指定使用某源，请使用 chsrc set ";
-  println (bdblue(xy_strcat (3, msg, "<target>", " <code>\n")));
+  println (bdblue(xy_strcat (3, msg, "<dish>", " <code>\n")));
   }
 
   {
@@ -174,7 +174,7 @@ iterate_aliases (const char *aliases, bool (*callback)(const char *alias, void *
 
 
 /**
- * 用于 cli_print_targets_for_menu() 的回调函数，打印每个别名
+ * 用于 cli_print_dishes_for_menu() 的回调函数，打印每个别名
  */
 bool
 callback_print_alias (const char *alias, void *DUMMY)
@@ -184,46 +184,46 @@ callback_print_alias (const char *alias, void *DUMMY)
 }
 
 void
-cli_print_targets_for_menu (XySeq_t *menu)
+cli_print_dishes_for_menu (XySeq_t *menu)
 {
   for (size_t i=0; i<xy_seq_len(menu); i++)
     {
-      Dish_t *target = xy_seq_at (menu, i);
+      Dish_t *dish = xy_seq_at (menu, i);
       // 使用通用的别名遍历函数打印所有别名
-      iterate_aliases (target->aliases, callback_print_alias, NULL);
-      br(); // 每个target换行
+      iterate_aliases (dish->aliases, callback_print_alias, NULL);
+      br(); // 每个 dish 换行
     }
   br(); // 最后额外换行
 }
 
 void
-cli_print_supported_targets ()
+cli_print_supported_dishes ()
 {
   {
-  char *msg = ENGLISH ? "Support following targets (same line indicates these targets are compatible)"
-                      : "支持对以下目标换源 (同一行表示这几个命令兼容)" ;
+  char *msg = CHINESE ? "支持对以下菜品换源 (同一行表示这几个菜品兼容)"
+                      : "Support following dishes (same line indicates these dishes are compatible)";
   say (bdblue(msg)); br();
   }
 
   {
-  char *msg = ENGLISH ? "Programming Languages" : "编程语言";
+  char *msg = CHINESE ? "编程语言" : "Programming Languages";
   say (bdgreen(msg));
   say ("-------------------------");
-  cli_print_targets_for_menu (ProgStore.pl);
+  cli_print_dishes_for_menu (ProgStore.pl);
   }
 
   {
-  char *msg = ENGLISH ? "Operating Systems" : "操作系统";
+  char *msg = CHINESE ? "操作系统" : "Operating Systems";
   say (bdgreen(msg));
   say ("-------------------------");
-  cli_print_targets_for_menu (ProgStore.os);
+  cli_print_dishes_for_menu (ProgStore.os);
   }
 
   {
-  char *msg = ENGLISH ? "Softwares" : "软件";
+  char *msg = CHINESE ? "软件" : "Softwares";
   say (bdgreen(msg));
   say ("-------------------------");
-  cli_print_targets_for_menu (ProgStore.wr);
+  cli_print_dishes_for_menu (ProgStore.wr);
   }
 }
 
@@ -233,36 +233,36 @@ cli_print_menu (char *menu)
   if (xy_streql (menu, "pl"))
     {
       char *msg =
-        ENGLISH ? "Support following Programming Languages (same line indicates these targets are compatible)\n"
-                : "支持对以下编程语言生态换源 (同一行表示这几个目标兼容)\n";
+        CHINESE ? "支持对以下编程语言生态换源 (同一行表示这几个目标兼容)\n"
+                : "Support following Programming Languages (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
-      cli_print_targets_for_menu (ProgStore.pl);
+      cli_print_dishes_for_menu (ProgStore.pl);
     }
   else if (xy_streql (menu, "os"))
     {
       char *msg =
-        ENGLISH ? "Support following Operating Systems (same line indicates these targets are compatible)\n"
-                : "支持对以下操作系统换源 (同一行表示这几个目标兼容)\n";
+        CHINESE ? "支持对以下操作系统换源 (同一行表示这几个目标兼容)\n"
+                : "Support following Operating Systems (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
-      cli_print_targets_for_menu (ProgStore.os);
+      cli_print_dishes_for_menu (ProgStore.os);
     }
   else if (xy_streql (menu, "wr"))
     {
       char *msg =
-        ENGLISH ? "Support following Softwares (same line indicates these targets are compatible)\n"
-                : "支持对以下软件换源 (同一行表示这几个目标兼容)\n";
+        CHINESE ? "支持对以下软件换源 (同一行表示这几个目标兼容)\n"
+                : "Support following Softwares (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
-      cli_print_targets_for_menu (ProgStore.wr);
+      cli_print_dishes_for_menu (ProgStore.wr);
     }
 }
 
 
 
 /**
- * 用于 chsrc list <target>
+ * 用于 chsrc list <dish>
  */
 void
-cli_print_target_available_sources (Source_t sources[], size_t size)
+cli_print_dish_available_sources (Source_t sources[], size_t size)
 {
   for (int i=0; i<size; i++)
     {
@@ -279,31 +279,31 @@ cli_print_target_available_sources (Source_t sources[], size_t size)
 
 
 void
-cli_print_target_features (Dish_t *target, const char *input_target_name)
+cli_print_dish_features (Dish_t *dish, const char *input_dish_name)
 {
   {
-  char *msg = ENGLISH ? "\nAvailable Features:\n" : "\n可用功能:\n";
+  char *msg = CHINESE ? "\n可用功能:\n" : "\nAvailable Features:\n";
   say (bdgreen(msg));
   }
 
   {
-  char *msg = ENGLISH ? " Get: View the current source state " : " Get: 查看当前源状态 ";
-  char *get_msg = xy_strcat (3, msg, "| chsrc get ", input_target_name);
-  if (target->getfn != NULL) printf (" %s%s\n", bdgreen(YesMark), purple(get_msg));
+  char *msg = CHINESE ? " Get: 查看当前源状态 " : " Get: View the current source state ";
+  char *get_msg = xy_strcat (3, msg, "| chsrc get ", input_dish_name);
+  if (dish->getfn != NULL) printf (" %s%s\n", bdgreen(YesMark), purple(get_msg));
   else printf (" %s%s\n", bdred(NoMark), get_msg);br();
   }
 
   {
-  char *msg = ENGLISH ? " Reset: Reset to the default source " : " Reset: 重置回默认源 ";
-  char *reset_msg = xy_strcat (3, msg, "| chsrc reset ", input_target_name);
-  if (target->resetfn != NULL) printf (" %s%s\n", bdgreen(YesMark), purple(reset_msg));
+  char *msg = CHINESE ? " Reset: 重置回默认源 " : " Reset: Reset to the default source ";
+  char *reset_msg = xy_strcat (3, msg, "| chsrc reset ", input_dish_name);
+  if (dish->resetfn != NULL) printf (" %s%s\n", bdgreen(YesMark), purple(reset_msg));
   else printf (" %s%s\n", bdred(NoMark), reset_msg);br();
   }
 
   {
-  char *msg = ENGLISH ? " UserDefine: using user-defined source link " : " UserDefine: 用户自定义换源链接 ";
-  char *user_define_msg = xy_strcat (5, msg, "| chsrc set ", input_target_name, " https://user-define-url.org/", input_target_name);
-  if (target->can_user_define) printf (" %s%s\n", bdgreen(YesMark), purple(user_define_msg));
+  char *msg = CHINESE ? " UserDefine: 用户自定义换源链接 " : " UserDefine: using user-defined source link ";
+  char *user_define_msg = xy_strcat (5, msg, "| chsrc set ", input_dish_name, " https://user-define-url.org/", input_dish_name);
+  if (dish->can_user_define) printf (" %s%s\n", bdgreen(YesMark), purple(user_define_msg));
   else printf (" %s%s\n", bdred(NoMark), user_define_msg);br();
   }
 
@@ -312,22 +312,22 @@ cli_print_target_features (Dish_t *target, const char *input_target_name)
 
   for (int i=0; i<NumberOfScopeType; i++)
     {
-      ScopeCapability_t cap = target->scope_caps[i];
+      ScopeCapability_t cap = dish->scope_caps[i];
       char *scope_name;
       if (i == 0)
         {
           scope_name = CHINESE ? " 项目级换源" : " project scope";
-          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=project ", input_target_name);
+          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=project ", input_dish_name);
         }
       else if (i == 1)
         {
           scope_name = CHINESE ? " 用户级换源" : " user scope";
-          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=user    ", input_target_name);
+          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=user    ", input_dish_name);
         }
       else if (i == 2)
         {
           scope_name = CHINESE ? " 系统级换源" : " system scope";
-          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=system  ", input_target_name);
+          scope_msg = xy_strcat (3, scope_name, " | chsrc set -scope=system  ", input_dish_name);
         }
       else
         {
@@ -358,7 +358,7 @@ cli_print_target_features (Dish_t *target, const char *input_target_name)
           xy_unreached();
         }
     }
-    Scope_t default_scope = target->default_scope;
+    Scope_t default_scope = dish->default_scope;
     char *default_scope_name = NULL;
     switch (default_scope)
       {
@@ -378,22 +378,22 @@ cli_print_target_features (Dish_t *target, const char *input_target_name)
         xy_unreached();
       }
     char *msg = xy_strcat (2, bdblue (" = "),
-      purple (xy_strcat (5, "默认作用域 | chsrc set -scope=default ", input_target_name, " (= ", default_scope_name ,")")));
+      purple (xy_strcat (5, "默认作用域 | chsrc set -scope=default ", input_dish_name, " (= ", default_scope_name ,")")));
     puts (msg);
     br();
   }
 
   {
   char *msg = ENGLISH ? " English: Output in English " : " English: 英文输出 ";
-  char *english_msg = xy_strcat (3, msg, "| chsrc set -en ", input_target_name);
-  if (target->can_english) printf (" %s%s\n", bdgreen(YesMark), purple(english_msg));
+  char *english_msg = xy_strcat (3, msg, "| chsrc set -en ", input_dish_name);
+  if (dish->can_english) printf (" %s%s\n", bdgreen(YesMark), purple(english_msg));
   else printf (" %s%s\n", bdred(NoMark), english_msg);br();
   }
 
-  if (target->note)
+  if (dish->note)
     {
       char *msg = ENGLISH ? "NOTE: " : "备注: ";
-      printf ("%s%s\n\n", bdyellow (msg), bdyellow (target->note));
+      printf ("%s%s\n\n", bdyellow (msg), bdyellow (dish->note));
     }
 }
 
@@ -401,23 +401,23 @@ cli_print_target_features (Dish_t *target, const char *input_target_name)
 /**
  * @brief 简略打印维护信息
  *
- * 用于 chsrc get/set/reset <target>
+ * 用于 chsrc get/set/reset <dish>
  */
 void
-cli_print_target_maintain_info_briefly (Dish_t *target, const char *input_target_name)
+cli_print_dish_maintain_info_briefly (Dish_t *dish, const char *input_dish_name)
 {
-  if (target->last_updated)
+  if (dish->last_updated)
     {
       char *msg = ENGLISH ? "Recipe Last Updated: " : "食谱更新: ";
-      printf ("%s%s  ", msg, purple(target->last_updated));
+      printf ("%s%s  ", msg, purple(dish->last_updated));
     }
 
-  char num[32]; sprintf(num, "%d", xy_seq_len(target->chefs) + xy_seq_len(target->sauciers));
+  char num[32]; sprintf(num, "%d", xy_seq_len(dish->chefs) + xy_seq_len(dish->sauciers));
   char *msg = ENGLISH ? "Contributors: " : "后厨人数: ";
   printf ("%s%s  ", msg, purple(num));
 
-  msg = ENGLISH ? xy_strcat (3, "(See chsrc ls ",  input_target_name, ")")
-                : xy_strcat (3, "(详查 chsrc ls ", input_target_name, ")");
+  msg = ENGLISH ? xy_strcat (3, "(See chsrc ls ",  input_dish_name, ")")
+                : xy_strcat (3, "(详查 chsrc ls ", input_dish_name, ")");
   printf ("%s\n", msg);
 }
 
@@ -425,32 +425,32 @@ cli_print_target_maintain_info_briefly (Dish_t *target, const char *input_target
 /**
  * @brief 详细打印维护信息
  *
- * 用于 chsrc ls <target>
+ * 用于 chsrc ls <dish>
  */
 void
-cli_print_target_maintain_info (Dish_t *target, const char *input_target_name)
+cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name)
 {
-  if (target->created_on)
+  if (dish->created_on)
     {
       char *msg = ENGLISH ? "Recipe Created On: " : "食谱创建: ";
-      printf ("%s%s ", bdblue(msg), target->created_on);
+      printf ("%s%s ", bdblue(msg), dish->created_on);
     }
 
-  if (target->last_updated)
+  if (dish->last_updated)
     {
       char *msg = ENGLISH ? "Recipe Last Updated: " : "食谱更新: ";
-      printf ("%s%s\n", bdblue(msg), target->last_updated);
+      printf ("%s%s\n", bdblue(msg), dish->last_updated);
     }
 
   {
     char *msg = ENGLISH ? "Chefs: " : "主厨: ";
-    if (target->chefs && xy_seq_len(target->chefs) > 0)
+    if (dish->chefs && xy_seq_len(dish->chefs) > 0)
       {
         printf ("%s", bdblue(msg));
-        for (size_t i=0; i<xy_seq_len(target->chefs); i++)
+        for (size_t i=0; i<xy_seq_len(dish->chefs); i++)
           {
             if (i > 0) printf (", ");
-            Contributor_t *chef = xy_seq_at (target->chefs, i);
+            Contributor_t *chef = xy_seq_at (dish->chefs, i);
             printf ("%s <%s>",
                     chef->name  ? chef->name : "Unknown",
                     chef->email ? chef->email : "unknown@example.com");
@@ -466,13 +466,13 @@ cli_print_target_maintain_info (Dish_t *target, const char *input_target_name)
 
   {
     char *msg = ENGLISH ? "Sauciers: " : "调味: ";
-    if (target->sauciers && xy_seq_len(target->sauciers) > 0)
+    if (dish->sauciers && xy_seq_len(dish->sauciers) > 0)
       {
         printf ("%s", bdblue(msg));
-        for (size_t i=0; i<xy_seq_len(target->sauciers); i++)
+        for (size_t i=0; i<xy_seq_len(dish->sauciers); i++)
           {
             if (i > 0) printf (", ");
-            Contributor_t *saucier = xy_seq_at (target->sauciers, i);
+            Contributor_t *saucier = xy_seq_at (dish->sauciers, i);
             printf ("%s <%s>", saucier->name, saucier->email );
           }
         br();
@@ -525,7 +525,7 @@ cli_print_issues ()
 
 
 /**
- * @brief 用于 callback_is_one_of_target_aliases() 的回调函数，检查别名是否匹配用户输入
+ * @brief 用于 callback_is_one_of_dish_aliases() 的回调函数，检查别名是否匹配用户输入
  */
 bool
 callback_match_alias (const char *alias, void *user_data)
@@ -538,10 +538,10 @@ callback_match_alias (const char *alias, void *user_data)
  * @brief 用于 iterate_menu() 的回调函数
  */
 bool
-callback_is_one_of_target_aliases (void *data, void *input)
+callback_is_one_of_dish_aliases (void *data, void *input)
 {
-  Dish_t *target = (Dish_t *) data;
-  if (iterate_aliases (target->aliases, callback_match_alias, input))
+  Dish_t *dish = (Dish_t *) data;
+  if (iterate_aliases (dish->aliases, callback_match_alias, input))
     {
       return true;
     }
@@ -550,27 +550,27 @@ callback_is_one_of_target_aliases (void *data, void *input)
 }
 
 /**
- * 查询用户输入 `input` 是否与该 `menu` 中的某个 target 匹配
+ * 查询用户输入 `input` 是否与该 `menu` 中的某个 dish 匹配
  *
  * @param[in]   menu    menu
- * @param[in]   input   用户输入的目标名
- * @param[out]  target  返回匹配到的 Dish_t 指针
+ * @param[in]   input  用户输入的目标名
+ * @param[out]  dish   返回匹配到的 Dish_t 指针
  *
  * @return 匹配到则返回true，未匹配到则返回false
  */
 bool
-iterate_menu (XySeq_t *menu, const char *input, Dish_t **target)
+iterate_menu (XySeq_t *menu, const char *input, Dish_t **dish)
 {
-  Dish_t *t = xy_seq_find (menu, callback_is_one_of_target_aliases, (void *) input);
+  Dish_t *d = xy_seq_find (menu, callback_is_one_of_dish_aliases, (void *) input);
 
-  if (t)
+  if (d)
     {
-      *target = t;
+      *dish = d;
       return true;
     }
   else
     {
-      *target = NULL;
+      *dish = NULL;
       return false;
     }
 }
@@ -579,15 +579,15 @@ iterate_menu (XySeq_t *menu, const char *input, Dish_t **target)
 void
 callback_perform_all_prepare_for_menu (void *data, void *DUMMY)
 {
-  Dish_t *target = (Dish_t *) data;
+  Dish_t *dish = (Dish_t *) data;
 
-  if (!target->preparefn)
+  if (!dish->preparefn)
     {
-      chef_debug_target (target);
+      chef_debug_dish (dish);
       chsrc_breakdown ("未定义 _prepare() !");
     }
 
-  target->preparefn();
+  dish->preparefn();
 }
 
 /**
@@ -619,36 +619,36 @@ chsrc_op_epilogue ()
 
 
 /**
- * 寻找target，并填充其 recipe 信息
+ * 寻找 dish，并填充其 recipe 信息
  *
  * @param  input   用户输入的目标
  *
- * @return 找到时返回 target 指针，否则返回 NULL
+ * @return 找到时返回 dish 指针，否则返回 NULL
  */
 Dish_t *
-find_target (const char *input)
+find_dish (const char *input)
 {
   /**
-   * 由于具体需要某一个 target 时，才会表达贡献者信息，所以像
+   * 由于具体需要某一个 dish 时，才会表达贡献者信息，所以像
    *
    *   $ chsrc -v
    *   $ chsrc issue
    *
-   * 等命令不需要 target 时，就不需要注册贡献者信息，加快执行速度
+   * 等命令不需要 dish 时，就不需要注册贡献者信息，加快执行速度
    */
   chsrc_register_chefs_and_sauciers ();
 
-  Dish_t *target = NULL;
+  Dish_t *dish = NULL;
 
-           bool matched = iterate_menu (ProgStore.pl, input, &target);
-  if (!matched) matched = iterate_menu (ProgStore.os, input, &target);
-  if (!matched) matched = iterate_menu (ProgStore.wr, input, &target);
+           bool matched = iterate_menu (ProgStore.pl, input, &dish);
+  if (!matched) matched = iterate_menu (ProgStore.os, input, &dish);
+  if (!matched) matched = iterate_menu (ProgStore.wr, input, &dish);
 
   if (matched)
     {
       /* 按需加载 recipe 信息: 填充好该 recipe 所有信息，其他 recipe 信息不填充 */
-      target->preparefn();
-      return target;
+      dish->preparefn();
+      return dish;
     }
   else
     {
@@ -669,12 +669,12 @@ typedef enum {
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_List_Info (Dish_t *target, const char *input, char *option)
+chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
 {
-  /* group target 仅展示维护信息 */
-  if (dish_has_sub_dishes(target))
+  /* group dish 仅展示维护信息 */
+  if (dish_has_sub_dishes(dish))
     {
-      int sub_count = xy_seq_len (target->sub_dishes);
+      int sub_count = xy_seq_len (dish->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
         bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
@@ -690,17 +690,17 @@ chefs_handle_List_Info (Dish_t *target, const char *input, char *option)
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple (sub_dish->aliases));
-          /* 嵌套的 group target 的处理 */
+          /* 嵌套的 group dish 的处理 */
           if (dish_has_sub_dishes(sub_dish))
             {
               chefs_handle_List_Info (sub_dish, dish_get_first_alias(sub_dish), option);
             }
           else
             {
-              cli_print_target_maintain_info (sub_dish, input);
+              cli_print_dish_maintain_info (sub_dish, input);
               br();
             }
         }
@@ -726,13 +726,13 @@ chefs_handle_List_Info (Dish_t *target, const char *input, char *option)
   say    ("---------    --------------    -----------------------------------------------    ---------------------");
   }
 
-  cli_print_target_available_sources (target->sources, target->sources_n);
-  cli_print_target_features (target, input);
+  cli_print_dish_available_sources (dish->sources, dish->sources_n);
+  cli_print_dish_features (dish, input);
 
   {
   char *msg = ENGLISH ? "Maintainer Information:\n" : "维护信息:\n";
   say (bdgreen(msg));
-  cli_print_target_maintain_info (target, input);
+  cli_print_dish_maintain_info (dish, input);
   }
 }
 
@@ -741,12 +741,12 @@ chefs_handle_List_Info (Dish_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Measure_Source (Dish_t *target, const char *input, char *option)
+chefs_handle_Measure_Source (Dish_t *dish, const char *input, char *option)
 {
-  /* group target 不测速，让用户自己分别测速 */
-  if (dish_has_sub_dishes(target))
+  /* group dish 不测速，让用户自己分别测速 */
+  if (dish_has_sub_dishes(dish))
     {
-      int sub_count = xy_seq_len (target->sub_dishes);
+      int sub_count = xy_seq_len (dish->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
         bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
@@ -762,14 +762,14 @@ chefs_handle_Measure_Source (Dish_t *target, const char *input, char *option)
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple (sub_dish->aliases));
         }
     }
   else
     {
-      auto_select_mirror (target->sources, target->sources_n, input);
+      auto_select_mirror (dish->sources, dish->sources_n, input);
       return;
     }
 }
@@ -779,25 +779,25 @@ chefs_handle_Measure_Source (Dish_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Get_Source (Dish_t *target, const char *input, char *option)
+chefs_handle_Get_Source (Dish_t *dish, const char *input, char *option)
 {
-  if (dish_has_sub_dishes(target))
+  if (dish_has_sub_dishes(dish))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
+      for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
         {
-          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple(sub_dish->aliases));
-          chsrc_set_target_group_mode();
+          chsrc_set_dish_group_mode();
           chefs_handle_Get_Source (sub_dish, dish_get_first_alias(sub_dish), option);
           br();
         }
       return;
     }
 
-  if (target->getfn)
+  if (dish->getfn)
     {
-      target->getfn("");
+      dish->getfn("");
     }
   else
     {
@@ -810,13 +810,13 @@ chefs_handle_Get_Source (Dish_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Set_Source (Dish_t *target, const char *input, char *option)
+chefs_handle_Set_Source (Dish_t *dish, const char *input, char *option)
 {
-  if (dish_has_sub_dishes(target))
+  if (dish_has_sub_dishes(dish))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
+      for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
         {
-          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple(sub_dish->aliases));
           chefs_handle_Set_Source (sub_dish, dish_get_first_alias(sub_dish), option);
@@ -825,27 +825,27 @@ chefs_handle_Set_Source (Dish_t *target, const char *input, char *option)
       return;
     }
 
-  if (target->setfn)
+  if (dish->setfn)
     {
       /**
        * Hook时机: 开始运行前可以在这里进行一些拦截操作，当前仅有的拦截为:
        *
        *    1. 检查用户要求设置的作用域，是否真的可以执行
        *
-       * 而检查用户自己提供换源URL 与 target->can_user_define 的冲突，则是
+       * 而检查用户自己提供换源URL 与 dish->can_user_define 的冲突，则是
        * 在 `chsrc_yield_source()` 里完成的
        */
-      if (dish_has_sub_dishes(target))
+      if (dish_has_sub_dishes(dish))
         {
-          /* group target 不要检查，留给后续 sub dishes 检查 */
+          /* group dish 不要检查，留给后续 sub dishes 检查 */
           xy_noop();
         }
       else
         {
-          chsrc_check_scope_capability (target);
+          chsrc_check_scope_capability (dish);
         }
 
-      target->setfn(option);
+      dish->setfn(option);
     }
   else
     {
@@ -858,13 +858,13 @@ chefs_handle_Set_Source (Dish_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Reset_Source (Dish_t *target, const char *input, char *option)
+chefs_handle_Reset_Source (Dish_t *dish, const char *input, char *option)
 {
-  if (dish_has_sub_dishes(target))
+  if (dish_has_sub_dishes(dish))
     {
-      for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
+      for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
         {
-          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple(sub_dish->aliases));
           chefs_handle_Reset_Source (sub_dish, dish_get_first_alias(sub_dish), option);
@@ -873,9 +873,9 @@ chefs_handle_Reset_Source (Dish_t *target, const char *input, char *option)
       return;
     }
 
-  if (target->resetfn)
+  if (dish->resetfn)
     {
-      target->resetfn(option);
+      dish->resetfn(option);
     }
   else
     {
@@ -885,26 +885,26 @@ chefs_handle_Reset_Source (Dish_t *target, const char *input, char *option)
 
 
 /**
- * 某一个 target 的 chefs(维护者) 们 开始处理用户的某个请求
+ * 某一个 dish 的 chefs 们 开始处理用户的某个请求
  *
- * @param  code    对target要执行的操作
+ * @param  code    对 dish 要执行的操作
  * @param  input   用户输入的原目标字符串(为了在提示中还原用户的输入)
  * @param  option  额外的选项，可为NULL
  */
 void
-chefs_handle_user_command (Dish_t *target, TargetCmd code, const char *input, char *option)
+chefs_handle_user_command (Dish_t *dish, TargetCmd code, const char *input, char *option)
 {
   if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
-      if (dish_has_sub_dishes(target))
+      if (dish_has_sub_dishes(dish))
         {
-          int sub_count = xy_seq_len(target->sub_dishes);
+          int sub_count = xy_seq_len(dish->sub_dishes);
           char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子目标组成: "));
           char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub dishes\n"));
 
           for (size_t i=0; i<sub_count; i++)
             {
-              Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+              Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
               zh_msg = xy_strcat (3, zh_msg, bdpurple(dish_get_first_alias(sub_dish)),
                 (i < sub_count-1) ? ", " : "");
             }
@@ -916,42 +916,42 @@ chefs_handle_user_command (Dish_t *target, TargetCmd code, const char *input, ch
 
   if (TargetCmd_Set_Source==code)
     {
-      chefs_handle_Set_Source (target, input, option);
+      chefs_handle_Set_Source (dish, input, option);
     }
   else if (TargetCmd_Reset_Source==code)
     {
-      chefs_handle_Reset_Source (target, input, option);
+      chefs_handle_Reset_Source (dish, input, option);
     }
   else if (TargetCmd_Get_Source==code)
     {
-      chefs_handle_Get_Source (target, input, option);
+      chefs_handle_Get_Source (dish, input, option);
     }
   else if (TargetCmd_List_Info==code)
     {
-      chefs_handle_List_Info (target, input, option);
+      chefs_handle_List_Info (dish, input, option);
     }
   else if (TargetCmd_Measure_Source==code)
     {
-      chefs_handle_Measure_Source (target, input, option);
+      chefs_handle_Measure_Source (dish, input, option);
     }
 
   /* 核心命令 get, set, reset 完成后需要简短显示维护信息 */
   if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
-      if (dish_has_sub_dishes(target))
+      if (dish_has_sub_dishes(dish))
         {
-          for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
+          for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
             {
-              Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+              Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
               /* 递归显示 sub dishes 信息 */
               sub_dish->preparefn();
-              cli_print_target_maintain_info_briefly (sub_dish, sub_dish->aliases);
+              cli_print_dish_maintain_info_briefly (sub_dish, sub_dish->aliases);
               // chefs_handle_user_command (sub_dish, code, input, option);
             }
         }
       else
         {
-          cli_print_target_maintain_info_briefly (target, input);
+          cli_print_dish_maintain_info_briefly (dish, input);
         }
     }
 
@@ -962,7 +962,7 @@ chefs_handle_user_command (Dish_t *target, TargetCmd code, const char *input, ch
     }
 
 #ifdef XY_DEBUG
-  chef_debug_target (target);
+  chef_debug_dish (dish);
   chsrc_perform_all_prepare ();
 #endif
 
@@ -987,18 +987,18 @@ main (int argc, char const *argv[])
 
   const char *command = argv[1];
 
-  // chsrc set <target-name> <mirror-code>
+  // chsrc set <dish-name> <mirror-code>
   //        1        2             3
-  int cli_arg_Target_pos = 2;
-  int cli_arg_Mirror_pos = cli_arg_Target_pos + 1;
-  const char *target_name = NULL;
+  int cli_arg_Dish_pos = 2;
+  int cli_arg_Mirror_pos = cli_arg_Dish_pos + 1;
+  const char *dish_name = NULL;
 
-  Dish_t *the_found_target = NULL;
+  Dish_t *the_found_dish = NULL;
 
   /**
    * (1)
-   * chsrc set -scope=project -en target mirror
-   *        1        2         3     4      5
+   * chsrc set -scope=project -en dish mirror
+   *        1        2         3    4    5
    * argc = 5
    *
    * (2) 考虑到这种情况，i必须还是从1开始
@@ -1029,7 +1029,7 @@ main (int argc, char const *argv[])
               if (xy_streql (argv[i], "-scope"))
                 {
                   scope = argv[i+1];
-                  cli_arg_Target_pos++;
+                  cli_arg_Dish_pos++;
                   cli_arg_Mirror_pos++;
                 }
               else if (xy_str_start_with (argv[i], "-scope="))
@@ -1097,7 +1097,7 @@ main (int argc, char const *argv[])
               char *msg = ENGLISH ? "Unknown option: " : "未识别的命令行选项 ";
               chsrc_error (xy_2strcat (msg, argv[i])); return Exit_Unknown;
             }
-          cli_arg_Target_pos++;
+          cli_arg_Dish_pos++;
           cli_arg_Mirror_pos++;
         }
     }
@@ -1138,65 +1138,66 @@ main (int argc, char const *argv[])
            || xy_streql (command, "l")
            || xy_streql (command, "ls"))
     {
-      if (argc < cli_arg_Target_pos)
+      if (argc < cli_arg_Dish_pos)
         {
           cli_print_all_mirror_sites ();
           br();
-          cli_print_supported_targets ();
+          cli_print_supported_dishes ();
         }
       else
         {
-          target_name = argv[cli_arg_Target_pos];
-          if (   xy_streql (target_name, "mirrors")
-              || xy_streql (target_name, "mirror"))
+          dish_name = argv[cli_arg_Dish_pos];
+          if (   xy_streql (dish_name, "mirrors")
+              || xy_streql (dish_name, "mirror"))
             {
               cli_print_all_mirror_sites ();
               return Exit_OK;
             }
 
-          else if (   xy_streql (target_name, "targets")
-                   || xy_streql (target_name, "target"))
+          else if (   xy_streql (dish_name, "dishes")
+                   || xy_streql (dish_name, "dish")
+                   || xy_streql (dish_name, "dishs")) /* 防止有人错误拼写 */
             {
-              cli_print_supported_targets ();
+              cli_print_supported_dishes ();
               return Exit_OK;
             }
 
-          else if (xy_streql (target_name, "os"))
+          else if (xy_streql (dish_name, "os"))
             {
               cli_print_menu ("os");
               return Exit_OK;
             }
 
-          else if (   xy_streql (target_name, "lang")
-                   || xy_streql (target_name, "pl")
-                   || xy_streql (target_name, "language"))
+          else if (   xy_streql (dish_name, "lang")
+                   || xy_streql (dish_name, "pl")
+                   || xy_streql (dish_name, "language"))
             {
               cli_print_menu ("pl");
               return Exit_OK;
             }
 
-          else if (   xy_streql (target_name, "ware")
-                   || xy_streql (target_name, "software"))
+          else if (   xy_streql (dish_name, "ware")
+                   || xy_streql (dish_name, "software"))
             {
               cli_print_menu ("wr");
               return Exit_OK;
             }
 
-          the_found_target = find_target (target_name);
-          if (!the_found_target)
+          the_found_dish = find_dish (dish_name);
+          if (!the_found_dish)
             {
               goto not_found;
             }
           else
             {
-              chefs_handle_user_command (the_found_target, TargetCmd_List_Info, target_name, NULL);
+              chefs_handle_user_command (the_found_dish, TargetCmd_List_Info, dish_name, NULL);
             }
         }
       return Exit_OK;
   }
 
-#define MSG_EN_USE_LIST_TARGETS "Use `chsrc list targets` to see all supported targets"
-#define MSG_ZH_USE_LIST_TARGETS "使用 chsrc list targets 查看所有支持的目标"
+#define MSG_EN_USE_LIST_TARGETS "Use `chsrc list dishes` to see all supported dishes"
+#define MSG_ZH_USE_LIST_TARGETS "使用 chsrc list dishes 查看所有支持的目标"
 
   /* chsrc measure */
   else if (   xy_streql (command, "measure")
@@ -1206,24 +1207,24 @@ main (int argc, char const *argv[])
            || xy_streql (command, "ce")
            || xy_streql (command, "c"))
     {
-      if (argc < cli_arg_Target_pos)
+      if (argc < cli_arg_Dish_pos)
         {
-          char *msg = ENGLISH ? "Please provide the target name you want to measure. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要测速源的目标名。" MSG_ZH_USE_LIST_TARGETS;
+          char *msg = ENGLISH ? "Please provide the dish name you want to measure. " MSG_EN_USE_LIST_TARGETS
+                              : "请提供想要测速的菜品名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
       ProgMode.MeasureMode = true;
-      target_name = argv[cli_arg_Target_pos];
+      dish_name = argv[cli_arg_Dish_pos];
 
-      the_found_target = find_target (target_name);
-      if (!the_found_target)
+      the_found_dish = find_dish (dish_name);
+      if (!the_found_dish)
         {
           goto not_found;
         }
       else
         {
-          chefs_handle_user_command (the_found_target, TargetCmd_Measure_Source, target_name, NULL);
+          chefs_handle_user_command (the_found_dish, TargetCmd_Measure_Source, dish_name, NULL);
         }
       return Exit_OK;
     }
@@ -1233,22 +1234,22 @@ main (int argc, char const *argv[])
   else if (   xy_streql (command, "get")
            || xy_streql (command, "g"))
     {
-      if (argc < cli_arg_Target_pos)
+      if (argc < cli_arg_Dish_pos)
         {
-          char *msg = ENGLISH ? "Please provide the target name you want to view the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要查看源的目标名。" MSG_ZH_USE_LIST_TARGETS;
+          char *msg = ENGLISH ? "Please provide the dish name you want to view the source. " MSG_EN_USE_LIST_TARGETS
+                              : "请提供想要查看源的菜品名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
-      target_name = argv[cli_arg_Target_pos];
-      the_found_target = find_target (target_name);
-      if (!the_found_target)
+      dish_name = argv[cli_arg_Dish_pos];
+      the_found_dish = find_dish (dish_name);
+      if (!the_found_dish)
         {
           goto not_found;
         }
       else
         {
-          chefs_handle_user_command (the_found_target, TargetCmd_Get_Source, target_name, NULL);
+          chefs_handle_user_command (the_found_dish, TargetCmd_Get_Source, dish_name, NULL);
         }
       return Exit_OK;
     }
@@ -1257,29 +1258,29 @@ main (int argc, char const *argv[])
   else if (   xy_streql (command, "set")
            || xy_streql (command, "s"))
     {
-      if (argc < cli_arg_Target_pos)
+      if (argc < cli_arg_Dish_pos)
         {
-          char *msg = ENGLISH ? "Please provide the target name you want to set the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要设置源的目标名。" MSG_ZH_USE_LIST_TARGETS;
+          char *msg = ENGLISH ? "Please provide the dish name you want to set the source. " MSG_EN_USE_LIST_TARGETS
+                              : "请提供想要设置源的菜品名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
 
-      target_name = argv[cli_arg_Target_pos];
+      dish_name = argv[cli_arg_Dish_pos];
       char *mirrorCode_or_url = NULL;
       if (argc >= cli_arg_Mirror_pos)
         {
           mirrorCode_or_url = xy_strdup (argv[cli_arg_Mirror_pos]);
         }
 
-      the_found_target = find_target (target_name);
-      if (!the_found_target)
+      the_found_dish = find_dish (dish_name);
+      if (!the_found_dish)
         {
           goto not_found;
         }
       else
         {
-          chefs_handle_user_command (the_found_target, TargetCmd_Set_Source, target_name, mirrorCode_or_url);
+          chefs_handle_user_command (the_found_dish, TargetCmd_Set_Source, dish_name, mirrorCode_or_url);
         }
       return Exit_OK;
     }
@@ -1289,24 +1290,24 @@ main (int argc, char const *argv[])
            || xy_streql (command, "rest")
            || xy_streql (command, "r"))
     {
-      if (argc < cli_arg_Target_pos)
+      if (argc < cli_arg_Dish_pos)
         {
-          char *msg = ENGLISH ? "Please provide the target name you want to reset the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要重置源的目标名。" MSG_ZH_USE_LIST_TARGETS;
+          char *msg = ENGLISH ? "Please provide the dish name you want to reset the source. " MSG_EN_USE_LIST_TARGETS
+                              : "请提供想要重置源的菜品名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
 
       ProgMode.ResetMode = true;
-      target_name = argv[cli_arg_Target_pos];
-      the_found_target = find_target (target_name);
-      if (!the_found_target)
+      dish_name = argv[cli_arg_Dish_pos];
+      the_found_dish = find_dish (dish_name);
+      if (!the_found_dish)
         {
           goto not_found;
         }
       else
         {
-          chefs_handle_user_command (the_found_target, TargetCmd_Reset_Source, target_name, NULL);
+          chefs_handle_user_command (the_found_dish, TargetCmd_Reset_Source, dish_name, NULL);
         }
       return Exit_OK;
     }
@@ -1330,10 +1331,10 @@ main (int argc, char const *argv[])
     }
 
 not_found:
-  if (!the_found_target)
+  if (!the_found_dish)
     {
-      char *msg = ENGLISH ? "Unknown target. "  MSG_EN_USE_LIST_TARGETS
-                          : "暂不支持的换源目标。" MSG_ZH_USE_LIST_TARGETS;
+      char *msg = ENGLISH ? "Unknown dish. "  MSG_EN_USE_LIST_TARGETS
+                          : "暂不支持的换源菜品。" MSG_ZH_USE_LIST_TARGETS;
       chsrc_error (msg);
       return Exit_Unknown;
     }

@@ -24,7 +24,7 @@ def_dish(wr_docker, "docker/dockerhub");
 void
 wr_docker_prepare ()
 {
-  chef_prep_this (wr_docker, gs);
+  chef_prep_this_dish (wr_docker, gs);
 
   chef_set_recipe_created_on   (this, "2024-06-08");
   chef_set_recipe_last_updated (this, "2025-08-09");

@@ -14,7 +14,7 @@ def_dish(wr_emacs, "emacs/elpa");
 void
 wr_emacs_prepare ()
 {
-  chef_prep_this (wr_emacs, s);
+  chef_prep_this_dish (wr_emacs, s);
 
   chef_set_recipe_created_on   (this, "2023-10-10");
   chef_set_recipe_last_updated (this, "2025-08-09");

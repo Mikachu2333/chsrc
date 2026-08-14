@@ -7,7 +7,7 @@ def_dish(pl_r, "r/cran");
 void
 pl_r_prepare ()
 {
-  chef_prep_this (pl_r, gs);
+  chef_prep_this_dish (pl_r, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-21");
   chef_set_recipe_last_updated (this, "2025-08-21");

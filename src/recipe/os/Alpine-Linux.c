@@ -7,7 +7,7 @@ def_dish(os_alpine, "alpine");
 void
 os_alpine_prepare ()
 {
-  chef_prep_this (os_alpine, gs);
+  chef_prep_this_dish (os_alpine, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-24");
   chef_set_recipe_last_updated (this, "2026-07-22");

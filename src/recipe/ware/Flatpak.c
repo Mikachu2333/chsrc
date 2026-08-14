@@ -7,7 +7,7 @@ def_dish(wr_flatpak, "flatpak/flathub");
 void
 wr_flatpak_prepare ()
 {
-  chef_prep_this (wr_flatpak, gsr);
+  chef_prep_this_dish (wr_flatpak, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-11");
   chef_set_recipe_last_updated (this, "2025-08-09");

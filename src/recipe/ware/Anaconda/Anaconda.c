@@ -9,7 +9,7 @@ def_dish(wr_anaconda, "conda/anaconda");
 void
 wr_anaconda_prepare ()
 {
-  chef_prep_this (wr_anaconda, gs);
+  chef_prep_this_dish (wr_anaconda, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-10");
   chef_set_recipe_last_updated (this, "2025-08-09");

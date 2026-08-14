@@ -7,7 +7,7 @@ def_dish(pl_bun, "bun");
 void
 pl_bun_prepare (void)
 {
-  chef_prep_this (pl_bun, gsr);
+  chef_prep_this_dish (pl_bun, gsr);
 
   chef_set_recipe_created_on   (this, "2024-09-29");
   chef_set_recipe_last_updated (this, "2025-07-22");
@@ -23,7 +23,7 @@ pl_bun_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_npm_dish);
+  chef_use_other_dish_sources (this, &pl_npm_dish);
 }
 
 /**

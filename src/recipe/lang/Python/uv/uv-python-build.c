@@ -23,7 +23,7 @@ static MirrorSite_t CnbUvPython =
 void
 pl_uv_python_build_prepare (void)
 {
-  chef_prep_this (pl_uv_python_build, gsr);
+  chef_prep_this_dish (pl_uv_python_build, gsr);
 
   chef_set_recipe_created_on   (this, "2026-08-02");
   chef_set_recipe_last_updated (this, "2026-08-13");

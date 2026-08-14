@@ -16,12 +16,12 @@
  * 由 chefs_handle_XXX() 里的 group dish 递归时调用
  */
 char *
-dish_get_first_alias (Dish_t *target)
+dish_get_first_alias (Dish_t *dish)
 {
-  if (!target || !target->aliases || *target->aliases == '\0')
+  if (!dish || !dish->aliases || *dish->aliases == '\0')
     return NULL;
 
-  char *alias = xy_strdup (target->aliases);
+  char *alias = xy_strdup (dish->aliases);
   char *separator = strchr (alias, '/');
   if (separator)
     *separator = '\0';
@@ -31,7 +31,7 @@ dish_get_first_alias (Dish_t *target)
 
 
 bool
-dish_has_sub_dishes (Dish_t *target)
+dish_has_sub_dishes (Dish_t *dish)
 {
-  return (target->sub_dishes && xy_seq_len(target->sub_dishes) > 1);
+  return (dish->sub_dishes && xy_seq_len(dish->sub_dishes) > 1);
 }

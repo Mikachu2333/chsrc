@@ -7,7 +7,7 @@ def_dish(os_freebsd, "freebsd");
 void
 os_freebsd_prepare ()
 {
-  chef_prep_this (os_freebsd, s);
+  chef_prep_this_dish (os_freebsd, s);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2025-08-10");

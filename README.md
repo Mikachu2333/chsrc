@@ -344,30 +344,30 @@ git clone https://gitee.com/RubyMetric/chsrc.git; cd chsrc; make
    chsrc - Change Source - (GPLv3+)
 
 使用:
-   chsrc <command> [options] [target] [mirror]
+   chsrc <command> [options] [dish] [mirror]
 
 命令:
-   help,  h                   打印此帮助，或 -h, --help
-   issue, i                   查看相关issue
+   help,  h                 打印此帮助，或 -h, --help
+   issue, i                 查看相关issue
 
-   list, ls, l                列出可用镜像站和可换源目标
-   list  mirror|target        列出支持的: 镜像站/换源目标
-   list  os|lang|ware         列出支持的: 操作系统/编程语言/软件
-   list   <target>            查看该目标可用源与支持功能
+   list, ls, l              列出可用镜像站和可换源菜品
+   list  mirror|dish        列出支持的: 镜像站/换源菜品
+   list  os|lang|ware       列出支持的: 操作系统/编程语言/软件
+   list   <dish>            查看该菜品可用源与支持功能
 
-   measure, m, cesu <target>  对该目标所有源测速
+   measure, m, cesu <dish>  对该菜品所有源测速
 
-   get, g <target>            查看该目标当前源的使用情况
+   get, g <dish>            查看该菜品当前源的使用情况
 
-   set, s <target>            换源，自动测速后挑选最快源
-   set    <target>  first     换源，使用维护团队测速第一的源
-   set    <target> <mirror>   换源，指定使用某镜像站 (通过list <target>查看)
-   set    <target>  <URL>     换源，用户自定义源URL
-   reset  <target>            重置，使用上游默认使用的源
+   set, s <dish>            换源，自动测速后挑选最快源
+   set    <dish>  first     换源，使用维护团队测速第一的源
+   set    <dish> <mirror>   换源，指定使用某镜像站 (通过list <dish>查看)
+   set    <dish>  <URL>     换源，用户自定义源URL
+   reset  <dish>            重置，使用上游默认使用的源
 
 选项:
    -dry                       Dry Run，模拟换源过程，命令仅打印并不运行
-   -scope=project|user|system 仅对本项目换源 / 用户级换源 / 系统级换源 (通过ls <target>查看)
+   -scope=project|user|system 仅对本项目换源 / 用户级换源 / 系统级换源 (通过ls <dish>查看)
    -ipv6                      使用IPv6测速
    -en(glish)                 使用英文输出
    -no-color                  无颜色输出

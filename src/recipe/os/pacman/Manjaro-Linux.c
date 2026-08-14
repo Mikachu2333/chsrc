@@ -7,7 +7,7 @@ def_dish(os_manjaro, "manjaro");
 void
 os_manjaro_prepare ()
 {
-  chef_prep_this (os_manjaro, s);
+  chef_prep_this_dish (os_manjaro, s);
 
   chef_set_recipe_created_on   (this, "2023-09-06");
   chef_set_recipe_last_updated (this, "2025-08-10");

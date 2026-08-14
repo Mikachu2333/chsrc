@@ -7,7 +7,7 @@ def_dish(os_linuxlite, "linuxlite");
 void
 os_linuxlite_prepare ()
 {
-  chef_prep_this (os_linuxlite, gsr);
+  chef_prep_this_dish (os_linuxlite, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-29");
   chef_set_recipe_last_updated (this, "2025-08-10");

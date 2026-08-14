@@ -16,7 +16,7 @@ chsrc - Change Source for every software on every platform from the command line
 
 .SH SYNOPSIS
 .SY chsrc
-<command> [options] [target] [mirror]
+<command> [options] [dish] [mirror]
 .YS
 
 
@@ -33,39 +33,39 @@ chsrc - Change Source for every software on every platform from the command line
 \fBlist\fR (或 \fBls\fR, 或 \fBl\fR)
 列出可用镜像源，和可换源目标
 .TP
-.B list mirror/target
+.B list mirror/dish
 列出可用镜像源，或可换源目标
 .B list os/lang/ware
 列出可换源的操作系统/编程语言/软件
 
 .SS 测速命令
 .TP
-.B measure/cesu \fI<target>\fI
+.B measure/cesu \fI<dish>\fI
 对该目标所有源测速
 
 .SS 查看配置命令
 .TP
-.B list \fI<target>\fR
+.B list \fI<dish>\fR
 查看该目标可用源与支持功能
 .TP
-.B get \fI<target>\fR
+.B get \fI<dish>\fR
 查看该目标当前源的使用情况
 
 .SS 换源命令
 .TP
-.B set \fI<target>\fR
+.B set \fI<dish>\fR
 换源，自动测速后挑选最快源
 .TP
-.B set \fI<target>\fR first
+.B set \fI<dish>\fR first
 换源，使用维护团队测速第一的源
 .TP
-.B set \fI<target>\fR \fI<mirror>\fR
-换源，指定使用某镜像站 (通过list <target>查看)
+.B set \fI<dish>\fR \fI<mirror>\fR
+换源，指定使用某镜像站 (通过list <dish>查看)
 .TP
-.B set \fI<target>\fR \fI<https://url>\fR
+.B set \fI<dish>\fR \fI<https://url>\fR
 换源，用户自定义源URL
 .TP
-.B reset \fI<target>\fR
+.B reset \fI<dish>\fR
 重置，使用上游默认使用的源
 
 
@@ -76,7 +76,7 @@ chsrc - Change Source for every software on every platform from the command line
 Dry Run，模拟换源过程，命令仅打印并不运行
 .TP
 \fB-scope\fR
-设置换源的作用域，可选值有：project|user|system|default (通过ls \fI<target>\fR查看支持情况)
+设置换源的作用域，可选值有：project|user|system|default (通过ls \fI<dish>\fR查看支持情况)
 .TP
 \fB-ipv6\fR
 使用IPv6测速

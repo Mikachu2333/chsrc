@@ -7,7 +7,7 @@ def_dish(os_opensuse, "opensuse/opensuse-leap/opensuse-tumbleweed");
 void
 os_opensuse_prepare ()
 {
-  chef_prep_this (os_opensuse, s);
+  chef_prep_this_dish (os_opensuse, s);
 
   chef_set_recipe_created_on   (this, "2023-09-17");
   chef_set_recipe_last_updated (this, "2025-08-10");

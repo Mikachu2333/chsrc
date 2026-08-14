@@ -10,7 +10,7 @@ def_dish(os_openkylin, "openkylin");
 void
 os_openkylin_prepare ()
 {
-  chef_prep_this (os_openkylin, gsr);
+  chef_prep_this_dish (os_openkylin, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-06");
   chef_set_recipe_last_updated (this, "2025-08-10");

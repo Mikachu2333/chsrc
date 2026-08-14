@@ -7,7 +7,7 @@ def_dish(os_openeuler, "openeuler");
 void
 os_openeuler_prepare ()
 {
-  chef_prep_this (os_openeuler, gs);
+  chef_prep_this_dish (os_openeuler, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-06");
   chef_set_recipe_last_updated (this, "2025-08-10");

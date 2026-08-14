@@ -21,7 +21,7 @@ def_dish(pl_go, "go/golang/goproxy");
 void
 pl_go_prepare ()
 {
-  chef_prep_this (pl_go, gsr);
+  chef_prep_this_dish (pl_go, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-30");
   chef_set_recipe_last_updated (this, "2025-08-10");

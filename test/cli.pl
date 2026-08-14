@@ -102,8 +102,8 @@ like `$CHSRC list ware`,  qr/brew\s*homebrew/,   'chsrc list ware';
 my $get_null = qr/chsrc: 请提供想要查看源的目标名/u;
 like `$CHSRC get -no-color 2>&1`,  $get_null,    'chsrc get -no-color';
 
-my $fake_target_name = qr/暂不支持的换源目标/;
-like `$CHSRC get fake_target_name 2>&1`,  $fake_target_name, 'chsrc get fake_target_name';
+my $fake_dish_name = qr/暂不支持的换源目标/;
+like `$CHSRC get fake_dish_name 2>&1`,  $fake_dish_name, 'chsrc get fake_dish_name';
 
 
 if ((defined $ARGV[0]) && ($ARGV[0] eq 'fastcheck')) {

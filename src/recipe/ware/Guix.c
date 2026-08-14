@@ -7,7 +7,7 @@ def_dish(wr_guix, "guix");
 void
 wr_guix_prepare ()
 {
-  chef_prep_this (wr_guix, s);
+  chef_prep_this_dish (wr_guix, s);
 
   chef_set_recipe_created_on   (this, "2023-09-11");
   chef_set_recipe_last_updated (this, "2025-08-09");

@@ -6,14 +6,14 @@
  * Contributors  : @Mikachu2333
  *               |
  * Created On    : <2024-08-09>
- * Last Modified : <2026-08-02>
+ * Last Modified : <2026-08-14>
  * -------------------------------------------------------------
  * 本文件作为一个通用模板：
  *
- *    为一个【换源目标(target)】定义具体的【换源方法(recipe)】
+ *    为一个【菜品(dish)】定义具体的【换源方法(recipe)】
  *
  * 模版中:
- * <target>   为该换源目标的名称
+ * <dish>   为该换源目标的名称
  * <category> 为该换源目标的类别，仅有3类: pl,  os, wr
  *            分别对应3个子目录:         lang, os, ware
  * ------------------------------------------------------------*/
@@ -31,15 +31,15 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_dish(<category>_<target>);
+def_dish(<category>_<dish>);
 
 /**
- * 定义专服务于该target的镜像站，该例数据为虚拟填充
+ * 定义专服务于该 dish 的镜像站，该例数据为虚拟填充
  */
 static MirrorSite_t
 RubyMetric = {
   IS_DedicatedMirrorSite, /* 镜像站类型 */
-  "rbmt",                 /* 该镜像站的 code, 可以这么使用: chsrc set <target> rbmt */
+  "rbmt",                 /* 该镜像站的 code, 可以这么使用: chsrc set <dish> rbmt */
 
   /* 该镜像站的英文缩写 |   该镜像站的全名    |     镜像站首页  */
   "RubyMetric",           "RubyMetric 镜像站",  "https://rubymetirc.com",
@@ -47,7 +47,7 @@ RubyMetric = {
   /* 是否跳过测速 | 跳过原因(中文) | 跳过原因(英文) */
   {NotSkip,             NA,                NA,
   /* 镜像站某个较大的可下载物的下载链接，用于测速 */
-  "https://rubymetirc.com/target/aws/aws-sdk-go/@v/v1.45.2.zip",
+  "https://rubymetirc.com/dishes/aws/aws-sdk-go/@v/v1.45.2.zip",
   /* 是否为精准测速，若使用间接URL来测速，则填ROUGH */
    ACCURATE
   };
@@ -56,10 +56,10 @@ RubyMetric = {
 
 
 void
-<category>_<target>_prepare (void)
+<category>_<dish>_prepare (void)
 {
   // op 可以为 NOOP|s|sr|gsr|gs, 代表支持 Get Set Reset 三种操作
-  chef_prep_this (<category>_<target>, op);
+  chef_prep_this_dish (<category>_<dish>, op);
 
   chef_set_recipe_created_on   (this, "2024-08-09"); // 文件创建日期
   chef_set_recipe_last_updated (this, "2025-08-12"); // 文件最后一次更新日期
@@ -83,8 +83,8 @@ void
 
   def_sources_begin()
   {&UpstreamProvider, "上游默认源链接, 若维护者暂时未知, 可填NULL, 这个主要用于reset", DelegateToUpstream}
-  {&RubyMetric,       "https://rubymetirc.com/target",       DelegateToMirror},
-  {&RubyInstaller,    "https://rubyinstaller.cn/target",     DelegateToMirror},
+  {&RubyMetric,       "https://rubymetirc.com/dishes",       DelegateToMirror},
+  {&RubyInstaller,    "https://rubyinstaller.cn/dishes",     DelegateToMirror},
   {&Gitee,            "https://gitee.com/RubyMetric/chsrc",  DelegateToMirror},
   {&GitHub,           "https://github.com/RubyMetric/chsrc", "https://一个精准测速链接"}
   def_sources_end()
@@ -94,12 +94,12 @@ void
 /**
  * @required 非必需
  *
- * 用于 chsrc get <target>
+ * 用于 chsrc get <dish>
  */
 void
-<category>_<target>_getsrc (char *option)
+<category>_<dish>_getsrc (char *option)
 {
-  // chsrc get <target>
+  // chsrc get <dish>
 }
 
 
@@ -107,16 +107,16 @@ void
  * @required 必需
  * @consult  写明换源实现的参考地址
  *
- * 用于 chsrc set <target>
+ * 用于 chsrc set <dish>
  */
 void
-<category>_<target>_setsrc (char *option)
+<category>_<dish>_setsrc (char *option)
 {
   /* 下面这行是必须的，注入 source 变量 */
-  chsrc_use_this_source (<category>_<target>);
+  chsrc_use_this_source (<category>_<dish>);
 
-  /* 如果是 target group，你可能想要指定不同的 target 来使用它的源 */
-  // Source_t source = chsrc_yield_source_and_confirm (&pl_js_group_target, option);
+  /* 你可能想要指定不同的 dish 来使用它的源 */
+  // Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_dish, option);
 
   /* 具体的换源步骤，如调用第三方命令... */
 
@@ -129,13 +129,13 @@ void
 /**
  * @required 非必需
  *
- * 用于 chsrc reset <target>
+ * 用于 chsrc reset <dish>
  */
 void
-<category>_<target>_resetsrc (char *option)
+<category>_<dish>_resetsrc (char *option)
 {
   /* 往往统一在 _setsrc() 中实现，直接调用即可 */
-  // <category>_<target>_setsrc (option);
+  // <category>_<dish>_setsrc (option);
 }
 
 

@@ -7,7 +7,7 @@ def_dish(wr_winget, "winget");
 void
 wr_winget_prepare ()
 {
-  chef_prep_this (wr_winget, gsr);
+  chef_prep_this_dish (wr_winget, gsr);
 
   chef_set_recipe_created_on   (this, "2024-06-07");
   chef_set_recipe_last_updated (this, "2025-08-17");

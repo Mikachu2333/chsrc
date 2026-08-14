@@ -34,8 +34,8 @@ _chsrc() {
 
     cur="${words[$cword]}"
 
-    ## 定义具体target
-    local targets_lang="gem ruby rb rubygem rubygems bundler
+    ## 定义具体dish
+    local dishes_lang="gem ruby rb rubygem rubygems bundler
         python pypi py
         pip
         poetry
@@ -64,7 +64,7 @@ _chsrc() {
         r cran
         julia"
 
-    local targets_os="ubuntu zorinos
+    local dishes_os="ubuntu zorinos
         linuxmint
         debian
         fedora
@@ -95,7 +95,7 @@ _chsrc() {
         netbsd
         openbsd"
 
-    local targets_ware="winget
+    local dishes_ware="winget
         brew homebrew
         cocoa cocoapods cocoapod
         docker dockerhub
@@ -106,7 +106,7 @@ _chsrc() {
         latex ctan tex texlive miktex tlmgr mpm
         conda anaconda"
 
-    local all_targets="$targets_lang $targets_os $targets_ware"
+    local all_dishes="$dishes_lang $dishes_os $dishes_ware"
     local options="-dry -scope= -ipv6 -english -en -no-color -h --help"
     local scope_options="project user system"
     local commands="help issue list ls measure cesu get set reset"
@@ -154,35 +154,35 @@ _chsrc() {
             ;;
         list|ls|l)
             if [[ $args_after -eq 1 ]]; then
-                COMPREPLY=( $(compgen -W "mirror target os lang ware $all_targets " -- $cur) )
+                COMPREPLY=( $(compgen -W "mirror dish os lang ware $all_dishes " -- $cur) )
             else
                 _complete_options
             fi
             ;;
         measure|m|cesu)
             if [[ $args_after -eq 1 && $cur != -* ]]; then
-                COMPREPLY=( $(compgen -W "$all_targets" -- "$cur") )
+                COMPREPLY=( $(compgen -W "$all_dishes" -- "$cur") )
             else
                 _complete_options
             fi
             ;;
         get|g)
             if [[ $args_after -eq 1 && $cur != -* ]]; then
-                COMPREPLY=( $(compgen -W "$all_targets" -- "$cur") )
+                COMPREPLY=( $(compgen -W "$all_dishes" -- "$cur") )
             else
                 COMPREPLY=( $(compgen -W "$options" -- $cur) )
             fi
             ;;
         reset)
             if [[ $args_after -eq 1 ]]; then
-                COMPREPLY=( $(compgen -W "$all_targets" -- $cur) )
+                COMPREPLY=( $(compgen -W "$all_dishes" -- $cur) )
             else
                 COMPREPLY=( $(compgen -W "$options" -- $cur) )
             fi
             ;;
         set|s)
             if [[ $args_after -eq 1 && $cur != -* ]]; then
-                COMPREPLY=( $(compgen -W "$all_targets" -- "$cur") )
+                COMPREPLY=( $(compgen -W "$all_dishes" -- "$cur") )
             elif [[ $args_after -eq 2 ]]; then
                 COMPREPLY=( $(compgen -W "first" -- $cur) )
             else

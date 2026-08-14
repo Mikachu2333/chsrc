@@ -12,7 +12,7 @@
  *               | @NewbieXvwu
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-13>
+ * Last Modified : <2026-08-14>
  *
  * chsrc framework
  * ------------------------------------------------------------*/
@@ -44,7 +44,7 @@ struct
   bool ResetMode;
 
   // 内部实现
-  bool TargetGroupMode;
+  bool DishGroupMode;
 
   // 用户命令选项
   bool Ipv6Mode;
@@ -57,7 +57,7 @@ ProgMode =
 {
   .MeasureMode = false,
   .ResetMode   = false,
-  .TargetGroupMode = false,
+  .DishGroupMode = false,
   .Ipv6Mode = false,
   .Scope = ImplementationDefinedScope,
   .EnglishMode = false,
@@ -66,10 +66,10 @@ ProgMode =
 };
 
 /* recipe 相关 mode */
-bool chsrc_in_target_group_mode() {return ProgMode.TargetGroupMode;}
-// 并非作为 follower target，而是自身作为一个独立的 target 执行
-bool chsrc_in_standalone_mode() {return !ProgMode.TargetGroupMode;}
-void chsrc_set_target_group_mode(){ProgMode.TargetGroupMode = true;}
+bool chsrc_in_dish_group_mode() {return ProgMode.DishGroupMode;}
+// 并非作为 sub dish，而是自身作为一个独立的 dish 执行
+bool chsrc_in_standalone_mode() {return !ProgMode.DishGroupMode;}
+void chsrc_set_dish_group_mode(){ProgMode.DishGroupMode = true;}
 
 bool chsrc_in_reset_mode(){return ProgMode.ResetMode;}
 /* 默认换源作用域就是 ImplementationDefinedScope */
@@ -92,12 +92,15 @@ static bool in_dry_run_mode(){return ProgMode.DryRunMode;}
 
 
 /**
- * Target Group mode (相反则称为 standalone mode)
+ * Dish Group mode (相反则称为 standalone mode)
  *
- *   1. 一个 target group 包含了多个 target，这些都被叫做 follower target
- *   2. 触发该运行模式的 target 被称为 leader target，其往往只是一个virtual target，类似 APT 中的 virtual package
+ *   1. 一个 dish group 包含了多个 dish
+ *   2. 触发该运行模式的 dish 被称为 combo dish，其只是一个 virtual dish，
+ *      类似 APT 中的 virtual package，而这个 combo dish 包含了多个 sub dish
  *
- * 目前使用该模式的有两个: Python 和 Node.js，因为二者的包管理器存在多个
+ * 目前使用该模式的有3个:
+ *   - Python, JavaScript，因为二者的包管理器存在多个
+ *   - uv，因为其需要换不止一个源
  */
 
 
@@ -114,7 +117,7 @@ typedef enum ChgType_t
 /* Global Program Status */
 struct
 {
-  int leader_selected_index;   /* leader target 选中的索引 */
+  int leader_selected_index;   /* combo dish 选中的索引 */
   ChgType_t chgtype;           /* 换源实现的类型 */
 
   /* 此时 chsrc_run() 不再是recipe中指定要运行的一个外部命令，而是作为一个功能实现的支撑 */
@@ -496,15 +499,15 @@ chsrc_check_file (char *path)
 
 
 /**
- * 用于 _setsrc 函数，检测用户输入的镜像站code，是否存在于该target可用源中
+ * 用于 _setsrc() 函数，检测用户输入的镜像站 code，是否存在于该 dish 可用源中
  *
  * @note 一个源Source必定来自于一个Provider，所以该函数名叫 query_mirror_exist
  *
- * @param  target_name  目标名
+ * @param  dish_name  目标名
  * @param  input        如果用户输入 default 或者 def，则选择第一个源
  */
 int
-query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *input)
+query_mirror_exist (Source_t *sources, size_t size, char *dish_name, char *input)
 {
   if (hp_is_url (input))
     {
@@ -517,7 +520,7 @@ query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *inp
     {
       char *msg1 = ENGLISH ? "Currently " : "当前 ";
       char *msg2 = ENGLISH ? " doesn't have any source available. Please contact the maintainers" : " 无任何可用源，请联系维护者";
-      chsrc_error (xy_strcat (3, msg1, target_name, msg2));
+      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
       exit (Exit_MaintainerCause);
     }
 
@@ -525,7 +528,7 @@ query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *inp
     {
       char *msg1 = ENGLISH ? "Currently " : "当前 ";
       char *msg2 = ENGLISH ? " only the upstream source exists. Please contact the maintainers" : " 仅存在上游默认源，请联系维护者";
-      chsrc_error (xy_strcat (3, msg1, target_name, msg2));
+      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
       exit (Exit_MaintainerCause);
     }
 
@@ -544,7 +547,7 @@ query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *inp
                            : " 目前唯一可用镜像站，感谢他们的慷慨支持";
       const char *name = ENGLISH ? sources[1].mirror->abbr
                                  : sources[1].mirror->name;
-      chsrc_succ (xy_strcat (4, name, msg1, target_name, msg2));
+      chsrc_succ (xy_strcat (4, name, msg1, dish_name, msg2));
     }
 
   if (xy_streql ("first", input))
@@ -596,7 +599,7 @@ query_mirror_exist (Source_t *sources, size_t size, char *target_name, char *inp
         }
 
       char *msg = ENGLISH ? "To see available sources, use chsrc list " : "查看可使用源，请使用 chsrc list ";
-      chsrc_error (xy_2strcat (msg, target_name));
+      chsrc_error (xy_2strcat (msg, dish_name));
       exit (Exit_UserCause);
     }
   return idx;
@@ -900,7 +903,7 @@ measure_speed_for_every_source (Source_t sources[], int size, double speed_recor
  * 自动测速选择镜像站和源
  */
 int
-auto_select_mirror (Source_t *sources, size_t size, const char *target_name)
+auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
 {
   /* reset 时选择默认源 */
   if (chsrc_in_reset_mode())
@@ -917,7 +920,7 @@ auto_select_mirror (Source_t *sources, size_t size, const char *target_name)
     {
       char *msg1 = ENGLISH ? "Currently " : "当前 ";
       char *msg2 = ENGLISH ? "No any source, please contact maintainers: chsrc issue" : " 无任何可用源，请联系维护者: chsrc issue";
-      chsrc_error (xy_strcat (3, msg1, target_name, msg2));
+      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
       exit (Exit_MaintainerCause);
     }
 
@@ -982,7 +985,7 @@ auto_select_mirror (Source_t *sources, size_t size, const char *target_name)
                            : " 目前唯一可用镜像站，感谢他们的慷慨支持";
       const char *name = ENGLISH ? sources[fast_idx].mirror->abbr
                                  : sources[fast_idx].mirror->name;
-      say (xy_strcat (5, msg1, bdgreen(name), green(is), green(target_name), green(msg2)));
+      say (xy_strcat (5, msg1, bdgreen(name), green(is), green(dish_name), green(msg2)));
     }
   else
     {
@@ -1005,15 +1008,15 @@ auto_select_mirror (Source_t *sources, size_t size, const char *target_name)
 
 
 int
-use_specific_mirror_or_auto_select (char *input, Dish_t *t)
+use_specific_mirror_or_auto_select (char *input, Dish_t *dish)
 {
   if (input)
     {
-      return query_mirror_exist (t->sources, t->sources_n, t->aliases, input);
+      return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, input);
     }
   else
     {
-      return auto_select_mirror (t->sources, t->sources_n, t->aliases);
+      return auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
     }
 }
 
@@ -1039,23 +1042,23 @@ source_has_empty_url (Source_t *source)
 
 
 /**
- * @brief 为该 target 确定最终将使用的源
+ * @brief 为该 dish 确定最终将使用的源
  *
  * 用户*只可能*通过下面5种方式来换源，无论哪一种都会返回一个 Source_t 出来
  *
- *   1. 用户指定了一个 Mirror Code，即 chsrc set <target> <code>
- *   2. 用户指定了一个 URL，        即 chsrc set <target> https://ur
- *   3. 用户什么都没指定，          即 chsrc set <target>
- *   4. 用户正在重置源，            即 chsrc reset <target>
+ *   1. 用户指定了一个 Mirror Code，即 chsrc set <dish> <code>
+ *   2. 用户指定了一个 URL，        即 chsrc set <dish> https://ur
+ *   3. 用户什么都没指定，          即 chsrc set <dish>
+ *   4. 用户正在重置源，            即 chsrc reset <dish>
  *
- * 如果处于 Target Group 模式下，leader target 已经测速过了，follower target
- * 不能再次测速，而是直接选择 leader 测过的结果
+ * 如果处于 Dish Group 模式下，combo dish 已经测速过了，sub dish
+ * 不能再次测速，而是直接选择 combo dish 测过的结果
  *
- *   5. leader target 测速出来的某个源
+ *   5. combo dish 测速出来的某个源
  *
  */
 Source_t
-chsrc_yield_source (Dish_t *t, char *option)
+chsrc_yield_source (Dish_t *dish, char *option)
 {
   /**
    * 防止某些意外时刻 _setsrc() 等函数会被直接调，但此时 _prepare() 还没有执行过
@@ -1063,24 +1066,24 @@ chsrc_yield_source (Dish_t *t, char *option)
    *
    * 目前可能出现这种情况的时候：组换源的时候，sub dishes 的 _setsrc() 被直接调用
    */
-  if (!t->inited) t->preparefn();
+  if (!dish->inited) dish->preparefn();
 
   Source_t source;
-  if (chsrc_in_target_group_mode() && ProgStatus.leader_selected_index==-1)
+  if (chsrc_in_dish_group_mode() && ProgStatus.leader_selected_index==-1)
     {
-      ProgStatus.leader_selected_index = use_specific_mirror_or_auto_select (option, t);
-      source = t->sources[ProgStatus.leader_selected_index];
+      ProgStatus.leader_selected_index = use_specific_mirror_or_auto_select (option, dish);
+      source = dish->sources[ProgStatus.leader_selected_index];
     }
-  else if (chsrc_in_target_group_mode() && ProgStatus.leader_selected_index!=-1)
+  else if (chsrc_in_dish_group_mode() && ProgStatus.leader_selected_index!=-1)
     {
-      source = t->sources[ProgStatus.leader_selected_index];
+      source = dish->sources[ProgStatus.leader_selected_index];
     }
   else if (hp_is_url (option))
     {
-      if (!(t->can_user_define))
+      if (!(dish->can_user_define))
         {
-          char *en_msg = "Using user-defined sources for this target is not supported.";
-          char *zh_msg = t->can_user_define_explain ? xy_2strcat ("暂不支持对该目标使用用户自定义源，", t->can_user_define_explain) : "暂不支持对该目标使用用户自定义源";
+          char *en_msg = "Using user-defined sources for this dish is not supported.";
+          char *zh_msg = dish->can_user_define_explain ? xy_2strcat ("暂不支持对该菜品使用用户自定义源，", dish->can_user_define_explain) : "暂不支持对该菜品使用用户自定义源";
           chsrc_error (ENGLISH ? en_msg : zh_msg);
           exit (Exit_Unsupported);
         }
@@ -1089,8 +1092,8 @@ chsrc_yield_source (Dish_t *t, char *option)
     }
   else
     {
-      int index = use_specific_mirror_or_auto_select (option, t);
-      source = t->sources[index];
+      int index = use_specific_mirror_or_auto_select (option, dish);
+      source = dish->sources[index];
     }
   return source;
 }
@@ -1112,11 +1115,11 @@ chsrc_confirm_source (Source_t *source)
 {
   // 由于实现问题，我们把本应该独立出去的上游默认源，也放在了可以换源的数组中，而且放在第一个
   // chsrc 已经规避用户使用未实现的 `chsrc reset`
-  // 但是某些用户可能摸索着强行使用 chsrc set target upstream，从而执行起该禁用的功能，
+  // 但是某些用户可能摸索着强行使用 chsrc set dish upstream，从而执行起该禁用的功能，
   // 之所以禁用，是因为有的 reset 我们并没有实现，我们在这里阻止这些邪恶的用户
   if (source_is_upstream (source) && source_has_empty_url (source))
     {
-      char *msg = ENGLISH ? "Not implement `reset` for the target yet" : "暂未对该目标实现重置";
+      char *msg = ENGLISH ? "Not implement `reset` for the dish yet" : "暂未对该菜品实现重置";
       chsrc_error (msg);
       exit (Exit_Unsupported);
     }
@@ -1138,9 +1141,9 @@ chsrc_confirm_source (Source_t *source)
 
 
 Source_t
-chsrc_yield_source_and_confirm (Dish_t *t, char *option)
+chsrc_yield_source_and_confirm (Dish_t *dish, char *option)
 {
-  Source_t source = chsrc_yield_source(t, option);
+  Source_t source = chsrc_yield_source(dish, option);
   chsrc_confirm_source(&source);
   return source;
 }
@@ -1190,7 +1193,8 @@ chsrc_conclude (Source_t *source)
   if (chsrc_in_reset_mode())
     {
       // source_is_upstream (source)
-      char *msg = ENGLISH ? "Has been reset to the upstream default source" : "已重置为上游默认源";
+      char *msg = CHINESE ? "已重置为上游默认源"
+                          : "Has been reset to the upstream default source";
       chsrc_log (purple (msg));
     }
   else if (ChgType_Auto == ProgStatus.chgtype)
@@ -1301,12 +1305,12 @@ chsrc_conclude (Source_t *source)
 
 
 /**
- * @brief 检测该 target 是否实现了用户所指定的 scope 能力
+ * @brief 检测该 dish 是否实现了用户所指定的 scope 能力
  *
  * @note 此函数目前只支持中文
  */
 void
-chsrc_check_scope_capability (Dish_t *target)
+chsrc_check_scope_capability (Dish_t *dish)
 {
   ScopeCapability_t cap = ScopeCap_Unknown;
 
@@ -1314,12 +1318,12 @@ chsrc_check_scope_capability (Dish_t *target)
   char *msg2 = "换源，请使用 chsrc ls ";
   char *msg3 = " 查看支持的作用域以及默认作用域";
 
-  char *aliases = target->aliases;
+  char *aliases = dish->aliases;
   char *scope_name = NULL;
 
   if (chsrc_in_project_scope_mode())
     {
-      cap = target->scope_caps[ScopeCap_Slot_Project];
+      cap = dish->scope_caps[ScopeCap_Slot_Project];
 
       if (cap != ScopeCap_Able_And_Implemented)
         {
@@ -1331,7 +1335,7 @@ chsrc_check_scope_capability (Dish_t *target)
     }
   if (chsrc_in_user_scope_mode())
     {
-      cap = target->scope_caps[ScopeCap_Slot_User];
+      cap = dish->scope_caps[ScopeCap_Slot_User];
 
       if (cap != ScopeCap_Able_And_Implemented)
         {
@@ -1343,7 +1347,7 @@ chsrc_check_scope_capability (Dish_t *target)
     }
   if (chsrc_in_system_scope_mode())
     {
-      cap = target->scope_caps[ScopeCap_Slot_System];
+      cap = dish->scope_caps[ScopeCap_Slot_System];
 
       if (cap != ScopeCap_Able_And_Implemented)
         {

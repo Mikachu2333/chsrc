@@ -7,7 +7,7 @@ def_dish(pl_yarn, "yarn");
 void
 pl_yarn_prepare (void)
 {
-  chef_prep_this (pl_yarn, gsr);
+  chef_prep_this_dish (pl_yarn, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
   chef_set_recipe_last_updated (this, "2025-07-11");
@@ -23,7 +23,7 @@ pl_yarn_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_npm_dish);
+  chef_use_other_dish_sources (this, &pl_npm_dish);
 }
 
 static double
@@ -78,7 +78,7 @@ pl_yarn_setsrc (char *option)
           char *msg = ENGLISH ? "Yarn v1 doesn't support `-scope=project`. SKIP changing source!"
                               : "Yarn v1 不支持项目级换源，跳过换源";
           chsrc_error (msg);
-          // 不能直接退出，因为 Leader target 不能就此结束
+          // 不能直接退出，因为 combo dish 不能就此结束
           return;
         }
       // 不再阻止换源命令输出到终端，即不再调用 xy_quiet_cmd()

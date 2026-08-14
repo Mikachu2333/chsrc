@@ -7,7 +7,7 @@ def_dish(wr_cocoapods, "cocoa/cocoapods/cocoapod");
 void
 wr_cocoapods_prepare ()
 {
-  chef_prep_this (wr_cocoapods, s);
+  chef_prep_this_dish (wr_cocoapods, s);
 
   chef_set_recipe_created_on   (this, "2024-06-08");
   chef_set_recipe_last_updated (this, "2025-08-09");

@@ -31,12 +31,11 @@ pl_pypi_smURL_constructor (const char *url, const char *user_data)
 void
 pl_pypi_prepare (void)
 {
-  chef_prep_sources_target (pl_pypi);
+  chef_prep_this_sources_dish (pl_pypi);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-01");
 
-  // 组换源的 leader target 应把所有 follower target 的贡献者都记录过来
   chef_set_chefs (this, 2, "@ccmywish", "@happy-game");
   chef_set_sauciers (this, 4, "@ReachForStar", "@Kattos", "@Mikachu2333", "@Yangmoooo");
 

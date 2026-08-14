@@ -7,7 +7,7 @@ def_dish(os_fedora, "fedora");
 void
 os_fedora_prepare ()
 {
-  chef_prep_this (os_fedora, sr);
+  chef_prep_this_dish (os_fedora, sr);
 
   chef_set_recipe_created_on   (this, "2023-09-26");
   chef_set_recipe_last_updated (this, "2025-08-10");

@@ -38,7 +38,7 @@ For chsrc @value{Chsrc_Version}
 
 The tool and framework @command{chsrc} is a great helper to Change Source for every software on every platform from the command line. This texinfo documentation is published on @b{@value{Doc_Publish_Date}} for @command{chsrc} @b{@value{Chsrc_Version}}
 
-@exdent 使用: chsrc <command> [options] [target] [mirror]
+@exdent 使用: chsrc <command> [options] [dish] [mirror]
 
 Exit status:
 
@@ -82,7 +82,7 @@ Exit status:
 @item list (或 ls, 或 l)
 列出可用镜像源，和可换源目标
 
-@item list mirror/target
+@item list mirror/dish
 列出可用镜像源，或可换源目标
 
 @item list os/lang/ware
@@ -92,37 +92,37 @@ Exit status:
 
 @section 测速命令
 @table @samp
-@item measure <target>
-@itemx cesu   <target>
+@item measure <dish>
+@itemx cesu   <dish>
 对该目标所有源测速
 @end table
 
 @page
 @section 查看配置命令
 @table @samp
-@item list <target>
+@item list <dish>
 查看该目标可用源与支持功能
 
-@item get <target>
+@item get <dish>
 查看该目标当前源的使用情况
 @end table
 
 
 @section 换源命令
 @table @samp
-@item set <target>
+@item set <dish>
 换源，自动测速后挑选最快源
 
-@item set <target> first
+@item set <dish> first
 换源，使用维护团队测速第一的源
 
-@item set <target> <mirror>
-换源，指定使用某镜像站 (通过list <target>查看)
+@item set <dish> <mirror>
+换源，指定使用某镜像站 (通过list <dish>查看)
 
-@item set <target> https://url
+@item set <dish> https://url
 换源，用户自定义源URL
 
-@item reset <target>
+@item reset <dish>
 重置，使用上游默认使用的源
 @end table
 
@@ -138,7 +138,7 @@ Dry Run，模拟换源过程，命令仅打印并不运行
 使用IPv6测速
 
 @item -scope
-设置换源的作用域，可选值有：project|user|system|default (通过ls <target>查看支持情况)
+设置换源的作用域，可选值有：project|user|system|default (通过ls <dish>查看支持情况)
 
 @item -en(glish)
 使用英文输出

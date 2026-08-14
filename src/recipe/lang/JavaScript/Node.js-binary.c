@@ -14,7 +14,7 @@ def_sources_dish(pl_nodejs_binary, "nodejs-binary");
 void
 pl_nodejs_binary_prepare (void)
 {
-  chef_prep_sources_target (pl_nodejs_binary);
+  chef_prep_this_sources_dish (pl_nodejs_binary);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
   chef_set_recipe_last_updated (this, "2026-08-12");

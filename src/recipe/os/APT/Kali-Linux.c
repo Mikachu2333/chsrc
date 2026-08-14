@@ -7,7 +7,7 @@ def_dish(os_kali, "kali");
 void
 os_kali_prepare ()
 {
-  chef_prep_this (os_kali, gsr);
+  chef_prep_this_dish (os_kali, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-29");
   chef_set_recipe_last_updated (this, "2026-05-22");

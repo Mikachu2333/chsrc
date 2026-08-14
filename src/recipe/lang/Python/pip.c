@@ -7,7 +7,7 @@ def_dish(pl_pip, "pip");
 void
 pl_pip_prepare (void)
 {
-  chef_prep_this (pl_pip, gsr);
+  chef_prep_this_dish (pl_pip, gsr);
 
   chef_set_recipe_created_on   (this, "2023-09-03");
   chef_set_recipe_last_updated (this, "2026-08-12");
@@ -23,7 +23,7 @@ pl_pip_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_pypi_dish);
+  chef_use_other_dish_sources (this, &pl_pypi_dish);
 }
 
 
@@ -151,7 +151,7 @@ pl_pip_setsrc (char *option)
       char *msg = ENGLISH ? "pip doesn't support `-scope=project`. SKIP changing source!"
                           : "pip 不支持项目级换源，跳过换源";
       chsrc_error (msg);
-      // 不能直接退出，因为 Leader target 不能就此结束
+      // 不能直接退出，因为 combo dish 不能就此结束
       return;
     }
 

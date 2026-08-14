@@ -7,7 +7,7 @@ def_dish(os_solus, "solus");
 void
 os_solus_prepare ()
 {
-  chef_prep_this (os_solus, s);
+  chef_prep_this_dish (os_solus, s);
 
   chef_set_recipe_created_on   (this, "2023-09-29");
   chef_set_recipe_last_updated (this, "2025-08-10");

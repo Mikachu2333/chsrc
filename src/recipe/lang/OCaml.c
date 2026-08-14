@@ -7,7 +7,7 @@ def_dish(pl_ocaml, "ocaml/opam");
 void
 pl_ocaml_prepare ()
 {
-  chef_prep_this (pl_ocaml, gs);
+  chef_prep_this_dish (pl_ocaml, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-15");
   chef_set_recipe_last_updated (this, "2025-08-10");

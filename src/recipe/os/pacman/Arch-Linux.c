@@ -10,7 +10,7 @@ def_dish(os_arch, "arch/archlinux");
 void
 os_arch_prepare ()
 {
-  chef_prep_this (os_arch, gs);
+  chef_prep_this_dish (os_arch, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-05");
   chef_set_recipe_last_updated (this, "2025-10-30");
@@ -103,7 +103,7 @@ os_arch_setsrc (char *option)
 
 
 /** ------------------------------------------------------------
- * archlinuxcn target
+ * archlinuxcn dish
  * ------------------------------------------------------------*/
 
 def_dish(os_archlinuxcn, "archlinuxcn/archcn");
@@ -111,7 +111,7 @@ def_dish(os_archlinuxcn, "archlinuxcn/archcn");
 void
 os_archlinuxcn_prepare ()
 {
-  chef_prep_this (os_archlinuxcn, gs);
+  chef_prep_this_dish (os_archlinuxcn, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-05");
   chef_set_recipe_last_updated (this, "2025-09-12");

@@ -7,7 +7,7 @@ def_dish(pl_julia, "julia");
 void
 pl_julia_prepare ()
 {
-  chef_prep_this (pl_julia, gs);
+  chef_prep_this_dish (pl_julia, gs);
 
   chef_set_recipe_created_on   (this, "2023-08-31");
   chef_set_recipe_last_updated (this, "2025-08-22");

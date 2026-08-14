@@ -7,7 +7,7 @@ def_dish(pl_haskell, "haskell/cabal/stack/hackage");
 void
 pl_haskell_prepare ()
 {
-  chef_prep_this (pl_haskell, s);
+  chef_prep_this_dish (pl_haskell, s);
 
   chef_set_recipe_created_on   (this, "2023-09-10");
   chef_set_recipe_last_updated (this, "2025-08-22");

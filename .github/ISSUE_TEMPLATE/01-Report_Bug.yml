@@ -18,7 +18,7 @@ body:
     attributes:
       label: 你操作了什么？
       # description: 告诉我们，在问题出现之前你使用 chsrc 做了什么?
-      placeholder: 我运行了 chsrc set <target>...
+      placeholder: 我运行了 chsrc set <dish>...
     validations:
       required: true
 

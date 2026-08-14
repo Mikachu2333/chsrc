@@ -14,7 +14,7 @@ def_dish(pl_lua, "lua/luarocks");
 void
 pl_lua_prepare ()
 {
-  chef_prep_this (pl_lua, gs);
+  chef_prep_this_dish (pl_lua, gs);
 
   chef_set_recipe_created_on   (this, "2023-09-27");
   chef_set_recipe_last_updated (this, "2025-08-22");

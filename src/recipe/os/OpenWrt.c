@@ -7,7 +7,7 @@ def_dish(os_openwrt, "openwrt/opkg/LEDE");
 void
 os_openwrt_prepare ()
 {
-  chef_prep_this (os_openwrt, gsr);
+  chef_prep_this_dish (os_openwrt, gsr);
 
   chef_set_recipe_created_on   (this, "2024-08-08");
   chef_set_recipe_last_updated (this, "2025-08-10");
