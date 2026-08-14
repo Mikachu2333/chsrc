@@ -80,10 +80,10 @@ Exit status:
 查看相关issue
 
 @item list (或 ls, 或 l)
-列出可用镜像源，和可换源目标
+列出可用镜像源，和可换源菜品
 
 @item list mirror/dish
-列出可用镜像源，或可换源目标
+列出可用镜像源，或可换源菜品
 
 @item list os/lang/ware
 列出可换源的操作系统/编程语言/软件
@@ -94,17 +94,17 @@ Exit status:
 @table @samp
 @item measure <dish>
 @itemx cesu   <dish>
-对该目标所有源测速
+对该菜品所有源测速
 @end table
 
 @page
 @section 查看配置命令
 @table @samp
 @item list <dish>
-查看该目标可用源与支持功能
+查看该菜品可用源与支持功能
 
 @item get <dish>
-查看该目标当前源的使用情况
+查看该菜品当前源的使用情况
 @end table
 
 

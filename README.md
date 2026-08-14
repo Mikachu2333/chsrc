@@ -66,7 +66,7 @@
 ---
 
 > [!IMPORTANT]
-> **`chsrc` 可换源 65+ 目标。每个人仅仅贡献和维护自己熟悉的部分，回报是得到其他所有领域专家的帮助。** [欢迎成为 recipe 维护者](https://github.com/RubyMetric/chsrc/issues/275)
+> **`chsrc` 可换源 65+ 菜品。每个人仅仅贡献和维护自己熟悉的部分，回报是得到其他所有领域专家的帮助。** [欢迎成为 recipe 维护者](https://github.com/RubyMetric/chsrc/issues/275)
 
 <br>
 
@@ -393,7 +393,7 @@ git clone https://gitee.com/RubyMetric/chsrc.git; cd chsrc; make
 
     $ chsrc set ruby https://gems.ruby-china.com/
 
-对支持 *项目级* 换源的目标，可以避免全局（*系统级* 或 *用户级*）换源
+对支持 *项目级* 换源的菜品，可以避免全局（*系统级* 或 *用户级*）换源
 
     $ chsrc set -scope=project bundler
     $ chsrc set -scope project pdm

@@ -233,7 +233,7 @@ cli_print_menu (char *menu)
   if (xy_streql (menu, "pl"))
     {
       char *msg =
-        CHINESE ? "支持对以下编程语言生态换源 (同一行表示这几个目标兼容)\n"
+        CHINESE ? "支持对以下编程语言生态换源 (同一行表示这几个菜品兼容)\n"
                 : "Support following Programming Languages (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
       cli_print_dishes_for_menu (ProgStore.pl);
@@ -241,7 +241,7 @@ cli_print_menu (char *menu)
   else if (xy_streql (menu, "os"))
     {
       char *msg =
-        CHINESE ? "支持对以下操作系统换源 (同一行表示这几个目标兼容)\n"
+        CHINESE ? "支持对以下操作系统换源 (同一行表示这几个菜品兼容)\n"
                 : "Support following Operating Systems (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
       cli_print_dishes_for_menu (ProgStore.os);
@@ -249,7 +249,7 @@ cli_print_menu (char *menu)
   else if (xy_streql (menu, "wr"))
     {
       char *msg =
-        CHINESE ? "支持对以下软件换源 (同一行表示这几个目标兼容)\n"
+        CHINESE ? "支持对以下软件换源 (同一行表示这几个菜品兼容)\n"
                 : "Support following Softwares (same line indicates these dishes are compatible)\n";
       say (bdgreen(msg));
       cli_print_dishes_for_menu (ProgStore.wr);
@@ -553,7 +553,7 @@ callback_is_one_of_dish_aliases (void *data, void *input)
  * 查询用户输入 `input` 是否与该 `menu` 中的某个 dish 匹配
  *
  * @param[in]   menu    menu
- * @param[in]   input  用户输入的目标名
+ * @param[in]   input  用户输入的菜品名
  * @param[out]  dish   返回匹配到的 Dish_t 指针
  *
  * @return 匹配到则返回true，未匹配到则返回false
@@ -621,7 +621,7 @@ chsrc_op_epilogue ()
 /**
  * 寻找 dish，并填充其 recipe 信息
  *
- * @param  input   用户输入的目标
+ * @param  input   用户输入的菜品名
  *
  * @return 找到时返回 dish 指针，否则返回 NULL
  */
@@ -677,7 +677,7 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
       int sub_count = xy_seq_len (dish->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
-        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc ls <")),
+        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子菜品组成，可使用 chsrc ls <")),
         bdpurple("sub-dish"),
         bdyellow("> 分别查看\n"));
 
@@ -749,7 +749,7 @@ chefs_handle_Measure_Source (Dish_t *dish, const char *input, char *option)
       int sub_count = xy_seq_len (dish->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
-        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成，可使用 chsrc measure <")),
+        bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子菜品组成，可使用 chsrc measure <")),
         bdpurple("sub-dish"),
         bdyellow("> 分别测速"));
 
@@ -888,7 +888,7 @@ chefs_handle_Reset_Source (Dish_t *dish, const char *input, char *option)
  * 某一个 dish 的 chefs 们 开始处理用户的某个请求
  *
  * @param  code    对 dish 要执行的操作
- * @param  input   用户输入的原目标字符串(为了在提示中还原用户的输入)
+ * @param  input   用户输入的原菜品字符串(为了在提示中还原用户的输入)
  * @param  option  额外的选项，可为NULL
  */
 void
@@ -899,7 +899,7 @@ chefs_handle_user_command (Dish_t *dish, TargetCmd code, const char *input, char
       if (dish_has_sub_dishes(dish))
         {
           int sub_count = xy_seq_len(dish->sub_dishes);
-          char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子目标组成: "));
+          char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子菜品组成: "));
           char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub dishes\n"));
 
           for (size_t i=0; i<sub_count; i++)
@@ -1197,7 +1197,7 @@ main (int argc, char const *argv[])
   }
 
 #define MSG_EN_USE_LIST_TARGETS "Use `chsrc list dishes` to see all supported dishes"
-#define MSG_ZH_USE_LIST_TARGETS "使用 chsrc list dishes 查看所有支持的目标"
+#define MSG_ZH_USE_LIST_TARGETS "使用 chsrc list dishes 查看所有支持的菜品"
 
   /* chsrc measure */
   else if (   xy_streql (command, "measure")

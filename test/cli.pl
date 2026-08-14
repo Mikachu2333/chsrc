@@ -4,7 +4,7 @@
 # Test Authors  : 曾奥然 <ccmywish@qq.com>
 # Contributors  : Nil Null <nil@null.org>
 # Created On    : <2024-06-05>
-# Last Modified : <2026-08-02>
+# Last Modified : <2026-08-14>
 #
 # 测试 chsrc 可执行文件
 # ---------------------------------------------------------------
@@ -86,7 +86,7 @@ like `$CHSRC`,        $help_str,    'chsrc';
 
 =end comment
 =cut
-my $list_str = qr/mirrorz\s*MirrorZ\s*.*\ntuna\s*TUNA/;
+my $list_str = qr/mirrorz\s*MirrorZ\s*.*\n\s*tuna\s*TUNA/;
 like `$CHSRC ls`,            $list_str,    'chsrc ls';
 like `$CHSRC list mirrors`,  $list_str,    'chsrc list mirrors';
 like `$CHSRC list os`,    qr/netbsd\s*openbsd/,   'chsrc list os';
@@ -99,11 +99,23 @@ like `$CHSRC list ware`,  qr/brew\s*homebrew/,   'chsrc list ware';
 
 =end comment
 =cut
-my $get_null = qr/chsrc: 请提供想要查看源的目标名/u;
+my $get_null = qr/chsrc: 请提供想要查看源的菜品名/u;
 like `$CHSRC get -no-color 2>&1`,  $get_null,    'chsrc get -no-color';
 
-my $fake_dish_name = qr/暂不支持的换源目标/;
+my $fake_dish_name = qr/暂不支持的换源菜品/;
 like `$CHSRC get fake_dish_name 2>&1`,  $fake_dish_name, 'chsrc get fake_dish_name';
+
+
+=begin comment
+
+测试 combo dish
+
+=end comment
+=cut
+my $measure_js = qr/js 由以下3个子菜品组成.*\nnpm\nyarn\npnpm/;
+like `$CHSRC measure -no-color js`, $measure_js, 'chsrc measure -no-color js';
+my $list_js = qr/食谱创建.*食谱创建.*食谱创建.*/s;
+like `$CHSRC list -no-color js`, $list_js, 'chsrc list -no-color js';
 
 
 if ((defined $ARGV[0]) && ($ARGV[0] eq 'fastcheck')) {
@@ -131,7 +143,7 @@ like `$CHSRC get ruby`,   $get_ruby,  'chsrc get ruby';
 
 =end comment
 =cut
-my $measure_ruby = qr/Ruby China 社区/;
+my $measure_ruby = qr/中国科学技术大学开源软件镜像/;
 like `$CHSRC measure ruby`,  $measure_ruby,  'chsrc measure ruby';
 
 
@@ -145,7 +157,7 @@ my $set_ruby_abcd      = qr/镜像站.*不存在/;
 my $set_ruby_first     = qr/全自动换源完成, 感谢镜像提供方/;
 my $set_ruby           = qr/全自动换源完成, 感谢镜像提供方/;
 my $reset_ruby         = qr/选中镜像站.*Upstream.*已重置为上游默认源/s;
-my $set_ruby_locally   = qr/bundle config --local/;
+my $set_ruby_locally   = qr/bundle config set --local/;
 
 like `$CHSRC set ruby abcd 2>&1`,      $set_ruby_abcd,      'chsrc set ruby abcd';
 like `$CHSRC set ruby first`,          $set_ruby_first,     'chsrc set ruby first';

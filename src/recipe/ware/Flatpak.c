@@ -23,7 +23,7 @@ wr_flatpak_prepare ()
   chef_deny_english(this);
   chef_allow_user_define(this);
 
-  chef_set_note (this, "对Flathub目标进行测速的文件非常小，测速效果严重失真，若你知道可供测速的URL，欢迎参与贡献: chsrc issue",
+  chef_set_note (this, "对Flathub菜品进行测速的文件非常小，测速效果严重失真，若你知道可供测速的URL，欢迎参与贡献: chsrc issue",
                        "The test file for Flathub is very small, causing inaccurate speed test results. If you know a URL suitable for speed testing, welcome to contribute: chsrc issue");
 
   def_sources_begin()

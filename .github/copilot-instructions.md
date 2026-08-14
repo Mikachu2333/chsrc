@@ -63,7 +63,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 
 ### 核心抽象
 
-- **`Dish_t`** — 换源目标。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preparefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
+- **`Dish_t`** — 换源菜品。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preparefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
 - **`Scope_t`** — 作用域：`ProjectScope`/`UserScope`/`SystemScope`，外加特殊的 `ImplementationDefinedScope`（由 recipe 按实际情况决定；多数 recipe 的 `default_scope` 设为它）。
 - **`SourceProvider_t` / `MirrorSite_t`** — 镜像站或上游源提供者。类型：`IS_GeneralMirrorSite`（通用镜像站）、`IS_DedicatedMirrorSite`（专用镜像站）、`IS_UpstreamProvider`（上游默认源）、`IS_UserDefinedProvider`（用户自定义源）。
 - **Chef DSL** — 宏与函数的混合 API，供 recipe 作者使用：

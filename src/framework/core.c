@@ -503,8 +503,8 @@ chsrc_check_file (char *path)
  *
  * @note 一个源Source必定来自于一个Provider，所以该函数名叫 query_mirror_exist
  *
- * @param  dish_name  目标名
- * @param  input        如果用户输入 default 或者 def，则选择第一个源
+ * @param  dish_name  菜品名
+ * @param  input      如果用户输入 default 或者 def，则选择第一个源
  */
 int
 query_mirror_exist (Source_t *sources, size_t size, char *dish_name, char *input)
