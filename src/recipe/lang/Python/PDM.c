@@ -30,6 +30,7 @@ pl_pdm_prepare (void)
 void
 pl_pdm_getsrc (char *option)
 {
+  chsrc_ensure_program ("pdm");
   // @HELP 不加 --global 时，会检测到本项目的配置吗？
   // 如果不行的话，就要分别改成 --global 和 --local
   char *cmd = "pdm config pypi.url";
@@ -43,6 +44,7 @@ pl_pdm_getsrc (char *option)
 void
 pl_pdm_setsrc (char *option)
 {
+  chsrc_ensure_program ("pdm");
   Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_dish, option);
 
   char *cmd = NULL;

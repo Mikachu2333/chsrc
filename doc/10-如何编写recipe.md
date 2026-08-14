@@ -41,7 +41,7 @@
 ## 基本概念
 
 - `dish`: 所要换源的目标
-- `dish group`: 一个 `dish` 包含了多个子 `dish`，比如 `Python group` 包含了该语言的多个包管理器
+- `combo dish`: 一个 `dish` 包含了多个子 `dish`，比如 `Python` 包含了该语言的多个包管理器
 
 - `category`: 是 `dish category` 的简写，即 `dish` 所属的类别，可以是 **编程语言**，**操作系统**，**软件** 三类之一
 
@@ -69,7 +69,7 @@
 
 ## 编写 `recipe` 步骤
 
-1. 确定你要编写的 `dish` 的标准名称，创建 `dish-Name.c` 文件
+1. 确定你要编写的 `dish` 的标准名称，创建 `Dish-Name.c` 文件
 
     大小写需严格按官方，若名称包含空格，需使用 `-` 代替空格
 
@@ -81,7 +81,7 @@
 
     1. 看一眼就能上手的参照物是 [PHP recipe](../src/recipe/lang/PHP.c)
     2. 最好的参照物是 [Ruby recipe](../src/recipe/lang/Ruby/Ruby.c)
-    3. 组换源参照物是 [JS group recipe](../src/recipe/lang/JavaScript/JavaScript.c)
+    3. 组换源参照物是 [JS combo recipe](../src/recipe/lang/JavaScript/JavaScript.c)
 
 5. 在 [Wiki] 中记录的镜像站中寻找可用源；可以额外补充镜像站
 
