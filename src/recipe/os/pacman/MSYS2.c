@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_msys2, "msys2/msys");
+def_dish(os_msys2, "msys2/msys");
 
 void
 os_msys2_prepare ()

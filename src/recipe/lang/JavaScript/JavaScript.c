@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_group_target(pl_js_group, "js/javascript/node/nodejs");
+def_group_dish(pl_js_group, "js/javascript/node/nodejs");
 
 void
 pl_js_group_prepare (void)

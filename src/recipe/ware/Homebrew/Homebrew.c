@@ -4,7 +4,7 @@
 
 #include "rawstr4c.h"
 
-def_target(wr_homebrew, "brew/homebrew");
+def_dish(wr_homebrew, "brew/homebrew");
 
 void
 wr_homebrew_prepare ()

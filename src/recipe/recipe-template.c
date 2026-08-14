@@ -31,7 +31,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(<category>_<target>);
+def_dish(<category>_<target>);
 
 /**
  * 定义专服务于该target的镜像站，该例数据为虚拟填充

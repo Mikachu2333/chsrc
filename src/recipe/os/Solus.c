@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_solus, "solus");
+def_dish(os_solus, "solus");
 
 void
 os_solus_prepare ()

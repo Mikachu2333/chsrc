@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_termux, "termux");
+def_dish(os_termux, "termux");
 
 void
 os_termux_prepare ()

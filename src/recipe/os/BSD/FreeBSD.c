@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_freebsd, "freebsd");
+def_dish(os_freebsd, "freebsd");
 
 void
 os_freebsd_prepare ()

@@ -10,7 +10,7 @@
  * 针对上游仓库 python-build-standalone 的镜像。
  */
 
-def_target(pl_uv_python_build, "uv-python-build");
+def_dish(pl_uv_python_build, "uv-python-build");
 
 // CNB (Cloud Native Build, 腾讯) 托管的 python-build-standalone releases 镜像
 static MirrorSite_t CnbUvPython =

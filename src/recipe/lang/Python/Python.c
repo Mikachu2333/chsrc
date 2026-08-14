@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_group_target(pl_py_group, "py/python");
+def_group_dish(pl_py_group, "py/python");
 
 void
 pl_py_group_prepare (void)

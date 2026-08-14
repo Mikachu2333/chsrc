@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_pnpm, "pnpm");
+def_dish(pl_pnpm, "pnpm");
 
 void
 pl_pnpm_prepare (void)

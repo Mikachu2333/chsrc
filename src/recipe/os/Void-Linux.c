@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_voidlinux, "voidlinux");
+def_dish(os_voidlinux, "voidlinux");
 
 void
 os_voidlinux_prepare ()

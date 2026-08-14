@@ -4,7 +4,7 @@
  * 由于Rye已经有后继uv了，所以我们不把该管理器纳入Python group中
  * ------------------------------------------------------------*/
 
-def_target(pl_rye, "rye");
+def_dish(pl_rye, "rye");
 
 void
 pl_rye_prepare (void)

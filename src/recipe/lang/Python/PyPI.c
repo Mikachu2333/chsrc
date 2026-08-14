@@ -4,7 +4,7 @@
 
 #include "rawstr4c.h"
 
-def_sources_target(pl_pypi, "pypi");
+def_sources_dish(pl_pypi, "pypi");
 
 /**
  * @note 测速链接的这个前缀是 ${host}/pipi/web/pacakges/56/e4....

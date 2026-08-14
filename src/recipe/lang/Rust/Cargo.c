@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_rust_cargo, "rust/cargo/crate/crates");
+def_dish(pl_rust_cargo, "rust/cargo/crate/crates");
 
 void
 pl_rust_cargo_prepare (void)

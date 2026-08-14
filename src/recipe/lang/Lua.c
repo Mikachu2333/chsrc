@@ -9,7 +9,7 @@ static MirrorSite_t Api7 =
   {SKIP, ToFill, ToFill, NULL, ROUGH}
 };
 
-def_target(pl_lua, "lua/luarocks");
+def_dish(pl_lua, "lua/luarocks");
 
 void
 pl_lua_prepare ()

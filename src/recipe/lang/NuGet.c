@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_nuget, "nuget/net/.net/dotnet");
+def_dish(pl_nuget, "nuget/net/.net/dotnet");
 
 void
 pl_nuget_prepare ()

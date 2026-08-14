@@ -3,7 +3,7 @@
  * ------------------------------------------------------------*/
 
 /* Zorin OS 完全使用 Ubuntu 的换源方法，二者兼容 */
-def_target(os_ubuntu, "ubuntu/zorinos");
+def_dish(os_ubuntu, "ubuntu/zorinos");
 
 void
 os_ubuntu_prepare ()

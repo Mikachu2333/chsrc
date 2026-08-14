@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_arch, "arch/archlinux");
+def_dish(os_arch, "arch/archlinux");
 
 #define OS_Pacman_MirrorList "/etc/pacman.d/mirrorlist"
 #define OS_Pacman_ArchLinuxCN_MirrorList "/etc/pacman.conf"
@@ -106,7 +106,7 @@ os_arch_setsrc (char *option)
  * archlinuxcn target
  * ------------------------------------------------------------*/
 
-def_target(os_archlinuxcn, "archlinuxcn/archcn");
+def_dish(os_archlinuxcn, "archlinuxcn/archcn");
 
 void
 os_archlinuxcn_prepare ()

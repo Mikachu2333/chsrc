@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_group_target(pl_uv, "uv");
+def_group_dish(pl_uv, "uv");
 
 void
 pl_uv_prepare (void)

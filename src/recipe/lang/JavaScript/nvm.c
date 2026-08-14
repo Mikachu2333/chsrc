@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_nvm, "nvm");
+def_dish(pl_nvm, "nvm");
 
 void
 pl_nvm_prepare (void)

@@ -67,7 +67,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 - **`Scope_t`** — 作用域：`ProjectScope`/`UserScope`/`SystemScope`，外加特殊的 `ImplementationDefinedScope`（由 recipe 按实际情况决定；多数 recipe 的 `default_scope` 设为它）。
 - **`SourceProvider_t` / `MirrorSite_t`** — 镜像站或上游源提供者。类型：`IS_GeneralMirrorSite`（通用镜像站）、`IS_DedicatedMirrorSite`（专用镜像站）、`IS_UpstreamProvider`（上游默认源）、`IS_UserDefinedProvider`（用户自定义源）。
 - **Chef DSL** — 宏与函数的混合 API，供 recipe 作者使用：
-  - 宏：`def_target()`、`chef_prep_this()`、`chef_allow_gsr()/s()/sr()/gs()/NOOP()`、`def_sources_begin()/end()`、`chsrc_use_this_source()`。
+  - 宏：`def_dish()`、`chef_prep_this()`、`chef_allow_gsr()/s()/sr()/gs()/NOOP()`、`def_sources_begin()/end()`、`chsrc_use_this_source()`。
   - 函数：贡献者 `chef_set_chefs()`/`chef_set_sauciers()`；作用域 `chef_set_scope_cap()`/`chef_set_default_scope()`；换源与测速链接 `chef_set_repoURL()`、`chef_set_smURL()`、`chef_set_smURL_with_postfix()`、`chef_set_smURL_with_func()`、`chef_set_provider_smURL()`；特性 `chef_allow_english()`/`chef_deny_english()`、`chef_allow_user_define()`/`chef_deny_user_define()`；其他 `chef_set_note()`、`chef_use_other_target_sources()`、`chef_verify_contributor()`。
 - **xy.h** — 跨平台运行时：`xy_on_windows`、字符串操作（`xy_str_gsub`、`xy_2strcat`）、`XySeq_t`（链表）、`XyMap_t`（哈希表）、命令执行、文件 I/O。内存约定：`return caller-free` 表示调用方必须释放返回值。
 

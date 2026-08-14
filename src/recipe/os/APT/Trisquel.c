@@ -4,7 +4,7 @@
  * Trisquel基于Ubuntu开发，不含任何专有软件及专有固件，内核使用 Linux-libre
  * ------------------------------------------------------------*/
 
-def_target(os_trisquel, "trisquel");
+def_dish(os_trisquel, "trisquel");
 
 void
 os_trisquel_prepare ()

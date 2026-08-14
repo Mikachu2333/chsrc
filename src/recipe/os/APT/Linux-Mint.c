@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_linuxmint, "linuxmint");
+def_dish(os_linuxmint, "linuxmint");
 
 void
 os_linuxmint_prepare ()

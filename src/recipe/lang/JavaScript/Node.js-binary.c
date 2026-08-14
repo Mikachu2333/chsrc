@@ -9,7 +9,7 @@ static MirrorSite_t NpmMirror =
   {SKIP, NULL, NULL, NULL, ACCURATE}
 };
 
-def_sources_target(pl_nodejs_binary, "nodejs-binary");
+def_sources_dish(pl_nodejs_binary, "nodejs-binary");
 
 void
 pl_nodejs_binary_prepare (void)

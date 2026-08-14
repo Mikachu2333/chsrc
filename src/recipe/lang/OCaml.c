@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_ocaml, "ocaml/opam");
+def_dish(pl_ocaml, "ocaml/opam");
 
 void
 pl_ocaml_prepare ()

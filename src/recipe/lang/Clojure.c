@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_clojure, "clojure/clojars/cloj/lein");
+def_dish(pl_clojure, "clojure/clojars/cloj/lein");
 
 void
 pl_clojure_prepare ()

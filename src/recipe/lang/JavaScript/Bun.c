@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_bun, "bun");
+def_dish(pl_bun, "bun");
 
 void
 pl_bun_prepare (void)

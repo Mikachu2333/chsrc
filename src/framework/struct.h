@@ -221,13 +221,13 @@ Dish_t;
 
 
 
-#define def_target(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Dish_t t##_target={aliases};
+#define def_dish(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Dish_t t##_target={aliases};
 
 /* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
-#define def_sources_target(t, name) Dish_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
+#define def_sources_dish(t, name) Dish_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
 
 /* group target 不需要实现任何操作(除了preparefn)即可使用 */
-#define def_group_target(t, aliases) Dish_t t##_target={aliases};
+#define def_group_dish(t, aliases) Dish_t t##_target={aliases};
 
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_s(t)   this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = NULL;

@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_pdm, "pdm");
+def_dish(pl_pdm, "pdm");
 
 void
 pl_pdm_prepare (void)

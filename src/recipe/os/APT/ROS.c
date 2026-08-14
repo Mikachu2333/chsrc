@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_ros, "ros/ros2");
+def_dish(os_ros, "ros/ros2");
 
 void
 os_ros_prepare ()

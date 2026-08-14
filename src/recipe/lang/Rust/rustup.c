@@ -5,7 +5,7 @@
 // Size: 20MB
 #define PL_Rustup_Speed_URL_Suffix
 
-def_target(pl_rust_rustup, "rustup");
+def_dish(pl_rust_rustup, "rustup");
 
 void
 pl_rust_rustup_prepare (void)

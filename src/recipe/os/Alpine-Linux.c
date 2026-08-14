@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_alpine, "alpine");
+def_dish(os_alpine, "alpine");
 
 void
 os_alpine_prepare ()

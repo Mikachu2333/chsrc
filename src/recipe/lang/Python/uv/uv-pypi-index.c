@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_uv_pypi_index, "uv-pypi-index");
+def_dish(pl_uv_pypi_index, "uv-pypi-index");
 
 void
 pl_uv_pypi_index_prepare (void)

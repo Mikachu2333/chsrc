@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(wr_nix, "nix");
+def_dish(wr_nix, "nix");
 
 /**
  * 运行时检查到底是哪种安装方式

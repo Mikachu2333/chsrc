@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(os_linuxlite, "linuxlite");
+def_dish(os_linuxlite, "linuxlite");
 
 void
 os_linuxlite_prepare ()

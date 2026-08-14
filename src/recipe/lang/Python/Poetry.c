@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * ------------------------------------------------------------*/
 
-def_target(pl_poetry, "poetry");
+def_dish(pl_poetry, "poetry");
 
 void
 pl_poetry_prepare (void)
