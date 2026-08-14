@@ -4,7 +4,7 @@
 # Contributors  : Nul None <nul@none.org>
 #               |
 # Created On    : <2023-09-14>
-# Last Modified : <2025-09-12>
+# Last Modified : <2026-08-14>
 #
 # Build chsrc on Windows and upload it to GitHub: the 'pre' release
 # ---------------------------------------------------------------
@@ -46,6 +46,9 @@ jobs:
       env:
         MSYSTEM: MINGW32
       run: |
+        # 清理上一步 x64 构建残留的 chsrc.res，避免 make 误判其已是最新而不重新生成，
+        # 导致把 x64 的 chsrc.res 链接进 x32 构建从而报 file format not recognized
+        rm -f chsrc.res
         mingw32-make.exe build-in-ci-release-mode
         mv chsrc-ci-release.exe chsrc-x86-windows.exe
 
