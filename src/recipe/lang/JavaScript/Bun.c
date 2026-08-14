@@ -23,7 +23,7 @@ pl_bun_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_npm_target);
+  chef_use_other_target_sources (this, &pl_npm_dish);
 }
 
 /**
@@ -47,7 +47,7 @@ void
 pl_bun_setsrc (char *option)
 {
   // 用的是 npm Registry 的源
-  Source_t source = chsrc_yield_source_and_confirm (&pl_js_group_target, option);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_js_group_dish, option);
 
   char *content = RAWSTR_pl_bun_config;
 

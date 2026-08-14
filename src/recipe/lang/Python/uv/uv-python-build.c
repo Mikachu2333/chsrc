@@ -89,7 +89,7 @@ pl_uv_python_build_getsrc (char *option)
   else
     {
       chsrc_note2 ("uv 中未配置 python-install-mirror，显示默认上游源：");
-      Source_t default_source = chsrc_yield_source (&pl_uv_python_build_target, "upstream");
+      Source_t default_source = chsrc_yield_source (&pl_uv_python_build_dish, "upstream");
       println (default_source.url);
     }
 }

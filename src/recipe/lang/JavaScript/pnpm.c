@@ -23,7 +23,7 @@ pl_pnpm_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_npm_target);
+  chef_use_other_target_sources (this, &pl_npm_dish);
 }
 
 
@@ -41,7 +41,7 @@ pl_pnpm_getsrc (char *option)
 void
 pl_pnpm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_npm_target, option);
+  Source_t source = chsrc_yield_source (&pl_npm_dish, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 

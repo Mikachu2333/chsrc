@@ -65,7 +65,7 @@ pl_rust_cargo_note_get_src_default ()
   else
     chsrc_note2 ("Cargo 中未自定义源，显示默认源：");
 
-    Source_t default_source = chsrc_yield_source (&pl_rust_cargo_target, "upstream");
+    Source_t default_source = chsrc_yield_source (&pl_rust_cargo_dish, "upstream");
     say (default_source.url);
 }
 

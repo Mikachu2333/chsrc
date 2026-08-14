@@ -25,7 +25,7 @@ pl_nvm_prepare (void)
 
   chef_set_note (this, "nvm 不支持 Fish shell", "nvm does not support Fish");
 
-  chef_use_other_target_sources (this, &pl_nodejs_binary_target);
+  chef_use_other_target_sources (this, &pl_nodejs_binary_dish);
 }
 
 
@@ -46,7 +46,7 @@ pl_nvm_getsrc (char *option)
 void
 pl_nvm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source_and_confirm (&pl_nodejs_binary_target, option);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_nodejs_binary_dish, option);
 
   char *w = xy_strcat (3, "export NVM_NODEJS_ORG_MIRROR=", source.url, "\n");
 

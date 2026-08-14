@@ -25,7 +25,7 @@ pl_rye_prepare (void)
   chef_allow_english(this);
   chef_allow_user_define(this);
 
-  chef_use_other_target_sources (this, &pl_pypi_target);
+  chef_use_other_target_sources (this, &pl_pypi_dish);
 }
 
 char *
@@ -54,7 +54,7 @@ void
 pl_rye_setsrc (char *option)
 {
   /* 并不在 Python group 中，所以不考虑 target group 情况，仅使用 Python group 提供的源 */
-  Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_target, option);
+  Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_dish, option);
 
   const char *content = RAWSTR_pl_rye_config;
 

@@ -48,7 +48,7 @@ pl_npm_getsrc (char *option)
 void
 pl_npm_setsrc (char *option)
 {
-  Source_t source = chsrc_yield_source (&pl_npm_target, option);
+  Source_t source = chsrc_yield_source (&pl_npm_dish, option);
   if (chsrc_in_standalone_mode())
     chsrc_confirm_source(&source);
 
