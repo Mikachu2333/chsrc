@@ -1005,7 +1005,7 @@ auto_select_mirror (Source_t *sources, size_t size, const char *target_name)
 
 
 int
-use_specific_mirror_or_auto_select (char *input, Target_t *t)
+use_specific_mirror_or_auto_select (char *input, Dish_t *t)
 {
   if (input)
     {
@@ -1055,7 +1055,7 @@ source_has_empty_url (Source_t *source)
  *
  */
 Source_t
-chsrc_yield_source (Target_t *t, char *option)
+chsrc_yield_source (Dish_t *t, char *option)
 {
   /**
    * 防止某些意外时刻 _setsrc() 等函数会被直接调，但此时 _prepare() 还没有执行过
@@ -1138,7 +1138,7 @@ chsrc_confirm_source (Source_t *source)
 
 
 Source_t
-chsrc_yield_source_and_confirm (Target_t *t, char *option)
+chsrc_yield_source_and_confirm (Dish_t *t, char *option)
 {
   Source_t source = chsrc_yield_source(t, option);
   chsrc_confirm_source(&source);
@@ -1306,7 +1306,7 @@ chsrc_conclude (Source_t *source)
  * @note 此函数目前只支持中文
  */
 void
-chsrc_check_scope_capability (Target_t *target)
+chsrc_check_scope_capability (Dish_t *target)
 {
   ScopeCapability_t cap = ScopeCap_Unknown;
 

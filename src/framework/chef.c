@@ -13,7 +13,7 @@
 #pragma once
 
 void
-chef_debug_target (Target_t *target)
+chef_debug_target (Dish_t *target)
 {
 #ifdef XY_DEBUG
   if (!target)
@@ -119,7 +119,7 @@ chef_set_provider_sm_accuracy (SourceProvider_t *provider, bool accuracy)
  * @example 见 os_ubuntu_resetsrc() 中对非 x86_64 架构源地址的修改
  */
 void
-chef_set_repoURL (Target_t *target, SourceProvider_t *provider, char *url)
+chef_set_repoURL (Dish_t *target, SourceProvider_t *provider, char *url)
 {
   xy_cant_be_null (target);
   xy_cant_be_null (provider);
@@ -145,7 +145,7 @@ chef_set_repoURL (Target_t *target, SourceProvider_t *provider, char *url)
  */
 void
 chef_set_smURL_with_func (
-  Target_t *target,
+  Dish_t *target,
   SourceProvider_t *provider,
   char *(*func)(const char *url, const char *user_data),
   char *user_data)
@@ -180,7 +180,7 @@ chef_set_smURL_with_func (
  * @brief 给 "换源链接" 增加一个后缀来构造和填充专用测速链接
  */
 void
-chef_set_smURL_with_postfix (Target_t *target, SourceProvider_t *provider, char *postfix)
+chef_set_smURL_with_postfix (Dish_t *target, SourceProvider_t *provider, char *postfix)
 {
   chef_set_smURL_with_func (target, provider, xy_2strcat, postfix);
 }
@@ -199,7 +199,7 @@ _chef_strdup_2nd_argument (const char *DUMMY, const char *str)
  * @breif 设置 或 修改 某个镜像站的 *精准*测速链接，即修改 Source_t.speed_measure_url
  */
 void
-chef_set_smURL (Target_t *target, SourceProvider_t *provider, char *url)
+chef_set_smURL (Dish_t *target, SourceProvider_t *provider, char *url)
 {
   chef_set_smURL_with_func (target, provider, _chef_strdup_2nd_argument, url);
 }
@@ -210,7 +210,7 @@ chef_set_smURL (Target_t *target, SourceProvider_t *provider, char *url)
  */
 void
 chef_set_rest_smURL_with_func (
-  Target_t *target,
+  Dish_t *target,
   char *(*func)(const char *url, const char *user_data),
   char *user_data)
 {
@@ -239,7 +239,7 @@ chef_set_rest_smURL_with_func (
  * @brief 针对每一个剩下的还未设置专用测速链接的源，对其 "换源链接" 增加一个后缀来生成专用测速链接
  */
 void
-chef_set_rest_smURL_with_postfix (Target_t *target, char *postfix)
+chef_set_rest_smURL_with_postfix (Dish_t *target, char *postfix)
 {
   chef_set_rest_smURL_with_func (target, xy_2strcat, postfix);
 }
@@ -249,7 +249,7 @@ chef_set_rest_smURL_with_postfix (Target_t *target, char *postfix)
  * @note 用于: 组中的 item target 在 standalone 模式时正确填充源信息
  */
 void
-chef_use_other_target_sources (Target_t *this, Target_t *other)
+chef_use_other_target_sources (Dish_t *this, Dish_t *other)
 {
   if (!other->inited)
     {
@@ -268,14 +268,14 @@ chef_use_other_target_sources (Target_t *this, Target_t *other)
 
 
 void
-chef_allow_english (Target_t *target)
+chef_allow_english (Dish_t *target)
 {
   xy_cant_be_null (target);
   target->can_english = true;
 }
 
 void
-chef_deny_english (Target_t *target)
+chef_deny_english (Dish_t *target)
 {
   xy_cant_be_null (target);
   target->can_english = false;
@@ -286,7 +286,7 @@ chef_deny_english (Target_t *target)
  * @brief 设置该 target 的作用域能力
  */
 void
-chef_set_scope_cap (Target_t *target, Scope_t scope, ScopeCapability_t cap)
+chef_set_scope_cap (Dish_t *target, Scope_t scope, ScopeCapability_t cap)
 {
   xy_cant_be_null (target);
 
@@ -316,7 +316,7 @@ chef_set_scope_cap (Target_t *target, Scope_t scope, ScopeCapability_t cap)
  * @note 该函数必须在 chef_set_scope_cap() 之后调用，以确保默认作用域的能力已经被明确了
  */
 void
-chef_set_default_scope (Target_t *target, Scope_t scope)
+chef_set_default_scope (Dish_t *target, Scope_t scope)
 {
   xy_cant_be_null (target);
   target->default_scope = scope;
@@ -351,7 +351,7 @@ chef_set_default_scope (Target_t *target, Scope_t scope)
  * @brief 由于操作系统相关的 target 换源都是系统级，所以 scope 都是固定的，我们提供此快捷函数来设置
  */
 void
-chef_set_os_scope (Target_t *target)
+chef_set_os_scope (Dish_t *target)
 {
   xy_cant_be_null (target);
 
@@ -365,7 +365,7 @@ chef_set_os_scope (Target_t *target)
 
 
 void
-chef_allow_user_define (Target_t *target)
+chef_allow_user_define (Dish_t *target)
 {
   xy_cant_be_null (target);
 
@@ -374,7 +374,7 @@ chef_allow_user_define (Target_t *target)
 }
 
 void
-chef_deny_user_define (Target_t *target)
+chef_deny_user_define (Dish_t *target)
 {
   xy_cant_be_null (target);
 
@@ -387,7 +387,7 @@ chef_deny_user_define (Target_t *target)
 
 
 void
-chef_set_note (Target_t *target, const char *note_zh, const char *note_en)
+chef_set_note (Dish_t *target, const char *note_zh, const char *note_en)
 {
   xy_cant_be_null (target);
 
@@ -423,7 +423,7 @@ chef_verify_contributor (const char *id)
  * @brief 设置 Chefs (recipe 主要作者)
  */
 void
-chef_set_chefs (Target_t *target, size_t count, ...)
+chef_set_chefs (Dish_t *target, size_t count, ...)
 {
   xy_cant_be_null (target);
 
@@ -448,7 +448,7 @@ chef_set_chefs (Target_t *target, size_t count, ...)
 }
 
 void
-chef_set_sauciers (Target_t *target, uint32_t count, ...)
+chef_set_sauciers (Dish_t *target, uint32_t count, ...)
 {
   xy_cant_be_null (target);
 
@@ -473,7 +473,7 @@ chef_set_sauciers (Target_t *target, uint32_t count, ...)
 
 
 void
-chef_set_sub_dishes (Target_t *target, uint32_t count, ...)
+chef_set_sub_dishes (Dish_t *target, uint32_t count, ...)
 {
   xy_cant_be_null (target);
 
@@ -489,8 +489,8 @@ chef_set_sub_dishes (Target_t *target, uint32_t count, ...)
 
   for (uint32_t i = 0; i < count; i++)
     {
-      Target_t *sub_target = va_arg (args, Target_t*);
-      xy_seq_push (target->sub_dishes, sub_target);
+      Dish_t *sub_dish = va_arg (args, Dish_t*);
+      xy_seq_push (target->sub_dishes, sub_dish);
     }
   va_end (args);
 }
@@ -498,7 +498,7 @@ chef_set_sub_dishes (Target_t *target, uint32_t count, ...)
 
 
 void
-chef_set_recipe_created_on (Target_t *target, char *date)
+chef_set_recipe_created_on (Dish_t *target, char *date)
 {
   xy_cant_be_null (target);
   xy_cant_be_null (date);
@@ -508,7 +508,7 @@ chef_set_recipe_created_on (Target_t *target, char *date)
 
 
 void
-chef_set_recipe_last_updated (Target_t *target, char *date)
+chef_set_recipe_last_updated (Dish_t *target, char *date)
 {
   xy_cant_be_null (target);
   xy_cant_be_null (date);

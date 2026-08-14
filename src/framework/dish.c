@@ -16,7 +16,7 @@
  * 由 chefs_handle_XXX() 里的 group dish 递归时调用
  */
 char *
-dish_get_first_alias (Target_t *target)
+dish_get_first_alias (Dish_t *target)
 {
   if (!target || !target->aliases || *target->aliases == '\0')
     return NULL;
@@ -31,7 +31,7 @@ dish_get_first_alias (Target_t *target)
 
 
 bool
-dish_has_sub_dishes (Target_t *target)
+dish_has_sub_dishes (Dish_t *target)
 {
   return (target->sub_dishes && xy_seq_len(target->sub_dishes) > 1);
 }

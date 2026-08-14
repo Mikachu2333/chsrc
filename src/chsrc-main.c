@@ -188,7 +188,7 @@ cli_print_targets_for_menu (XySeq_t *menu)
 {
   for (size_t i=0; i<xy_seq_len(menu); i++)
     {
-      Target_t *target = xy_seq_at (menu, i);
+      Dish_t *target = xy_seq_at (menu, i);
       // 使用通用的别名遍历函数打印所有别名
       iterate_aliases (target->aliases, callback_print_alias, NULL);
       br(); // 每个target换行
@@ -279,7 +279,7 @@ cli_print_target_available_sources (Source_t sources[], size_t size)
 
 
 void
-cli_print_target_features (Target_t *target, const char *input_target_name)
+cli_print_target_features (Dish_t *target, const char *input_target_name)
 {
   {
   char *msg = ENGLISH ? "\nAvailable Features:\n" : "\n可用功能:\n";
@@ -404,7 +404,7 @@ cli_print_target_features (Target_t *target, const char *input_target_name)
  * 用于 chsrc get/set/reset <target>
  */
 void
-cli_print_target_maintain_info_briefly (Target_t *target, const char *input_target_name)
+cli_print_target_maintain_info_briefly (Dish_t *target, const char *input_target_name)
 {
   if (target->last_updated)
     {
@@ -428,7 +428,7 @@ cli_print_target_maintain_info_briefly (Target_t *target, const char *input_targ
  * 用于 chsrc ls <target>
  */
 void
-cli_print_target_maintain_info (Target_t *target, const char *input_target_name)
+cli_print_target_maintain_info (Dish_t *target, const char *input_target_name)
 {
   if (target->created_on)
     {
@@ -540,7 +540,7 @@ callback_match_alias (const char *alias, void *user_data)
 bool
 callback_is_one_of_target_aliases (void *data, void *input)
 {
-  Target_t *target = (Target_t *) data;
+  Dish_t *target = (Dish_t *) data;
   if (iterate_aliases (target->aliases, callback_match_alias, input))
     {
       return true;
@@ -554,14 +554,14 @@ callback_is_one_of_target_aliases (void *data, void *input)
  *
  * @param[in]   menu    menu
  * @param[in]   input   用户输入的目标名
- * @param[out]  target  返回匹配到的 Target_t 指针
+ * @param[out]  target  返回匹配到的 Dish_t 指针
  *
  * @return 匹配到则返回true，未匹配到则返回false
  */
 bool
-iterate_menu (XySeq_t *menu, const char *input, Target_t **target)
+iterate_menu (XySeq_t *menu, const char *input, Dish_t **target)
 {
-  Target_t *t = xy_seq_find (menu, callback_is_one_of_target_aliases, (void *) input);
+  Dish_t *t = xy_seq_find (menu, callback_is_one_of_target_aliases, (void *) input);
 
   if (t)
     {
@@ -579,7 +579,7 @@ iterate_menu (XySeq_t *menu, const char *input, Target_t **target)
 void
 callback_perform_all_prepare_for_menu (void *data, void *DUMMY)
 {
-  Target_t *target = (Target_t *) data;
+  Dish_t *target = (Dish_t *) data;
 
   if (!target->preparefn)
     {
@@ -625,7 +625,7 @@ chsrc_op_epilogue ()
  *
  * @return 找到时返回 target 指针，否则返回 NULL
  */
-Target_t *
+Dish_t *
 find_target (const char *input)
 {
   /**
@@ -638,7 +638,7 @@ find_target (const char *input)
    */
   chsrc_register_chefs_and_sauciers ();
 
-  Target_t *target = NULL;
+  Dish_t *target = NULL;
 
            bool matched = iterate_menu (ProgStore.pl, input, &target);
   if (!matched) matched = iterate_menu (ProgStore.os, input, &target);
@@ -669,7 +669,7 @@ typedef enum {
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_List_Info (Target_t *target, const char *input, char *option)
+chefs_handle_List_Info (Dish_t *target, const char *input, char *option)
 {
   /* group target 仅展示维护信息 */
   if (dish_has_sub_dishes(target))
@@ -690,17 +690,17 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-          sub_target->preparefn();
-          println (bdpurple (sub_target->aliases));
+          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          sub_dish->preparefn();
+          println (bdpurple (sub_dish->aliases));
           /* 嵌套的 group target 的处理 */
-          if (dish_has_sub_dishes(sub_target))
+          if (dish_has_sub_dishes(sub_dish))
             {
-              chefs_handle_List_Info (sub_target, dish_get_first_alias(sub_target), option);
+              chefs_handle_List_Info (sub_dish, dish_get_first_alias(sub_dish), option);
             }
           else
             {
-              cli_print_target_maintain_info (sub_target, input);
+              cli_print_target_maintain_info (sub_dish, input);
               br();
             }
         }
@@ -741,7 +741,7 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
+chefs_handle_Measure_Source (Dish_t *target, const char *input, char *option)
 {
   /* group target 不测速，让用户自己分别测速 */
   if (dish_has_sub_dishes(target))
@@ -762,9 +762,9 @@ chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
 
       for (size_t i=0; i<sub_count; i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-          sub_target->preparefn();
-          println (bdpurple (sub_target->aliases));
+          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          sub_dish->preparefn();
+          println (bdpurple (sub_dish->aliases));
         }
     }
   else
@@ -779,17 +779,17 @@ chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
+chefs_handle_Get_Source (Dish_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-          sub_target->preparefn();
-          println (bdpurple(sub_target->aliases));
+          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          sub_dish->preparefn();
+          println (bdpurple(sub_dish->aliases));
           chsrc_set_target_group_mode();
-          chefs_handle_Get_Source (sub_target, dish_get_first_alias(sub_target), option);
+          chefs_handle_Get_Source (sub_dish, dish_get_first_alias(sub_dish), option);
           br();
         }
       return;
@@ -810,16 +810,16 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
+chefs_handle_Set_Source (Dish_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-          sub_target->preparefn();
-          println (bdpurple(sub_target->aliases));
-          chefs_handle_Set_Source (sub_target, dish_get_first_alias(sub_target), option);
+          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          sub_dish->preparefn();
+          println (bdpurple(sub_dish->aliases));
+          chefs_handle_Set_Source (sub_dish, dish_get_first_alias(sub_dish), option);
           br();
         }
       return;
@@ -858,16 +858,16 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
  * 由 chefs_handle_user_command() 拆分而来
  */
 void
-chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
+chefs_handle_Reset_Source (Dish_t *target, const char *input, char *option)
 {
   if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
         {
-          Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-          sub_target->preparefn();
-          println (bdpurple(sub_target->aliases));
-          chefs_handle_Reset_Source (sub_target, dish_get_first_alias(sub_target), option);
+          Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+          sub_dish->preparefn();
+          println (bdpurple(sub_dish->aliases));
+          chefs_handle_Reset_Source (sub_dish, dish_get_first_alias(sub_dish), option);
           br();
         }
       return;
@@ -892,7 +892,7 @@ chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
  * @param  option  额外的选项，可为NULL
  */
 void
-chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, char *option)
+chefs_handle_user_command (Dish_t *target, TargetCmd code, const char *input, char *option)
 {
   if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
@@ -904,8 +904,8 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
 
           for (size_t i=0; i<sub_count; i++)
             {
-              Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
-              zh_msg = xy_strcat (3, zh_msg, bdpurple(dish_get_first_alias(sub_target)),
+              Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
+              zh_msg = xy_strcat (3, zh_msg, bdpurple(dish_get_first_alias(sub_dish)),
                 (i < sub_count-1) ? ", " : "");
             }
 
@@ -942,11 +942,11 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
         {
           for (size_t i=0; i<xy_seq_len(target->sub_dishes); i++)
             {
-              Target_t *sub_target = xy_seq_at (target->sub_dishes, i);
+              Dish_t *sub_dish = xy_seq_at (target->sub_dishes, i);
               /* 递归显示 sub dishes 信息 */
-              sub_target->preparefn();
-              cli_print_target_maintain_info_briefly (sub_target, sub_target->aliases);
-              // chefs_handle_user_command (sub_target, code, input, option);
+              sub_dish->preparefn();
+              cli_print_target_maintain_info_briefly (sub_dish, sub_dish->aliases);
+              // chefs_handle_user_command (sub_dish, code, input, option);
             }
         }
       else
@@ -993,7 +993,7 @@ main (int argc, char const *argv[])
   int cli_arg_Mirror_pos = cli_arg_Target_pos + 1;
   const char *target_name = NULL;
 
-  Target_t *the_found_target = NULL;
+  Dish_t *the_found_target = NULL;
 
   /**
    * (1)

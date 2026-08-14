@@ -42,7 +42,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
 | `src/chsrc-main.c`             | 入口点：`main()`、CLI 解析、输出显示                                                                                          |
 | `src/framework/`               | 核心：全局状态、Chef DSL、类型定义、镜像站注册、辅助工具                                                                      |
-| `src/framework/struct.h`       | `Target_t`、`Source_t`、`MirrorSite_t`、Chef DSL 宏 — **chsrc 的骨架**                                                        |
+| `src/framework/struct.h`       | `Dish_t`、`Source_t`、`MirrorSite_t`、Chef DSL 宏 — **chsrc 的骨架**                                                        |
 | `src/framework/core.c`         | 框架核心：全局状态、C11 版本检查、速度测量（curl）、CLI 辅助                                                                  |
 | `src/framework/chef.c`         | Chef DSL 实现，供 recipe 作者使用                                                                                             |
 | `src/framework/helper.c`       | `hp_*` 通用辅助函数（URL 判断、字符串处理等），供 recipe 与 framework 使用                                                    |
@@ -63,7 +63,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 
 ### 核心抽象
 
-- **`Target_t`** — 换源目标。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preparefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
+- **`Dish_t`** — 换源目标。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preparefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
 - **`Scope_t`** — 作用域：`ProjectScope`/`UserScope`/`SystemScope`，外加特殊的 `ImplementationDefinedScope`（由 recipe 按实际情况决定；多数 recipe 的 `default_scope` 设为它）。
 - **`SourceProvider_t` / `MirrorSite_t`** — 镜像站或上游源提供者。类型：`IS_GeneralMirrorSite`（通用镜像站）、`IS_DedicatedMirrorSite`（专用镜像站）、`IS_UpstreamProvider`（上游默认源）、`IS_UserDefinedProvider`（用户自定义源）。
 - **Chef DSL** — 宏与函数的混合 API，供 recipe 作者使用：

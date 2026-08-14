@@ -166,9 +166,9 @@ typedef struct Contributor_t
 Contributor_t;
 
 
-typedef struct Target_t
+typedef struct Dish_t
 {
-  /* 以 / 为分隔符的多个目标别名 */
+  /* 以 / 为分隔符的多个菜品别名 */
   char *aliases;
 
   void (*getfn)   (char *option);
@@ -217,34 +217,34 @@ typedef struct Target_t
   XySeq_t *chefs;    /* 该 recipe 的主要作者   */
   XySeq_t *sauciers; /* 该 recipe 的次要贡献者 */
 }
-Target_t;
+Dish_t;
 
 
 
-#define def_target(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Target_t t##_target={aliases};
+#define def_target(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Dish_t t##_target={aliases};
 
 /* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
-#define def_sources_target(t, name) Target_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
+#define def_sources_target(t, name) Dish_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
 
 /* group target 不需要实现任何操作(除了preparefn)即可使用 */
-#define def_group_target(t, aliases) Target_t t##_target={aliases};
+#define def_group_target(t, aliases) Dish_t t##_target={aliases};
 
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_s(t)   this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_sr(t)  this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_gs(t)  this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_NOOP(t)
-#define chef_prep_this(t,op) Target_t *this = &t##_target; this->inited = true; chef_allow_##op(t);
+#define chef_prep_this(t,op) Dish_t *this = &t##_target; this->inited = true; chef_allow_##op(t);
 
 /* 简化 "源target" 的编写 */
-#define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t);
+#define chef_prep_sources_target(t) Dish_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t);
 
 /* 内部 "源target" 的 prepare 未通过 menu.c 的 add() 注册, 手动挂载 */
 #define chef_set_preparefn_for_sources_target(t) t##_target.preparefn = t##_prepare;
 
 
-#define chef_use_this(t) Target_t *this = &t##_target;
-#define chsrc_use_this_source(t) Target_t *this = &t##_target; Source_t source = chsrc_yield_source_and_confirm (this, option);
+#define chef_use_this(t) Dish_t *this = &t##_target;
+#define chsrc_use_this_source(t) Dish_t *this = &t##_target; Source_t source = chsrc_yield_source_and_confirm (this, option);
 
 /**
  * 用于定义换源列表
