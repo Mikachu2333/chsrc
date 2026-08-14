@@ -11,7 +11,7 @@
 #               | @Mikachu2333
 #               |
 # Created On    : <2023-08-28>
-# Last Modified : <2026-08-11>
+# Last Modified : <2026-08-14>
 #
 # 请阅读 ./doc/01-开发与构建.md 来使用
 # --------------------------------------------------------------
@@ -167,7 +167,7 @@ Finished-Echo-Info = echo Finished: Build in ${1} mode
 # 真正的编译命令
 Build-Command = $(CC) src/chsrc-main.c $(CFLAGS) $(CFLAGS_warning) -o $(1)
 
-Build-Command-For-Release = $(CC) src/chsrc-main.c chsrc.res $(CFLAGS) $(CFLAGS_warning) -o $(1)
+Build-Command-For-Release = $(CC) src/chsrc-main.c ${Windows-Res-File} $(CFLAGS) $(CFLAGS_warning) -o $(1)
 
 
 
@@ -186,12 +186,15 @@ build-in-debug-mode:
 
 
 ifeq ($(Use-Binary-Windows-Resource), 1)
+
+  Windows-Res-File = chsrc.res
+
 # 动态增加 target: Windows 上的二进制资源文件
-chsrc.res:
-	@windres src/resource/chsrc.rc -O coff -o chsrc.res
+${Windows-Res-File}:
+	@windres src/resource/chsrc.rc -O coff -o ${Windows-Res-File}
 
 # 动态增加先决条件
-build-in-release-mode build-in-ci-release-mode: chsrc.res
+build-in-release-mode build-in-ci-release-mode: ${Windows-Res-File}
 endif
 
 build-in-release-mode:
