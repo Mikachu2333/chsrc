@@ -7,7 +7,7 @@
  * Contributors  : @livelycode36
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-12>
+ * Last Modified : <2026-08-14>
  *
  * chsrc struct
  * ------------------------------------------------------------*/
@@ -15,7 +15,7 @@
 typedef struct ProviderSpeedMeasureInfo_t
 {
   bool  skip;           /* 是否默认跳过 */
-  char *skip_reason_CN; /* 跳过的原因（中文）*/
+  char *skip_reason_ZH; /* 跳过的原因（中文）*/
   char *skip_reason_EN; /* 跳过的原因（英文）*/
   char *url;            /* 测速链接 */
   bool  accurate;       /* 是否为精准测速，上游源和专用镜像站为 ACCURATE，通用镜像站为 ROUGH */

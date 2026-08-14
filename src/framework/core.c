@@ -820,7 +820,7 @@ measure_speed_for_every_source (Source_t sources[], int size, double speed_recor
               speed = -1024*1024*1024;
               if (!src.url)
                 {
-                  psmi.skip_reason_CN = "缺乏对上游默认源进行测速的URL，请帮助补充";
+                  psmi.skip_reason_ZH = "缺乏对上游默认源进行测速的URL，请帮助补充";
                   psmi.skip_reason_EN = "Lack of URL to measure upstream default source provider, please help to add";
                 }
             }
@@ -838,7 +838,7 @@ measure_speed_for_every_source (Source_t sources[], int size, double speed_recor
           speed_records[i] = speed;
 
           const char *msg = ENGLISH ? provider->abbr : provider->name;
-          const char *skip_reason = ENGLISH ? psmi.skip_reason_EN : psmi.skip_reason_CN;
+          const char *skip_reason = ENGLISH ? psmi.skip_reason_EN : psmi.skip_reason_ZH;
           if (NULL==skip_reason)
             {
               skip_reason = ENGLISH ? "SKIP for no reason" : "无理由跳过";
@@ -1154,25 +1154,25 @@ chsrc_determine_chgtype (ChgType_t type)
 
 
 #define MSG_EN_PUBLIC_URL "If the URL you specify is a public service, you are invited to contribute: chsrc issue"
-#define MSG_CN_PUBLIC_URL "若您指定的URL为公有服务，邀您参与贡献: chsrc issue"
+#define MSG_ZH_PUBLIC_URL "若您指定的URL为公有服务，邀您参与贡献: chsrc issue"
 
 #define MSG_EN_FULLY_AUTO "Fully-Auto changed source. "
-#define MSG_CN_FULLY_AUTO "全自动换源完成"
+#define MSG_ZH_FULLY_AUTO "全自动换源完成"
 
 #define MSG_EN_SEMI_AUTO  "Semi-Auto changed source. "
-#define MSG_CN_SEMI_AUTO  "半自动换源完成"
+#define MSG_ZH_SEMI_AUTO  "半自动换源完成"
 
 #define MSG_EN_THANKS     "Thanks to the mirror site: "
-#define MSG_CN_THANKS     "感谢镜像提供方: "
+#define MSG_ZH_THANKS     "感谢镜像提供方: "
 
 #define MSG_EN_BETTER     "If you have a better source changing method , please help: chsrc issue"
-#define MSG_CN_BETTER     "若您有更好的换源方案，邀您帮助: chsrc issue"
+#define MSG_ZH_BETTER     "若您有更好的换源方案，邀您帮助: chsrc issue"
 
 #define MSG_EN_CONSTRAINT "Implementation constraints require manual operation according to the above prompts. "
-#define MSG_CN_CONSTRAINT "因实现约束需按上述提示手工操作"
+#define MSG_ZH_CONSTRAINT "因实现约束需按上述提示手工操作"
 
 #define MSG_EN_STILL      "Still need to operate manually according to the above prompts. "
-#define MSG_CN_STILL      "仍需按上述提示手工操作"
+#define MSG_ZH_STILL      "仍需按上述提示手工操作"
 
 #define thank_mirror(msg) say(xy_2strcat(msg,purple(ENGLISH?source->mirror->abbr:source->mirror->name)))
 
@@ -1200,19 +1200,19 @@ chsrc_conclude (Source_t *source)
           if (source_is_userdefine (source))
             {
               char *msg = ENGLISH ? MSG_EN_FULLY_AUTO      MSG_EN_PUBLIC_URL \
-                                  : MSG_CN_FULLY_AUTO ", " MSG_CN_PUBLIC_URL;
+                                  : MSG_ZH_FULLY_AUTO ", " MSG_ZH_PUBLIC_URL;
               chsrc_log (msg);
             }
           else
             {
               char *msg = ENGLISH ? MSG_EN_FULLY_AUTO      MSG_EN_THANKS \
-                                  : MSG_CN_FULLY_AUTO ", " MSG_CN_THANKS;
+                                  : MSG_ZH_FULLY_AUTO ", " MSG_ZH_THANKS;
               thank_mirror (msg);
             }
         }
       else
         {
-          char *msg = ENGLISH ? MSG_EN_FULLY_AUTO : MSG_CN_FULLY_AUTO;
+          char *msg = ENGLISH ? MSG_EN_FULLY_AUTO : MSG_ZH_FULLY_AUTO;
           chsrc_log (msg);
         }
     }
@@ -1223,24 +1223,24 @@ chsrc_conclude (Source_t *source)
           if (source_is_userdefine (source))
             {
               char *msg = ENGLISH ? MSG_EN_SEMI_AUTO      MSG_EN_STILL      MSG_EN_PUBLIC_URL \
-                                  : MSG_CN_SEMI_AUTO ", " MSG_CN_STILL "。" MSG_CN_PUBLIC_URL;
+                                  : MSG_ZH_SEMI_AUTO ", " MSG_ZH_STILL "。" MSG_ZH_PUBLIC_URL;
               chsrc_log (msg);
             }
           else
             {
               char *msg = ENGLISH ? MSG_EN_SEMI_AUTO      MSG_EN_STILL      MSG_EN_THANKS \
-                                  : MSG_CN_SEMI_AUTO ", " MSG_CN_STILL "。" MSG_CN_THANKS;
+                                  : MSG_ZH_SEMI_AUTO ", " MSG_ZH_STILL "。" MSG_ZH_THANKS;
               thank_mirror (msg);
             }
         }
       else
         {
           char *msg = ENGLISH ? MSG_EN_SEMI_AUTO      MSG_EN_STILL \
-                              : MSG_CN_SEMI_AUTO ", " MSG_CN_STILL;
+                              : MSG_ZH_SEMI_AUTO ", " MSG_ZH_STILL;
           chsrc_log (msg);
         }
 
-      char *msg = ENGLISH ? MSG_EN_BETTER : MSG_CN_BETTER;
+      char *msg = ENGLISH ? MSG_EN_BETTER : MSG_ZH_BETTER;
       chsrc_warn (msg);
     }
   else if (ChgType_Manual == ProgStatus.chgtype)
@@ -1250,22 +1250,22 @@ chsrc_conclude (Source_t *source)
           if (source_is_userdefine (source))
             {
               char *msg = ENGLISH ? MSG_EN_CONSTRAINT      MSG_EN_PUBLIC_URL \
-                                  : MSG_CN_CONSTRAINT "; " MSG_CN_PUBLIC_URL;
+                                  : MSG_ZH_CONSTRAINT "; " MSG_ZH_PUBLIC_URL;
               chsrc_log (msg);
             }
           else
             {
               char *msg = ENGLISH ? MSG_EN_CONSTRAINT      MSG_EN_THANKS \
-                                  : MSG_CN_CONSTRAINT ", " MSG_CN_THANKS;
+                                  : MSG_ZH_CONSTRAINT ", " MSG_ZH_THANKS;
               thank_mirror (msg);
             }
         }
       else
         {
-          char *msg = ENGLISH ? MSG_EN_CONSTRAINT : MSG_CN_CONSTRAINT;
+          char *msg = ENGLISH ? MSG_EN_CONSTRAINT : MSG_ZH_CONSTRAINT;
           chsrc_log (msg);
         }
-      char *msg = ENGLISH ? MSG_EN_BETTER : MSG_CN_BETTER;
+      char *msg = ENGLISH ? MSG_EN_BETTER : MSG_ZH_BETTER;
       chsrc_warn (msg);
     }
   else if (ChgType_Untested == ProgStatus.chgtype)
@@ -1274,12 +1274,12 @@ chsrc_conclude (Source_t *source)
         {
           if (source_is_userdefine (source))
             {
-              char *msg = ENGLISH ? MSG_EN_PUBLIC_URL : MSG_CN_PUBLIC_URL;
+              char *msg = ENGLISH ? MSG_EN_PUBLIC_URL : MSG_ZH_PUBLIC_URL;
               chsrc_log (msg);
             }
           else
             {
-              char *msg = ENGLISH ? MSG_EN_THANKS : MSG_CN_THANKS;
+              char *msg = ENGLISH ? MSG_EN_THANKS : MSG_ZH_THANKS;
               thank_mirror (msg);
             }
         }

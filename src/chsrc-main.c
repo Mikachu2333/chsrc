@@ -1212,7 +1212,7 @@ main (int argc, char const *argv[])
   }
 
 #define MSG_EN_USE_LIST_TARGETS "Use `chsrc list targets` to see all supported targets"
-#define MSG_CN_USE_LIST_TARGETS "使用 chsrc list targets 查看所有支持的目标"
+#define MSG_ZH_USE_LIST_TARGETS "使用 chsrc list targets 查看所有支持的目标"
 
   /* chsrc measure */
   else if (   xy_streql (command, "measure")
@@ -1225,7 +1225,7 @@ main (int argc, char const *argv[])
       if (argc < cli_arg_Target_pos)
         {
           char *msg = ENGLISH ? "Please provide the target name you want to measure. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要测速源的目标名。" MSG_CN_USE_LIST_TARGETS;
+                              : "请提供想要测速源的目标名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
@@ -1252,7 +1252,7 @@ main (int argc, char const *argv[])
       if (argc < cli_arg_Target_pos)
         {
           char *msg = ENGLISH ? "Please provide the target name you want to view the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要查看源的目标名。" MSG_CN_USE_LIST_TARGETS;
+                              : "请提供想要查看源的目标名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
@@ -1276,7 +1276,7 @@ main (int argc, char const *argv[])
       if (argc < cli_arg_Target_pos)
         {
           char *msg = ENGLISH ? "Please provide the target name you want to set the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要设置源的目标名。" MSG_CN_USE_LIST_TARGETS;
+                              : "请提供想要设置源的目标名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
@@ -1308,7 +1308,7 @@ main (int argc, char const *argv[])
       if (argc < cli_arg_Target_pos)
         {
           char *msg = ENGLISH ? "Please provide the target name you want to reset the source. " MSG_EN_USE_LIST_TARGETS
-                              : "请提供想要重置源的目标名。" MSG_CN_USE_LIST_TARGETS;
+                              : "请提供想要重置源的目标名。" MSG_ZH_USE_LIST_TARGETS;
           chsrc_error (msg);
           return Exit_Unknown;
         }
@@ -1349,7 +1349,7 @@ not_found:
   if (!the_found_target)
     {
       char *msg = ENGLISH ? "Unknown target. "  MSG_EN_USE_LIST_TARGETS
-                          : "暂不支持的换源目标。" MSG_CN_USE_LIST_TARGETS;
+                          : "暂不支持的换源目标。" MSG_ZH_USE_LIST_TARGETS;
       chsrc_error (msg);
       return Exit_Unknown;
     }
