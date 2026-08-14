@@ -915,11 +915,18 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
       if (chef_has_sub_targets(target))
         {
           int sub_count = xy_seq_len(target->sub_targets);
-          char *zh_msg = bdyellow(xy_strcat (4, input, " 由以下", xy_int2str(sub_count), "个子目标组成\n"));
+          char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子目标组成: "));
+          char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub targets\n"));
 
-          char *en_msg = bdyellow(xy_strcat (4, input, " consists of the following ", xy_int2str(sub_count), " sub targets\n"));
+          for (size_t i=0; i<sub_count; i++)
+            {
+              Target_t *sub_target = xy_seq_at (target->sub_targets, i);
+              zh_msg = xy_strcat (3, zh_msg, bdpurple(get_first_alias(sub_target)),
+                (i < sub_count-1) ? ", " : "");
+            }
 
           chsrc_log (CHINESE ? zh_msg : en_msg);
+          br();
         }
     }
 

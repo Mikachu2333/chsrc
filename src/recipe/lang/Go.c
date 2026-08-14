@@ -53,23 +53,9 @@ pl_go_prelude ()
 
 
 void
-pl_go_check_cmd ()
-{
-  char *check_cmd = xy_quiet_cmd ("go version");
-  bool exist = query_program_exist (check_cmd, "go", Noisy_When_Exist|Noisy_When_NonExist);
-
-  if (!exist)
-    {
-      chsrc_error ("未找到 go 相关命令，请检查是否存在");
-      exit (Exit_UserCause);
-    }
-}
-
-
-void
 pl_go_getsrc (char *option)
 {
-  pl_go_check_cmd ();
+  chsrc_ensure_program ("go");
   chsrc_run ("go env GOPROXY", RunOpt_Default);
 }
 
@@ -80,7 +66,7 @@ pl_go_getsrc (char *option)
 void
 pl_go_setsrc (char *option)
 {
-  pl_go_check_cmd ();
+  chsrc_ensure_program ("go");
 
   chsrc_use_this_source (pl_go);
 
