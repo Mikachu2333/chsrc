@@ -7,7 +7,7 @@
 def_target(wr_anaconda, "conda/anaconda");
 
 void
-wr_anaconda_prelude ()
+wr_anaconda_prepare ()
 {
   chef_prep_this (wr_anaconda, gs);
 

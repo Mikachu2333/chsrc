@@ -7,7 +7,7 @@
 def_target(os_trisquel, "trisquel");
 
 void
-os_trisquel_prelude ()
+os_trisquel_prepare ()
 {
   chef_prep_this (os_trisquel, gsr);
 

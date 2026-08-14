@@ -5,7 +5,7 @@
 def_target(os_deepin, "deepin");
 
 void
-os_deepin_prelude ()
+os_deepin_prepare ()
 {
   chef_prep_this (os_deepin, gsr);
 

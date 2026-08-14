@@ -5,7 +5,7 @@
 def_target(os_rockylinux, "rocky/rockylinux");
 
 void
-os_rockylinux_prelude ()
+os_rockylinux_prepare ()
 {
   chef_prep_this (os_rockylinux, sr);
 

@@ -5,7 +5,7 @@
 def_target(pl_ocaml, "ocaml/opam");
 
 void
-pl_ocaml_prelude ()
+pl_ocaml_prepare ()
 {
   chef_prep_this (pl_ocaml, gs);
 

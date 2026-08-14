@@ -12,7 +12,7 @@ static MirrorSite_t EmacsChina =
 def_target(wr_emacs, "emacs/elpa");
 
 void
-wr_emacs_prelude ()
+wr_emacs_prepare ()
 {
   chef_prep_this (wr_emacs, s);
 

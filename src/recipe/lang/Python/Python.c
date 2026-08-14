@@ -5,7 +5,7 @@
 def_group_target(pl_py_group, "py/python");
 
 void
-pl_py_group_prelude (void)
+pl_py_group_prepare (void)
 {
   chef_prep_this (pl_py_group, NOOP);
 

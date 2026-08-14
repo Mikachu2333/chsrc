@@ -26,7 +26,7 @@ just test-cli         # CLI 集成测试 (Perl)
 just fastcheck        # CLI 快速检查 (test/cli.pl fastcheck)
 ```
 
-DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日志和 `chef_debug_target()` 调试信息，并在每次 Get/Set/Reset 操作后重跑所有 `_prelude()` 以验证其可重复执行且不会崩溃（见 `src/chsrc-main.c` 中的 `chsrc_perform_all_prelude()`）。
+DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日志和 `chef_debug_target()` 调试信息，并在每次 Get/Set/Reset 操作后重跑所有 `_prepare()` 以验证其可重复执行且不会崩溃（见 `src/chsrc-main.c` 中的 `chsrc_perform_all_prepare()`）。
 
 原生 Windows 上 `just br` 会先用 `windres` 编译 `src/resource/chsrc.rc` 生成 `chsrc.res` 再链接。开发与 PR 请使用 `dev` 分支（CI 仅在 PR 目标为 `dev` 时运行测试，见 `doc/01-开发与构建.md`）。
 
@@ -63,7 +63,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 
 ### 核心抽象
 
-- **`Target_t`** — 换源目标。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preludefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
+- **`Target_t`** — 换源目标。字段：别名（`aliases`）、函数指针（`getfn`/`setfn`/`resetfn`/`preparefn`）、`inited` 标志、源列表（`sources`/`sources_n`）、特性（`can_english`、`can_user_define`）、作用域（`scope_caps[]`、`default_scope`）、`note`、维护信息（`created_on`/`last_updated`）、贡献者列表（`chefs`/`sauciers`）。
 - **`Scope_t`** — 作用域：`ProjectScope`/`UserScope`/`SystemScope`，外加特殊的 `ImplementationDefinedScope`（由 recipe 按实际情况决定；多数 recipe 的 `default_scope` 设为它）。
 - **`SourceProvider_t` / `MirrorSite_t`** — 镜像站或上游源提供者。类型：`IS_GeneralMirrorSite`（通用镜像站）、`IS_DedicatedMirrorSite`（专用镜像站）、`IS_UpstreamProvider`（上游默认源）、`IS_UserDefinedProvider`（用户自定义源）。
 - **Chef DSL** — 宏与函数的混合 API，供 recipe 作者使用：
@@ -74,14 +74,14 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 ### 执行流程
 
 1. `main()` → `chsrc_init_framework()` → `chsrc_init_menu()`（填充 target 列表），并调用 `chsrc_register_contributors()` 把所有贡献者登记到代码中
-2. 解析 CLI → 在 `pl`/`os`/`wr` 三个菜单中搜索匹配的 target → 调用 `preludefn()` → 按 `TargetOp`（Get/Set/Reset/Measure/List_Config）分派到 `getfn`/`setfn`/`resetfn` 等
+2. 解析 CLI → 在 `pl`/`os`/`wr` 三个菜单中搜索匹配的 target → 调用 `preparefn()` → 按 `TargetOp`（Get/Set/Reset/Measure/List_Config）分派到 `getfn`/`setfn`/`resetfn` 等
 3. 执行 `set` 时：通过系统 `curl` 自动测量镜像站速度（精准/粗略测速，见 `doc/11-如何设置换源链接与测速链接.md`），选择最快的，recipe 的 `_setsrc()` 执行换源
 
 ### Recipe 模式
 
 每个 target 由 `.c` 文件实现（一个文件可包含多个 target），包含：
 
-- `_prelude()` — **必需。** 通过 Chef DSL 初始化元数据和源列表。
+- `_prepare()` — **必需。** 通过 Chef DSL 初始化元数据和源列表。
 - `_setsrc()` — **必需。** 执行换源操作。必须调用 `chsrc_use_this_source (target)` 注入选中的源。
 - `_getsrc()` / `_resetsrc()` — 可选。
 
@@ -92,7 +92,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 ### 开发辅助与质量保障
 
 - **Lefthook git hooks**（`lefthook.yml`）— 提交前自动验证：
-  - 修改 `*.{c,h}`（不含 `test/`）：`just build-in-debug-mode` + `./chsrc-debug get pip`（触发所有 `_prelude()` 检查）
+  - 修改 `*.{c,h}`（不含 `test/`）：`just build-in-debug-mode` + `./chsrc-debug get pip`（触发所有 `_prepare()` 检查）
   - 修改 `lib/xy.h` 或 `test/xy.c`：`just test-xy`
   - 修改 `src/framework/*`、`src/chsrc-main.c` 或 `test/fw.c`：`just test-fw`
 - **CI**（`.github/workflows/`）— 多平台构建：Linux（x64/AArch64/ARMv7/riscv64）、macOS、Windows（x64/Arm64）；PR 时 Ubuntu 运行 `make` + `make test`、Windows 运行 `just` + `just test`（`PR-test.yml`，仅 PR 目标分支为 `dev` 时触发）
@@ -104,7 +104,7 @@ DEBUG 模式（`-DXY_DEBUG`）会启用诊断功能：输出 `chsrc_debug*` 日�
 - `os*` = **o**perating **s**ystem（操作系统）→ `src/recipe/os/`
 - `wr*` = soft**w**a**r**e（软件）→ `src/recipe/ware/`
 - 类型名：`PascalCase_t`
-- 函数名与 `()` 之间必须有空格 — 代码应写 `foo ()` 而非 `foo()`。（本文档中的 API 提及如 `_prelude()` 仅为简写。）
+- 函数名与 `()` 之间必须有空格 — 代码应写 `foo ()` 而非 `foo()`。（本文档中的 API 提及如 `_prepare()` 仅为简写。）
 
 ## 代码风格
 

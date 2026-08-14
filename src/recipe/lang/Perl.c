@@ -5,7 +5,7 @@
 def_target(pl_perl, "perl/cpan");
 
 void
-pl_perl_prelude ()
+pl_perl_prepare ()
 {
   chef_prep_this (pl_perl, gs);
 
@@ -24,21 +24,21 @@ pl_perl_prelude ()
   chef_allow_user_define (this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://www.cpan.org/",                      FeedByPrelude},
-  {&MirrorZ,          "https://mirrors.cernet.edu.cn/CPAN/",        FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/CPAN/", FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/CPAN/",          FeedByPrelude},
-  {&Cqu,              "https://mirrors.cqu.edu.cn/CPAN/",           FeedByPrelude},
-  {&Bjtu,             "https://mirror.bjtu.edu.cn/cpan/",           FeedByPrelude},
-  {&Nju,              "https://mirrors.nju.edu.cn/CPAN/",           FeedByPrelude},
-  {&Nyist,            "https://mirror.nyist.edu.cn/CPAN/",          FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/CPAN/",          FeedByPrelude},
-  {&Sjtug_Siyuan,     "https://mirror.sjtu.edu.cn/cpan/",           FeedByPrelude},
-  {&Iscas,            "https://mirror.iscas.ac.cn/CPAN/",           FeedByPrelude},
-  {&Zju,              "https://mirrors.zju.edu.cn/CPAN/",           FeedByPrelude},
-  {&Lzuoss,           "https://mirrors.lzu.edu.cn/CPAN/",           FeedByPrelude},
-  {&Hust,             "https://mirrors.hust.edu.cn/CPAN/",          FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/CPAN/",           FeedByPrelude}
+  {&UpstreamProvider, "https://www.cpan.org/",                      FeedByPrepare},
+  {&MirrorZ,          "https://mirrors.cernet.edu.cn/CPAN/",        FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/CPAN/", FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/CPAN/",          FeedByPrepare},
+  {&Cqu,              "https://mirrors.cqu.edu.cn/CPAN/",           FeedByPrepare},
+  {&Bjtu,             "https://mirror.bjtu.edu.cn/cpan/",           FeedByPrepare},
+  {&Nju,              "https://mirrors.nju.edu.cn/CPAN/",           FeedByPrepare},
+  {&Nyist,            "https://mirror.nyist.edu.cn/CPAN/",          FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/CPAN/",          FeedByPrepare},
+  {&Sjtug_Siyuan,     "https://mirror.sjtu.edu.cn/cpan/",           FeedByPrepare},
+  {&Iscas,            "https://mirror.iscas.ac.cn/CPAN/",           FeedByPrepare},
+  {&Zju,              "https://mirrors.zju.edu.cn/CPAN/",           FeedByPrepare},
+  {&Lzuoss,           "https://mirrors.lzu.edu.cn/CPAN/",           FeedByPrepare},
+  {&Hust,             "https://mirrors.hust.edu.cn/CPAN/",          FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/CPAN/",           FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "authors/id/D/DB/DBAURAIN/Bio-MUST-Apps-FortyTwo-0.213470.tar.gz");

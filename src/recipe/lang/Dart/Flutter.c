@@ -5,7 +5,7 @@
 def_target(pl_dart_flutter, "flutter");
 
 void
-pl_dart_flutter_prelude (void)
+pl_dart_flutter_prepare (void)
 {
   chef_prep_this (pl_dart_flutter, gsr);
 
@@ -24,11 +24,11 @@ pl_dart_flutter_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://storage.googleapis.com", FeedByPrelude},
-  {&FlutterCN,        "https://storage.flutter-io.cn",  FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn",     FeedByPrelude }, /* 官方文档也没有给后缀，怀疑是否存在问题 */
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/flutter", FeedByPrelude},
-  {&Nju,              "https://mirror.nju.edu.cn/flutter", FeedByPrelude}
+  {&UpstreamProvider, "https://storage.googleapis.com", FeedByPrepare},
+  {&FlutterCN,        "https://storage.flutter-io.cn",  FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn",     FeedByPrepare }, /* 官方文档也没有给后缀，怀疑是否存在问题 */
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/flutter", FeedByPrepare},
+  {&Nju,              "https://mirror.nju.edu.cn/flutter", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/flutter_infra_release/releases/stable/linux/flutter_linux_v1.0.0-stable.tar.xz");

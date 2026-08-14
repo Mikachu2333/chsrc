@@ -5,7 +5,7 @@
 def_target(pl_clojure, "clojure/clojars/cloj/lein");
 
 void
-pl_clojure_prelude ()
+pl_clojure_prepare ()
 {
   chef_prep_this (pl_clojure, s);
 

@@ -5,7 +5,7 @@
 def_target(os_solus, "solus");
 
 void
-os_solus_prelude ()
+os_solus_prepare ()
 {
   chef_prep_this (os_solus, s);
 

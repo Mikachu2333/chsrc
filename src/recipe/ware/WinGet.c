@@ -5,7 +5,7 @@
 def_target(wr_winget, "winget");
 
 void
-wr_winget_prelude ()
+wr_winget_prepare ()
 {
   chef_prep_this (wr_winget, gsr);
 

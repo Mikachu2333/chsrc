@@ -6,7 +6,7 @@
 def_target(os_ubuntu, "ubuntu/zorinos");
 
 void
-os_ubuntu_prelude ()
+os_ubuntu_prepare ()
 {
   chef_prep_this (os_ubuntu, gsr);
 
@@ -24,22 +24,22 @@ os_ubuntu_prelude ()
   chef_set_note(this, NULL, NULL);
 
   def_sources_begin()
-  {&UpstreamProvider, "http://archive.ubuntu.com/ubuntu",  FeedByPrelude}, /* 不支持https */
-  {&MirrorZ,          "https://mirrors.cernet.edu.cn/ubuntu",FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/ubuntu",FeedByPrelude},
-  {&Volcengine,       "https://mirrors.volces.com/ubuntu",FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/ubuntu",FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/ubuntu",FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/ubuntu",FeedByPrelude},
-  {&Tencent,          "https://mirrors.tencent.com/ubuntu", FeedByPrelude},
-  // {&Tencent_Intra, "https://mirrors.tencentyun.com/ubuntu",FeedByPrelude},
-  {&Huawei,           "https://mirrors.huaweicloud.com/ubuntu",FeedByPrelude}
+  {&UpstreamProvider, "http://archive.ubuntu.com/ubuntu",  FeedByPrepare}, /* 不支持https */
+  {&MirrorZ,          "https://mirrors.cernet.edu.cn/ubuntu",FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/ubuntu",FeedByPrepare},
+  {&Volcengine,       "https://mirrors.volces.com/ubuntu",FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/ubuntu",FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/ubuntu",FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/ubuntu",FeedByPrepare},
+  {&Tencent,          "https://mirrors.tencent.com/ubuntu", FeedByPrepare},
+  // {&Tencent_Intra, "https://mirrors.tencentyun.com/ubuntu",FeedByPrepare},
+  {&Huawei,           "https://mirrors.huaweicloud.com/ubuntu",FeedByPrepare}
 
   /* 不启用原因：过慢 */
-  // {&Netease,          "https://mirrors.163.com/ubuntu", FeedByPrelude},
+  // {&Netease,          "https://mirrors.163.com/ubuntu", FeedByPrepare},
 
   /* 不启用原因：过慢 */
-  // {&Sohu,             "https://mirrors.sohu.com/ubuntu", FeedByPrelude}
+  // {&Sohu,             "https://mirrors.sohu.com/ubuntu", FeedByPrepare}
   def_sources_end()
 
   char *arch = chsrc_get_cpuarch ();

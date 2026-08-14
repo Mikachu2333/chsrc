@@ -5,7 +5,7 @@
 def_target(os_manjaro, "manjaro");
 
 void
-os_manjaro_prelude ()
+os_manjaro_prepare ()
 {
   chef_prep_this (os_manjaro, s);
 

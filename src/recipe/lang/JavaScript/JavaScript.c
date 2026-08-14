@@ -5,7 +5,7 @@
 def_group_target(pl_js_group, "js/javascript/node/nodejs");
 
 void
-pl_js_group_prelude (void)
+pl_js_group_prepare (void)
 {
   chef_prep_this (pl_js_group, NOOP);
 

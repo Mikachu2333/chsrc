@@ -5,7 +5,7 @@
 def_target(wr_cocoapods, "cocoa/cocoapods/cocoapod");
 
 void
-wr_cocoapods_prelude ()
+wr_cocoapods_prepare ()
 {
   chef_prep_this (wr_cocoapods, s);
 

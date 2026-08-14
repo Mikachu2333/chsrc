@@ -5,7 +5,7 @@
 def_group_target(pl_uv, "uv");
 
 void
-pl_uv_prelude (void)
+pl_uv_prepare (void)
 {
   chef_prep_this (pl_uv, NOOP);
 

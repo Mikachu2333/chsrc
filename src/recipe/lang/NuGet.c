@@ -5,7 +5,7 @@
 def_target(pl_nuget, "nuget/net/.net/dotnet");
 
 void
-pl_nuget_prelude ()
+pl_nuget_prepare ()
 {
   chef_prep_this (pl_nuget, gs);
 

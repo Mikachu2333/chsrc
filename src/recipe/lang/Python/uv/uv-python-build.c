@@ -21,7 +21,7 @@ static MirrorSite_t CnbUvPython =
 };
 
 void
-pl_uv_python_build_prelude (void)
+pl_uv_python_build_prepare (void)
 {
   chef_prep_this (pl_uv_python_build, gsr);
 
@@ -36,10 +36,10 @@ pl_uv_python_build_prelude (void)
 
   def_sources_begin ()
   {&UpstreamProvider, "https://github.com/astral-sh/python-build-standalone/releases/download",       DelegateToUpstream},
-  {&Nju,              "https://mirrors.nju.edu.cn/github-release/astral-sh/python-build-standalone",  FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/github-release/astral-sh/python-build-standalone", FeedByPrelude},
-  {&Lzuoss,           "https://mirror.lzu.edu.cn/github-release/astral-sh/python-build-standalone",   FeedByPrelude},
-  {&CnbUvPython,      "https://cnb.cool/astral-sh/python-build-standalone/-/releases/download",       FeedByPrelude}
+  {&Nju,              "https://mirrors.nju.edu.cn/github-release/astral-sh/python-build-standalone",  FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/github-release/astral-sh/python-build-standalone", FeedByPrepare},
+  {&Lzuoss,           "https://mirror.lzu.edu.cn/github-release/astral-sh/python-build-standalone",   FeedByPrepare},
+  {&CnbUvPython,      "https://cnb.cool/astral-sh/python-build-standalone/-/releases/download",       FeedByPrepare}
   def_sources_end ()
 
 #define GH_SM_POSTFIX  "/20260728/cpython-3.14.6+20260728-i686-pc-windows-msvc-install_only_stripped.tar.gz"

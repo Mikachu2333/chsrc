@@ -8,7 +8,7 @@ def_target(os_arch, "arch/archlinux");
 #define OS_Pacman_ArchLinuxCN_MirrorList "/etc/pacman.conf"
 
 void
-os_arch_prelude ()
+os_arch_prepare ()
 {
   chef_prep_this (os_arch, gs);
 
@@ -109,7 +109,7 @@ os_arch_setsrc (char *option)
 def_target(os_archlinuxcn, "archlinuxcn/archcn");
 
 void
-os_archlinuxcn_prelude ()
+os_archlinuxcn_prepare ()
 {
   chef_prep_this (os_archlinuxcn, gs);
 

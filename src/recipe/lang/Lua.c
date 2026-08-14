@@ -12,7 +12,7 @@ static MirrorSite_t Api7 =
 def_target(pl_lua, "lua/luarocks");
 
 void
-pl_lua_prelude ()
+pl_lua_prepare ()
 {
   chef_prep_this (pl_lua, gs);
 

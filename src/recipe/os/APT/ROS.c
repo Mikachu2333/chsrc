@@ -5,7 +5,7 @@
 def_target(os_ros, "ros/ros2");
 
 void
-os_ros_prelude ()
+os_ros_prepare ()
 {
   chef_prep_this (os_ros, gs);
 

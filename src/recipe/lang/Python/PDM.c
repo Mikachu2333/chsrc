@@ -5,7 +5,7 @@
 def_target(pl_pdm, "pdm");
 
 void
-pl_pdm_prelude (void)
+pl_pdm_prepare (void)
 {
   chef_prep_this (pl_pdm, gsr);
 

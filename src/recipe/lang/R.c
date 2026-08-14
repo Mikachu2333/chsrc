@@ -5,7 +5,7 @@
 def_target(pl_r, "r/cran");
 
 void
-pl_r_prelude ()
+pl_r_prepare ()
 {
   chef_prep_this (pl_r, gs);
 

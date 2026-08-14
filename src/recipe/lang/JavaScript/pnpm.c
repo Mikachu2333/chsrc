@@ -5,7 +5,7 @@
 def_target(pl_pnpm, "pnpm");
 
 void
-pl_pnpm_prelude (void)
+pl_pnpm_prepare (void)
 {
   chef_prep_this (pl_pnpm, gsr);
 

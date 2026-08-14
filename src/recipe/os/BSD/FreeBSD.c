@@ -5,7 +5,7 @@
 def_target(os_freebsd, "freebsd");
 
 void
-os_freebsd_prelude ()
+os_freebsd_prepare ()
 {
   chef_prep_this (os_freebsd, s);
 

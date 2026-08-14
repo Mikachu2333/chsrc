@@ -5,7 +5,7 @@
 def_target(os_linuxlite, "linuxlite");
 
 void
-os_linuxlite_prelude ()
+os_linuxlite_prepare ()
 {
   chef_prep_this (os_linuxlite, gsr);
 

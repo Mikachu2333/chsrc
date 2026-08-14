@@ -5,7 +5,7 @@
 def_target(wr_flatpak, "flatpak/flathub");
 
 void
-wr_flatpak_prelude ()
+wr_flatpak_prepare ()
 {
   chef_prep_this (wr_flatpak, gsr);
 

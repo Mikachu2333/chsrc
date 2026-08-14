@@ -5,7 +5,7 @@
 def_target(pl_yarn, "yarn");
 
 void
-pl_yarn_prelude (void)
+pl_yarn_prepare (void)
 {
   chef_prep_this (pl_yarn, gsr);
 

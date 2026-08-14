@@ -91,8 +91,8 @@ Source_t;
 #define DelegateToMirror    NULL
 /* 看到该注释的贡献者，你可以帮忙寻找专用测速链接 */
 #define NeedContribute      NULL
-/* 由 prelude() 填充 */
-#define FeedByPrelude NULL
+/* 由 _prepare() 填充 */
+#define FeedByPrepare NULL
 
 
 /**
@@ -178,15 +178,15 @@ typedef struct Target_t
   /**
    * 初始化函数，用于填充该 struct 的各种信息
    *
-   * 值得注意的是，preludefn() 将初始化该结构体内三个最重要的函数:
-   * 即 getfn setfn resetfn 的函数地址，但是 preludefn 这个函数自
+   * 值得注意的是，preparefn() 将初始化该结构体内三个最重要的函数:
+   * 即 getfn setfn resetfn 的函数地址，但是 preparefn 这个函数自
    * 身的函数地址不可能由自己初始化，所以需要额外的位置初始化:
    *
    *   1. menu.c 中通过 add() 注册
    *   2. recipe 内部手动调用，如 "源target"
    */
-  void (*preludefn) (void);
-  bool inited; /* 是否执行过了 preludefn() */
+  void (*preparefn) (void);
+  bool inited; /* 是否执行过了 preparefn() */
 
   XySeq_t *sub_targets; /* 某些 target 为 group target，几乎完全由 sub targets 定义 */
 
@@ -226,7 +226,7 @@ Target_t;
 /* 仅内部使用的 "源target"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
 #define def_sources_target(t, name) Target_t t##_target={"__internal_target_only_for_storing_sources__" name "__"}
 
-/* group target 不需要实现任何操作(除了preludefn)即可使用 */
+/* group target 不需要实现任何操作(除了preparefn)即可使用 */
 #define def_group_target(t, aliases) Target_t t##_target={aliases};
 
 #define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
@@ -239,8 +239,8 @@ Target_t;
 /* 简化 "源target" 的编写 */
 #define chef_prep_sources_target(t) Target_t *this = &t##_target; this->inited = true; chef_allow_NOOP(t);
 
-/* 内部 "源target" 的 prelude 未通过 menu.c 的 add() 注册, 手动挂载 */
-#define chef_set_preludefn_for_sources_target(t) t##_target.preludefn = t##_prelude;
+/* 内部 "源target" 的 prepare 未通过 menu.c 的 add() 注册, 手动挂载 */
+#define chef_set_preparefn_for_sources_target(t) t##_target.preparefn = t##_prepare;
 
 
 #define chef_use_this(t) Target_t *this = &t##_target;
@@ -255,7 +255,7 @@ Target_t;
  *   {&某镜像站2,        "换源URL",  NULL },  // 若精准测速链接为空，则为模糊测速，默认使用该镜像站的整体测速链接
  *   def_sources_end()
  *
- *   出于代码美观考虑，上述第三列可以写 FeedByPrelude，然后下面使用文档 ./doc/11-如何设置换源链接与测速链接.md 中的函数来填充
+ *   出于代码美观考虑，上述第三列可以写 FeedByPrepare，然后下面使用文档 ./doc/11-如何设置换源链接与测速链接.md 中的函数来填充
  */
 #define def_sources_begin()  Source_t sources[] = {
 #define def_sources_end()    }; \

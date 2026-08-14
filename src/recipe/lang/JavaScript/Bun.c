@@ -5,7 +5,7 @@
 def_target(pl_bun, "bun");
 
 void
-pl_bun_prelude (void)
+pl_bun_prepare (void)
 {
   chef_prep_this (pl_bun, gsr);
 

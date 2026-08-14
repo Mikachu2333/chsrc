@@ -5,7 +5,7 @@
 def_target(pl_pip, "pip");
 
 void
-pl_pip_prelude (void)
+pl_pip_prepare (void)
 {
   chef_prep_this (pl_pip, gsr);
 

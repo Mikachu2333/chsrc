@@ -5,7 +5,7 @@
 def_target(os_kali, "kali");
 
 void
-os_kali_prelude ()
+os_kali_prepare ()
 {
   chef_prep_this (os_kali, gsr);
 

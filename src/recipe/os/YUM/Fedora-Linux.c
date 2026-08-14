@@ -5,7 +5,7 @@
 def_target(os_fedora, "fedora");
 
 void
-os_fedora_prelude ()
+os_fedora_prepare ()
 {
   chef_prep_this (os_fedora, sr);
 

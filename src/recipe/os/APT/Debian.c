@@ -5,7 +5,7 @@
 def_target(os_debian, "debian");
 
 void
-os_debian_prelude ()
+os_debian_prepare ()
 {
   chef_prep_this (os_debian, gsr);
 
@@ -23,22 +23,22 @@ os_debian_prelude ()
   chef_set_note(this, NULL, NULL);
 
   def_sources_begin()
-  {&UpstreamProvider, "http://deb.debian.org/debian",          FeedByPrelude},
-  {&MirrorZ,          "https://mirrors.cernet.edu.cn/debian",  FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/debian", FeedByPrelude},
-  {&Volcengine,       "https://mirrors.volces.com/debian", FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/debian", FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/debian", FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/debian", FeedByPrelude},
-  {&Tencent,          "https://mirrors.tencent.com/debian", FeedByPrelude}
+  {&UpstreamProvider, "http://deb.debian.org/debian",          FeedByPrepare},
+  {&MirrorZ,          "https://mirrors.cernet.edu.cn/debian",  FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/debian", FeedByPrepare},
+  {&Volcengine,       "https://mirrors.volces.com/debian", FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/debian", FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/debian", FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/debian", FeedByPrepare},
+  {&Tencent,          "https://mirrors.tencent.com/debian", FeedByPrepare}
 
-  // {&Tencent_Intra, "https://mirrors.tencentyun.com/debian", FeedByPrelude},
-
-  /* 不启用原因：过慢 */
-  // {&Netease,     "https://mirrors.163.com/debian", FeedByPrelude},
+  // {&Tencent_Intra, "https://mirrors.tencentyun.com/debian", FeedByPrepare},
 
   /* 不启用原因：过慢 */
-  // {&Sohu,        "https://mirrors.sohu.com/debian", FeedByPrelude}
+  // {&Netease,     "https://mirrors.163.com/debian", FeedByPrepare},
+
+  /* 不启用原因：过慢 */
+  // {&Sohu,        "https://mirrors.sohu.com/debian", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/dists/bookworm/main/Contents-all.gz");

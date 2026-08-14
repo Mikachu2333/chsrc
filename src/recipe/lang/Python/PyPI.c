@@ -29,7 +29,7 @@ pl_pypi_smURL_constructor (const char *url, const char *user_data)
 
 
 void
-pl_pypi_prelude (void)
+pl_pypi_prepare (void)
 {
   chef_prep_sources_target (pl_pypi);
 
@@ -43,25 +43,25 @@ pl_pypi_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://pypi.org/simple",                       FeedByPrelude},
-  {&MirrorZ,          "https://mirrors.cernet.edu.cn/pypi/web/simple", FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/pypi/web/simple",   FeedByPrelude},
+  {&UpstreamProvider, "https://pypi.org/simple",                       FeedByPrepare},
+  {&MirrorZ,          "https://mirrors.cernet.edu.cn/pypi/web/simple", FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/pypi/web/simple",   FeedByPrepare},
   // 不要添加Zju，浙大的PyPI服务在校外访问会自动转向Tuna
-  {&Lzuoss,           "https://mirror.lzu.edu.cn/pypi/web/simple",     FeedByPrelude},
+  {&Lzuoss,           "https://mirror.lzu.edu.cn/pypi/web/simple",     FeedByPrepare},
   // 2025-09-29 此源已停用
   // @ref https://mirrors.jlu.edu.cn/_news/#2025-04-06-pypi-repo-down
-  // {&Jlu,              "https://mirrors.jlu.edu.cn/pypi/web/simple", FeedByPrelude},
-  {&Sjtug_Siyuan,     "https://mirror.sjtu.edu.cn/pypi/web/simple",    FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",   FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/pypi/simple",       FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/pypi/simple",        FeedByPrelude},
-  {&Nju,              "https://mirror.nju.edu.cn/pypi/web/simple",     FeedByPrelude},
-  {&Pku,              "https://mirrors.pku.edu.cn/pypi/web/simple",    FeedByPrelude},
-  {&Tencent,          "https://mirrors.cloud.tencent.com/pypi/simple", FeedByPrelude},
+  // {&Jlu,              "https://mirrors.jlu.edu.cn/pypi/web/simple", FeedByPrepare},
+  {&Sjtug_Siyuan,     "https://mirror.sjtu.edu.cn/pypi/web/simple",    FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple",   FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/pypi/simple",       FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/pypi/simple",        FeedByPrepare},
+  {&Nju,              "https://mirror.nju.edu.cn/pypi/web/simple",     FeedByPrepare},
+  {&Pku,              "https://mirrors.pku.edu.cn/pypi/web/simple",    FeedByPrepare},
+  {&Tencent,          "https://mirrors.cloud.tencent.com/pypi/simple", FeedByPrepare},
 
-  // {&Tencent_Intra, "https://mirrors.cloud.tencentyun.com/pypi/simple", FeedByPrelude}
-  {&Huawei,           "https://mirrors.huaweicloud.com/repository/pypi/simple", FeedByPrelude},
-  {&Hust,             "https://mirrors.hust.edu.cn/pypi/web/simple",   FeedByPrelude}
+  // {&Tencent_Intra, "https://mirrors.cloud.tencentyun.com/pypi/simple", FeedByPrepare}
+  {&Huawei,           "https://mirrors.huaweicloud.com/repository/pypi/simple", FeedByPrepare},
+  {&Hust,             "https://mirrors.hust.edu.cn/pypi/web/simple",   FeedByPrepare}
 
   /* 不启用原因：24小时更新一次 */
   // {&Netease,       "https://mirrors.163.com/.help/pypi.html", NULL}

@@ -7,7 +7,7 @@
 def_target(wr_tex, "latex/ctan/tex/texlive/miktex/tlmgr/mpm");
 
 void
-wr_tex_prelude ()
+wr_tex_prepare ()
 {
   chef_prep_this (wr_tex, gs);
 

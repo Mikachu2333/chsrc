@@ -5,7 +5,7 @@
 def_target(pl_julia, "julia");
 
 void
-pl_julia_prelude ()
+pl_julia_prepare ()
 {
   chef_prep_this (pl_julia, gs);
 

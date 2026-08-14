@@ -5,7 +5,7 @@
 def_target(pl_haskell, "haskell/cabal/stack/hackage");
 
 void
-pl_haskell_prelude ()
+pl_haskell_prepare ()
 {
   chef_prep_this (pl_haskell, s);
 

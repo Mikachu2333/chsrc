@@ -8,7 +8,7 @@
 def_target(pl_rust_rustup, "rustup");
 
 void
-pl_rust_rustup_prelude (void)
+pl_rust_rustup_prepare (void)
 {
   chef_prep_this (pl_rust_rustup, gsr);
 
@@ -27,16 +27,16 @@ pl_rust_rustup_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://static.rust-lang.org",                 FeedByPrelude},
-  {&MirrorZ,          "https://mirrors.cernet.edu.cn/rustup",         FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/rustup",  FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/rust-static",      FeedByPrelude},
-  {&Nju,              "https://mirror.nju.edu.cn/rustup",             FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/rust-static",       FeedByPrelude},
-  {&Zju,              "https://mirrors.zju.edu.cn/rustup",            FeedByPrelude},
-  {&Iscas,            "https://mirror.iscas.ac.cn/rustup",            FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/rustup",            FeedByPrelude},
-  {&RsProxyCN,        "https://rsproxy.cn",                           FeedByPrelude}
+  {&UpstreamProvider, "https://static.rust-lang.org",                 FeedByPrepare},
+  {&MirrorZ,          "https://mirrors.cernet.edu.cn/rustup",         FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/rustup",  FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/rust-static",      FeedByPrepare},
+  {&Nju,              "https://mirror.nju.edu.cn/rustup",             FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/rust-static",       FeedByPrepare},
+  {&Zju,              "https://mirrors.zju.edu.cn/rustup",            FeedByPrepare},
+  {&Iscas,            "https://mirror.iscas.ac.cn/rustup",            FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/rustup",            FeedByPrepare},
+  {&RsProxyCN,        "https://rsproxy.cn",                           FeedByPrepare}
   def_sources_end()
 
   // 20MB大小

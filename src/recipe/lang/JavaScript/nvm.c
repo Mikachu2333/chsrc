@@ -5,7 +5,7 @@
 def_target(pl_nvm, "nvm");
 
 void
-pl_nvm_prelude (void)
+pl_nvm_prepare (void)
 {
   chef_prep_this (pl_nvm, gsr);
 

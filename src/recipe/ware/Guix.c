@@ -5,7 +5,7 @@
 def_target(wr_guix, "guix");
 
 void
-wr_guix_prelude ()
+wr_guix_prepare ()
 {
   chef_prep_this (wr_guix, s);
 

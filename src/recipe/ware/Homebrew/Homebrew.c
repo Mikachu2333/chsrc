@@ -7,7 +7,7 @@
 def_target(wr_homebrew, "brew/homebrew");
 
 void
-wr_homebrew_prelude ()
+wr_homebrew_prepare ()
 {
   chef_prep_this (wr_homebrew, gs);
 

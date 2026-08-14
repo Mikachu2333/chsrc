@@ -5,7 +5,7 @@
 def_target(os_openbsd, "openbsd");
 
 void
-os_openbsd_prelude ()
+os_openbsd_prepare ()
 {
   chef_prep_this (os_openbsd, gs);
 

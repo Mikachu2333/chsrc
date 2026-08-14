@@ -5,7 +5,7 @@
 def_target(os_voidlinux, "voidlinux");
 
 void
-os_voidlinux_prelude ()
+os_voidlinux_prepare ()
 {
   chef_prep_this (os_voidlinux, gsr);
 
@@ -23,10 +23,10 @@ os_voidlinux_prelude ()
   chef_set_note(this, NULL, NULL);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://repo-default.voidlinux.org", FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/voidlinux", FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/voidlinux", FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/voidlinux", FeedByPrelude}
+  {&UpstreamProvider, "https://repo-default.voidlinux.org", FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/voidlinux", FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/voidlinux", FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/voidlinux", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/live/20240314/void-live-x86_64-musl-20240314-xfce.iso");

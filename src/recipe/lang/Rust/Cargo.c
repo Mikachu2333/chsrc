@@ -5,7 +5,7 @@
 def_target(pl_rust_cargo, "rust/cargo/crate/crates");
 
 void
-pl_rust_cargo_prelude (void)
+pl_rust_cargo_prepare (void)
 {
   chef_prep_this (pl_rust_cargo, gsr);
 
@@ -40,7 +40,7 @@ pl_rust_cargo_prelude (void)
   {&Zju,              "https://mirrors.zju.edu.cn/crates.io-index/",    NULL},
 
   /* 注释原因: (2025-06-17) 镜像同步失败，多数包都不可用 */
-  // {&Nju,        "https://mirror.nju.edu.cn/git/crates.io-index.git/",   FeedByPrelude},
+  // {&Nju,        "https://mirror.nju.edu.cn/git/crates.io-index.git/",   FeedByPrepare},
 
   {&Sjtug_Zhiyuan, "https://mirrors.sjtug.sjtu.edu.cn/crates.io-index/",   "https://mirror.sjtu.edu.cn/crates.io/crates/windows/windows-0.58.0.crate"},
   {&Tuna,          "https://mirrors.tuna.tsinghua.edu.cn/crates.io-index/", NULL},
@@ -48,7 +48,7 @@ pl_rust_cargo_prelude (void)
   {&Ustc,          "https://mirrors.ustc.edu.cn/crates.io-index/",         "https://crates-io.proxy.ustclug.org/" url_postfix},
 
   /* 注释原因: (2025-06-17) 镜像同步失败，多数包都不可用 */
-  // {&Hust,       "https://mirrors.hust.edu.cn/crates.io-index/", FeedByPrelude},
+  // {&Hust,       "https://mirrors.hust.edu.cn/crates.io-index/", FeedByPrepare},
 
   {&Cqu,           "https://mirrors.cqu.edu.cn/crates.io-index/",  NULL}
   def_sources_end()

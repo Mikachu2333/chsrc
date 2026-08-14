@@ -5,7 +5,7 @@
 def_target(os_openwrt, "openwrt/opkg/LEDE");
 
 void
-os_openwrt_prelude ()
+os_openwrt_prepare ()
 {
   chef_prep_this (os_openwrt, gsr);
 

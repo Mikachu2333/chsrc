@@ -5,7 +5,7 @@
 def_target(os_gentoo, "gentoo");
 
 void
-os_gentoo_prelude ()
+os_gentoo_prepare ()
 {
   chef_prep_this (os_gentoo, s);
 

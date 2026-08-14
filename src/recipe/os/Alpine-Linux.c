@@ -5,7 +5,7 @@
 def_target(os_alpine, "alpine");
 
 void
-os_alpine_prelude ()
+os_alpine_prepare ()
 {
   chef_prep_this (os_alpine, gs);
 
@@ -23,14 +23,14 @@ os_alpine_prelude ()
   chef_set_note(this, NULL, NULL);
 
   def_sources_begin()
-  {&UpstreamProvider, "http://dl-cdn.alpinelinux.org/alpine", FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/alpine", FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirrors.sjtug.sjtu.edu.cn/alpine", FeedByPrelude},
-  {&Zju,              "https://mirrors.zju.edu.cn/alpine", FeedByPrelude},
-  {&Lzuoss,           "https://mirror.lzu.edu.cn/alpine", FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/alpine", FeedByPrelude},
-  {&Tencent,          "https://mirrors.cloud.tencent.com/alpine", FeedByPrelude},
-  {&Huawei,           "https://mirrors.huaweicloud.com/alpine", FeedByPrelude}
+  {&UpstreamProvider, "http://dl-cdn.alpinelinux.org/alpine", FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/alpine", FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirrors.sjtug.sjtu.edu.cn/alpine", FeedByPrepare},
+  {&Zju,              "https://mirrors.zju.edu.cn/alpine", FeedByPrepare},
+  {&Lzuoss,           "https://mirror.lzu.edu.cn/alpine", FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/alpine", FeedByPrepare},
+  {&Tencent,          "https://mirrors.cloud.tencent.com/alpine", FeedByPrepare},
+  {&Huawei,           "https://mirrors.huaweicloud.com/alpine", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/latest-stable/releases/x86_64/netboot/initramfs-lts");

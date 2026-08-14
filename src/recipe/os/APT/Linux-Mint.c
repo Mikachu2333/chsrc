@@ -5,7 +5,7 @@
 def_target(os_linuxmint, "linuxmint");
 
 void
-os_linuxmint_prelude ()
+os_linuxmint_prepare ()
 {
   chef_prep_this (os_linuxmint, gs);
 

@@ -28,7 +28,7 @@ chef_debug_target (Target_t *target)
   printf ("  Get Function: %p\n", target->getfn);
   printf ("  Set Function: %p\n", target->setfn);
   printf ("  Reset Function: %p\n", target->resetfn);
-  printf ("  Prelude Function: %p\n", target->preludefn);
+  printf ("  Prepare Function: %p\n", target->preparefn);
 
   printf ("  Inited?: %d\n", target->inited);
 
@@ -253,12 +253,12 @@ chef_use_other_target_sources (Target_t *this, Target_t *other)
 {
   if (!other->inited)
     {
-      if (other->preludefn)
-        other->preludefn();
+      if (other->preparefn)
+        other->preparefn();
       else
         {
           chef_debug_target (other);
-          chsrc_breakdown ("`other` 未定义 _prelude() !");
+          chsrc_breakdown ("`other` 未定义 _prepare() !");
         }
     }
 
@@ -528,7 +528,7 @@ chef_set_recipe_last_updated (Target_t *target, char *date)
 /**
  * @note 某些 target 需要修改 User-Agent
  * 由于单独测速 (chsrc measure) 的时候也需要进行此项修改，
- * 所以该函数不能仅仅放在 _setsrc() 里，而是应当放在 _prelude() 里
+ * 所以该函数不能仅仅放在 _setsrc() 里，而是应当放在 _prepare() 里
  */
 void
 chef_set_user_agent (char *user_agent)

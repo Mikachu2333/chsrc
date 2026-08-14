@@ -5,7 +5,7 @@
 def_target(os_almalinux, "alma/almalinux");
 
 void
-os_almalinux_prelude ()
+os_almalinux_prepare ()
 {
   chef_prep_this (os_almalinux, s);
 
@@ -23,11 +23,11 @@ os_almalinux_prelude ()
 
   def_sources_begin()
   {&UpstreamProvider, "http://repo.almalinux.org/almalinux",  DelegateToUpstream},
-  {&Ali,              "https://mirrors.aliyun.com/almalinux", FeedByPrelude},
-  {&Volcengine,       "https://mirrors.volces.com/almalinux", FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirrors.sjtug.sjtu.edu.cn/almalinux", FeedByPrelude},
-  {&Zju,              "https://mirrors.zju.edu.cn/almalinux",        FeedByPrelude},
-  {&Nju,              "https://mirror.nju.edu.cn/almalinux",         FeedByPrelude}
+  {&Ali,              "https://mirrors.aliyun.com/almalinux", FeedByPrepare},
+  {&Volcengine,       "https://mirrors.volces.com/almalinux", FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirrors.sjtug.sjtu.edu.cn/almalinux", FeedByPrepare},
+  {&Zju,              "https://mirrors.zju.edu.cn/almalinux",        FeedByPrepare},
+  {&Nju,              "https://mirror.nju.edu.cn/almalinux",         FeedByPrepare}
   def_sources_end()
 
 #define link "/9.6/isos/x86_64/AlmaLinux-9-latest-x86_64-minimal.iso"

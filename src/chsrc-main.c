@@ -593,32 +593,32 @@ iterate_menu (XySeq_t *menu, const char *input, Target_t **target)
 
 
 void
-callback_perform_all_prelude_for_menu (void *data, void *DUMMY)
+callback_perform_all_prepare_for_menu (void *data, void *DUMMY)
 {
   Target_t *target = (Target_t *) data;
 
-  if (!target->preludefn)
+  if (!target->preparefn)
     {
       chef_debug_target (target);
-      chsrc_breakdown ("未定义 _prelude() !");
+      chsrc_breakdown ("未定义 _prepare() !");
     }
 
-  target->preludefn();
+  target->preparefn();
 }
 
 /**
- * @brief 用于检查所有 _prelude() 是否能正常工作
+ * @brief 用于检查所有 _prepare() 是否能正常工作
  *
  * 为了防止 DEBUG 模式下运行流程和普通模式下运行流程不一样，我们只在 Get, Set, Reset
  * 之后才运行该函数
  */
 void
-chsrc_perform_all_prelude ()
+chsrc_perform_all_prepare ()
 {
-  chsrc_debug ("prelude", "DEBUG模式下, 额外检查所有 _prelude() 是否能正常工作");
-  xy_seq_each (ProgStore.pl, callback_perform_all_prelude_for_menu, NULL);
-  xy_seq_each (ProgStore.os, callback_perform_all_prelude_for_menu, NULL);
-  xy_seq_each (ProgStore.wr, callback_perform_all_prelude_for_menu, NULL);
+  chsrc_debug ("prepare", "DEBUG模式下, 额外检查所有 _prepare() 是否能正常工作");
+  xy_seq_each (ProgStore.pl, callback_perform_all_prepare_for_menu, NULL);
+  xy_seq_each (ProgStore.os, callback_perform_all_prepare_for_menu, NULL);
+  xy_seq_each (ProgStore.wr, callback_perform_all_prepare_for_menu, NULL);
 }
 
 
@@ -663,7 +663,7 @@ find_target (const char *input)
   if (matched)
     {
       /* 按需加载 recipe 信息: 填充好该 recipe 所有信息，其他 recipe 信息不填充 */
-      target->preludefn();
+      target->preparefn();
       return target;
     }
   else
@@ -707,7 +707,7 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
       for (size_t i=0; i<sub_count; i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-          sub_target->preludefn();
+          sub_target->preparefn();
           println (bdpurple (sub_target->aliases));
           /* 嵌套的 group target 的处理 */
           if (chef_has_sub_targets(sub_target))
@@ -779,7 +779,7 @@ chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
       for (size_t i=0; i<sub_count; i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-          sub_target->preludefn();
+          sub_target->preparefn();
           println (bdpurple (sub_target->aliases));
         }
     }
@@ -802,7 +802,7 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-          sub_target->preludefn();
+          sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chsrc_set_target_group_mode();
           chefs_handle_Get_Source (sub_target, get_first_alias(sub_target), option);
@@ -833,7 +833,7 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-          sub_target->preludefn();
+          sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chefs_handle_Set_Source (sub_target, get_first_alias(sub_target), option);
           br();
@@ -881,7 +881,7 @@ chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-          sub_target->preludefn();
+          sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chefs_handle_Reset_Source (sub_target, get_first_alias(sub_target), option);
           br();
@@ -960,7 +960,7 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
               /* 递归显示 sub targets 信息 */
-              sub_target->preludefn();
+              sub_target->preparefn();
               cli_print_target_maintain_info_briefly (sub_target, sub_target->aliases);
               // chefs_handle_user_command (sub_target, code, input, option);
             }
@@ -979,7 +979,7 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
 
 #ifdef XY_DEBUG
   chef_debug_target (target);
-  chsrc_perform_all_prelude ();
+  chsrc_perform_all_prepare ();
 #endif
 
   return;

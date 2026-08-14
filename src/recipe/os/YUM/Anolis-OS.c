@@ -5,7 +5,7 @@
 def_target(os_anolis, "anolis/openanolis");
 
 void
-os_anolis_prelude ()
+os_anolis_prepare ()
 {
   chef_prep_this (os_anolis, s);
 

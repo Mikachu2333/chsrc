@@ -8,7 +8,7 @@
 def_target(os_openkylin, "openkylin");
 
 void
-os_openkylin_prelude ()
+os_openkylin_prepare ()
 {
   chef_prep_this (os_openkylin, gsr);
 

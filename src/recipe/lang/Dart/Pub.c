@@ -5,7 +5,7 @@
 def_target(pl_dart, "dart/pub");
 
 void
-pl_dart_prelude (void)
+pl_dart_prepare (void)
 {
   chef_prep_this (pl_dart, gsr);
 
@@ -24,11 +24,11 @@ pl_dart_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://pub.dev",           FeedByPrelude},
-  {&FlutterCN,        "https://pub.flutter-io.cn", FeedByPrelude},
-  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/dart-pub", FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/dart-pub", FeedByPrelude},
-  {&Nju,              "https://mirror.nju.edu.cn/dart-pub", FeedByPrelude}
+  {&UpstreamProvider, "https://pub.dev",           FeedByPrepare},
+  {&FlutterCN,        "https://pub.flutter-io.cn", FeedByPrepare},
+  {&Sjtug_Zhiyuan,    "https://mirror.sjtu.edu.cn/dart-pub", FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/dart-pub", FeedByPrepare},
+  {&Nju,              "https://mirror.nju.edu.cn/dart-pub", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/packages/flutter_vision/versions/1.1.4.tar.gz");

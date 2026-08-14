@@ -5,7 +5,7 @@
 def_target(os_openeuler, "openeuler");
 
 void
-os_openeuler_prelude ()
+os_openeuler_prepare ()
 {
   chef_prep_this (os_openeuler, gs);
 
@@ -22,18 +22,18 @@ os_openeuler_prelude ()
   chef_set_note(this, NULL, NULL);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://repo.openeuler.org/",               FeedByPrelude},
-  {&Ali,              "https://mirrors.aliyun.com/openeuler/",     FeedByPrelude},
-  {&Bfsu,             "https://mirrors.bfsu.edu.cn/openeuler/",    FeedByPrelude},
-  {&Ustc,             "https://mirrors.ustc.edu.cn/openeuler/",    FeedByPrelude},
-  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/openeuler/", FeedByPrelude},
-  {&Tencent,          "https://mirrors.tencent.com/openeuler/",    FeedByPrelude}
-  // {&Tencent_Intra, "https://mirrors.tencentyun.com/openeuler/", FeedByPrelude},
+  {&UpstreamProvider, "https://repo.openeuler.org/",               FeedByPrepare},
+  {&Ali,              "https://mirrors.aliyun.com/openeuler/",     FeedByPrepare},
+  {&Bfsu,             "https://mirrors.bfsu.edu.cn/openeuler/",    FeedByPrepare},
+  {&Ustc,             "https://mirrors.ustc.edu.cn/openeuler/",    FeedByPrepare},
+  {&Tuna,             "https://mirrors.tuna.tsinghua.edu.cn/openeuler/", FeedByPrepare},
+  {&Tencent,          "https://mirrors.tencent.com/openeuler/",    FeedByPrepare}
+  // {&Tencent_Intra, "https://mirrors.tencentyun.com/openeuler/", FeedByPrepare},
 
   /* 不启用原因：过慢 */
-  // {&Netease,          "https://mirrors.163.com/openeuler/",  FeedByPrelude}
+  // {&Netease,          "https://mirrors.163.com/openeuler/",  FeedByPrepare}
   /* 不启用原因：过慢 */
-  // {&Sohu,             "https://mirrors.sohu.com/openeuler/", FeedByPrelude}
+  // {&Sohu,             "https://mirrors.sohu.com/openeuler/", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "https://repo.openeuler.org/openEuler-24.03-LTS/ISO/x86_64/openEuler-24.03-LTS-netinst-x86_64-dvd.iso");

@@ -12,7 +12,7 @@ static MirrorSite_t RubyChina =
 def_target(pl_ruby, "gem/ruby/rb/rubygem/rubygems/bundler");
 
 void
-pl_ruby_prelude (void)
+pl_ruby_prepare (void)
 {
   chef_prep_this (pl_ruby, gsr);
 

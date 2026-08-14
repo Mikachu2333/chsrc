@@ -5,7 +5,7 @@
 def_target(pl_php, "php/composer");
 
 void
-pl_php_prelude ()
+pl_php_prepare ()
 {
   chef_prep_this (pl_php, gs);
 

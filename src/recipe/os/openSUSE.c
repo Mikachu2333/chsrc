@@ -5,7 +5,7 @@
 def_target(os_opensuse, "opensuse/opensuse-leap/opensuse-tumbleweed");
 
 void
-os_opensuse_prelude ()
+os_opensuse_prepare ()
 {
   chef_prep_this (os_opensuse, s);
 

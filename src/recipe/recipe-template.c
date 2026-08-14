@@ -56,7 +56,7 @@ RubyMetric = {
 
 
 void
-<category>_<target>_prelude (void)
+<category>_<target>_prepare (void)
 {
   // op 可以为 NOOP|s|sr|gsr|gs, 代表支持 Get Set Reset 三种操作
   chef_prep_this (<category>_<target>, op);

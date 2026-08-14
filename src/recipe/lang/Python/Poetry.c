@@ -5,7 +5,7 @@
 def_target(pl_poetry, "poetry");
 
 void
-pl_poetry_prelude (void)
+pl_poetry_prepare (void)
 {
   chef_prep_this (pl_poetry, gsr);
 

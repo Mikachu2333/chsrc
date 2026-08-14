@@ -23,7 +23,7 @@ wr_nix_is_multi_user_installation_mode ()
 }
 
 void
-wr_nix_prelude ()
+wr_nix_prepare ()
 {
   chef_prep_this (wr_nix, s);
 

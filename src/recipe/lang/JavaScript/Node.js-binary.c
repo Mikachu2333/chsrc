@@ -12,7 +12,7 @@ static MirrorSite_t NpmMirror =
 def_sources_target(pl_nodejs_binary, "nodejs-binary");
 
 void
-pl_nodejs_binary_prelude (void)
+pl_nodejs_binary_prepare (void)
 {
   chef_prep_sources_target (pl_nodejs_binary);
 
@@ -25,13 +25,13 @@ pl_nodejs_binary_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider,  "https://nodejs.org/dist/", FeedByPrelude},
-  {&NpmMirror, "https://npmmirror.com/mirrors", FeedByPrelude},
-  {&Tuna,      "https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/",FeedByPrelude},
-  {&Bfsu,      "https://mirrors.bfsu.edu.cn/nodejs-release/",FeedByPrelude},
-  {&Ustc,      "https://mirrors.ustc.edu.cn/node/",FeedByPrelude},
-  {&Huawei,    "https://mirrors.huaweicloud.com/nodejs/",FeedByPrelude},
-  {&Tencent,   "https://mirrors.cloud.tencent.com/nodejs-release/", FeedByPrelude}
+  {&UpstreamProvider,  "https://nodejs.org/dist/", FeedByPrepare},
+  {&NpmMirror, "https://npmmirror.com/mirrors", FeedByPrepare},
+  {&Tuna,      "https://mirrors.tuna.tsinghua.edu.cn/nodejs-release/",FeedByPrepare},
+  {&Bfsu,      "https://mirrors.bfsu.edu.cn/nodejs-release/",FeedByPrepare},
+  {&Ustc,      "https://mirrors.ustc.edu.cn/node/",FeedByPrepare},
+  {&Huawei,    "https://mirrors.huaweicloud.com/nodejs/",FeedByPrepare},
+  {&Tencent,   "https://mirrors.cloud.tencent.com/nodejs-release/", FeedByPrepare}
   def_sources_end()
 
   chef_set_rest_smURL_with_postfix (this, "/v23.4.0/node-v23.4.0-linux-x64.tar.xz");

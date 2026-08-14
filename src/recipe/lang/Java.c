@@ -5,7 +5,7 @@
 def_target(pl_java, "java/maven/mvn/maven-daemon/mvnd/gradle");
 
 void
-pl_java_prelude ()
+pl_java_prepare ()
 {
   chef_prep_this (pl_java, gsr);
 
@@ -32,13 +32,13 @@ pl_java_prelude ()
   chef_set_user_agent ("Maven/3.9.11");
 
   def_sources_begin()
-  {&UpstreamProvider, "https://repo1.maven.org/maven2/",                                 FeedByPrelude},
-  {&Ali,              "https://maven.aliyun.com/repository/public/",                     FeedByPrelude},
-  {&Huawei,           "https://mirrors.huaweicloud.com/repository/maven/",               FeedByPrelude},
-  {&HuaweiCDN,        "https://repo.huaweicloud.com/repository/maven/",                  FeedByPrelude},
-  {&Tencent,          "https://mirrors.cloud.tencent.com/nexus/repository/maven-public/",FeedByPrelude},
+  {&UpstreamProvider, "https://repo1.maven.org/maven2/",                                 FeedByPrepare},
+  {&Ali,              "https://maven.aliyun.com/repository/public/",                     FeedByPrepare},
+  {&Huawei,           "https://mirrors.huaweicloud.com/repository/maven/",               FeedByPrepare},
+  {&HuaweiCDN,        "https://repo.huaweicloud.com/repository/maven/",                  FeedByPrepare},
+  {&Tencent,          "https://mirrors.cloud.tencent.com/nexus/repository/maven-public/",FeedByPrepare},
   // 网易的24小时更新一次
-  {&Netease,          "http://mirrors.163.com/maven/repository/maven-public/",           FeedByPrelude}
+  {&Netease,          "http://mirrors.163.com/maven/repository/maven-public/",           FeedByPrepare}
   def_sources_end()
 
   // 220MB

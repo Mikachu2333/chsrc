@@ -5,7 +5,7 @@
 def_target(os_netbsd, "netbsd");
 
 void
-os_netbsd_prelude ()
+os_netbsd_prepare ()
 {
   chef_prep_this (os_netbsd, gs);
 

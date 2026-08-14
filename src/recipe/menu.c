@@ -161,7 +161,7 @@ chsrc_init_menu ()
 
 
 
-#define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preludefn = pl_##t##_prelude
+#define add(t) xy_seq_push(ProgStore.pl, &pl_##t##_target); (&pl_##t##_target)->preparefn = pl_##t##_prepare
   add (ruby);
   // Python
   add (py_group);
@@ -198,7 +198,7 @@ chsrc_init_menu ()
   add (julia);
 #undef add
 
-#define add(t) xy_seq_push(ProgStore.os, &os_##t##_target); (&os_##t##_target)->preludefn = os_##t##_prelude
+#define add(t) xy_seq_push(ProgStore.os, &os_##t##_target); (&os_##t##_target)->preparefn = os_##t##_prepare
   add (ubuntu);
   add (linuxmint);
   add (debian);
@@ -231,7 +231,7 @@ chsrc_init_menu ()
   add (openbsd);
 #undef add
 
-#define add(t) xy_seq_push(ProgStore.wr, &wr_##t##_target); (&wr_##t##_target)->preludefn = wr_##t##_prelude
+#define add(t) xy_seq_push(ProgStore.wr, &wr_##t##_target); (&wr_##t##_target)->preparefn = wr_##t##_prepare
   add (winget);
   add (homebrew);
   add (cocoapods);
@@ -244,6 +244,6 @@ chsrc_init_menu ()
   add (anaconda);
 #undef add
 
-  chef_set_preludefn_for_sources_target (pl_pypi);
-  chef_set_preludefn_for_sources_target (pl_nodejs_binary);
+  chef_set_preparefn_for_sources_target (pl_pypi);
+  chef_set_preparefn_for_sources_target (pl_nodejs_binary);
 }

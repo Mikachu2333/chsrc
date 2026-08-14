@@ -7,7 +7,7 @@
 def_target(os_raspberrypi, "raspi/raspberrypi");
 
 void
-os_raspberrypi_prelude ()
+os_raspberrypi_prepare ()
 {
   chef_prep_this (os_raspberrypi, gsr);
 

@@ -5,7 +5,7 @@
 def_target(os_termux, "termux");
 
 void
-os_termux_prelude ()
+os_termux_prepare ()
 {
   chef_prep_this (os_termux, gsr);
 

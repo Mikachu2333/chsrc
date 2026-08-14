@@ -19,7 +19,7 @@ GoProxyIO =
 def_target(pl_go, "go/golang/goproxy");
 
 void
-pl_go_prelude ()
+pl_go_prepare ()
 {
   chef_prep_this (pl_go, gsr);
 

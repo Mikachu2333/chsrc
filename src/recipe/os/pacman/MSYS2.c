@@ -5,7 +5,7 @@
 def_target(os_msys2, "msys2/msys");
 
 void
-os_msys2_prelude ()
+os_msys2_prepare ()
 {
   chef_prep_this (os_msys2, s);
 

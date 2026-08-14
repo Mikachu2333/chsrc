@@ -15,7 +15,7 @@ pre-commit:
   parallel: false
   jobs:
     - name: 试运行 DEBUG mode
-      # 触发所有 _prelude() 函数检查
+      # 触发所有 _prepare() 函数检查
       run: |
         just build-in-debug-mode
         ./chsrc-debug get pip

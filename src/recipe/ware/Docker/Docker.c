@@ -22,7 +22,7 @@ Fit2Cloud =
 def_target(wr_docker, "docker/dockerhub");
 
 void
-wr_docker_prelude ()
+wr_docker_prepare ()
 {
   chef_prep_this (wr_docker, gs);
 

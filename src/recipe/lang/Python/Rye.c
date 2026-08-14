@@ -7,7 +7,7 @@
 def_target(pl_rye, "rye");
 
 void
-pl_rye_prelude (void)
+pl_rye_prepare (void)
 {
   chef_prep_this (pl_rye, gsr);
 

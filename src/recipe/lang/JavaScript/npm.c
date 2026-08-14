@@ -5,7 +5,7 @@
 def_target(pl_npm, "npm");
 
 void
-pl_npm_prelude (void)
+pl_npm_prepare (void)
 {
   chef_prep_this (pl_npm, gsr);
 
@@ -24,10 +24,10 @@ pl_npm_prelude (void)
   chef_allow_user_define(this);
 
   def_sources_begin()
-  {&UpstreamProvider, "https://registry.npmjs.org/",    FeedByPrelude}, /* @note 根据 pnpm 官网，有最后的斜线 */
-  {&NpmMirror,        "https://registry.npmmirror.com", FeedByPrelude},
-  {&Huawei,           "https://mirrors.huaweicloud.com/repository/npm/", FeedByPrelude},
-  {&Tencent,          "https://mirrors.cloud.tencent.com/npm/", FeedByPrelude}
+  {&UpstreamProvider, "https://registry.npmjs.org/",    FeedByPrepare}, /* @note 根据 pnpm 官网，有最后的斜线 */
+  {&NpmMirror,        "https://registry.npmmirror.com", FeedByPrepare},
+  {&Huawei,           "https://mirrors.huaweicloud.com/repository/npm/", FeedByPrepare},
+  {&Tencent,          "https://mirrors.cloud.tencent.com/npm/", FeedByPrepare}
   def_sources_end()
 
   // 29MB 大小

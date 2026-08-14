@@ -5,7 +5,7 @@
 def_target(os_armbian, "armbian");
 
 void
-os_armbian_prelude ()
+os_armbian_prepare ()
 {
   chef_prep_this (os_armbian, gsr);
 
