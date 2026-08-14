@@ -36,9 +36,10 @@
 #include "framework/version.h"
 #include "framework/core.c"
 #include "framework/chef.c"
+#include "framework/dish.c"
 
 void
-chsrc_register_contributors ()
+chsrc_register_chefs_and_sauciers ()
 {
   /* 项目创建者 */
   chef_register_contributor ("@ccmywish",       "曾奥然",         "ccmywish@qq.com",                NULL);
@@ -128,23 +129,6 @@ cli_print_all_mirror_sites ()
     }
 }
 
-
-
-/**
- * 由 chefs_handle_XXX() 里的 group target 递归时调用
- */
-char *
-get_first_alias (Target_t *target)
-{
-  if (!target || !target->aliases || *target->aliases == '\0')
-    return NULL;
-
-  char *alias = xy_strdup (target->aliases);
-  char *separator = strchr (alias, '/');
-  if (separator)
-    *separator = '\0';
-  return alias;
-}
 
 
 /**
@@ -652,7 +636,7 @@ find_target (const char *input)
    *
    * 等命令不需要 target 时，就不需要注册贡献者信息，加快执行速度
    */
-  chsrc_register_contributors ();
+  chsrc_register_chefs_and_sauciers ();
 
   Target_t *target = NULL;
 
@@ -688,7 +672,7 @@ void
 chefs_handle_List_Info (Target_t *target, const char *input, char *option)
 {
   /* group target 仅展示维护信息 */
-  if (chef_has_sub_targets(target))
+  if (dish_has_sub_dishes(target))
     {
       int sub_count = xy_seq_len (target->sub_targets);
 
@@ -710,9 +694,9 @@ chefs_handle_List_Info (Target_t *target, const char *input, char *option)
           sub_target->preparefn();
           println (bdpurple (sub_target->aliases));
           /* 嵌套的 group target 的处理 */
-          if (chef_has_sub_targets(sub_target))
+          if (dish_has_sub_dishes(sub_target))
             {
-              chefs_handle_List_Info (sub_target, get_first_alias(sub_target), option);
+              chefs_handle_List_Info (sub_target, dish_get_first_alias(sub_target), option);
             }
           else
             {
@@ -760,7 +744,7 @@ void
 chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
 {
   /* group target 不测速，让用户自己分别测速 */
-  if (chef_has_sub_targets(target))
+  if (dish_has_sub_dishes(target))
     {
       int sub_count = xy_seq_len (target->sub_targets);
 
@@ -797,7 +781,7 @@ chefs_handle_Measure_Source (Target_t *target, const char *input, char *option)
 void
 chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
 {
-  if (chef_has_sub_targets(target))
+  if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
@@ -805,7 +789,7 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
           chsrc_set_target_group_mode();
-          chefs_handle_Get_Source (sub_target, get_first_alias(sub_target), option);
+          chefs_handle_Get_Source (sub_target, dish_get_first_alias(sub_target), option);
           br();
         }
       return;
@@ -828,14 +812,14 @@ chefs_handle_Get_Source (Target_t *target, const char *input, char *option)
 void
 chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
 {
-  if (chef_has_sub_targets(target))
+  if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
-          chefs_handle_Set_Source (sub_target, get_first_alias(sub_target), option);
+          chefs_handle_Set_Source (sub_target, dish_get_first_alias(sub_target), option);
           br();
         }
       return;
@@ -851,7 +835,7 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
        * 而检查用户自己提供换源URL 与 target->can_user_define 的冲突，则是
        * 在 `chsrc_yield_source()` 里完成的
        */
-      if (chef_has_sub_targets(target))
+      if (dish_has_sub_dishes(target))
         {
           /* group target 不要检查，留给后续 sub targets 检查 */
           xy_noop();
@@ -876,14 +860,14 @@ chefs_handle_Set_Source (Target_t *target, const char *input, char *option)
 void
 chefs_handle_Reset_Source (Target_t *target, const char *input, char *option)
 {
-  if (chef_has_sub_targets(target))
+  if (dish_has_sub_dishes(target))
     {
       for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
         {
           Target_t *sub_target = xy_seq_at (target->sub_targets, i);
           sub_target->preparefn();
           println (bdpurple(sub_target->aliases));
-          chefs_handle_Reset_Source (sub_target, get_first_alias(sub_target), option);
+          chefs_handle_Reset_Source (sub_target, dish_get_first_alias(sub_target), option);
           br();
         }
       return;
@@ -912,7 +896,7 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
 {
   if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
-      if (chef_has_sub_targets(target))
+      if (dish_has_sub_dishes(target))
         {
           int sub_count = xy_seq_len(target->sub_targets);
           char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子目标组成: "));
@@ -921,7 +905,7 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
           for (size_t i=0; i<sub_count; i++)
             {
               Target_t *sub_target = xy_seq_at (target->sub_targets, i);
-              zh_msg = xy_strcat (3, zh_msg, bdpurple(get_first_alias(sub_target)),
+              zh_msg = xy_strcat (3, zh_msg, bdpurple(dish_get_first_alias(sub_target)),
                 (i < sub_count-1) ? ", " : "");
             }
 
@@ -954,7 +938,7 @@ chefs_handle_user_command (Target_t *target, TargetCmd code, const char *input, 
   /* 核心命令 get, set, reset 完成后需要简短显示维护信息 */
   if (TargetCmd_Get_Source==code || TargetCmd_Set_Source==code || TargetCmd_Reset_Source==code)
     {
-      if (chef_has_sub_targets(target))
+      if (dish_has_sub_dishes(target))
         {
           for (size_t i=0; i<xy_seq_len(target->sub_targets); i++)
             {
