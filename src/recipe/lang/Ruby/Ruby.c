@@ -17,7 +17,7 @@ pl_ruby_prepare (void)
   chef_prep_this_dish (pl_ruby, gsr);
 
   chef_set_recipe_created_on   (this, "2023-08-29");
-  chef_set_recipe_last_updated (this, "2026-08-02");
+  chef_set_recipe_last_updated (this, "2026-08-14");
 
   chef_set_chefs (this, 1, "@ccmywish");
   chef_set_sauciers (this, 1, "@BingChunMoLi");
@@ -100,7 +100,7 @@ pl_ruby_setsrc (char *option)
       where = " --local ";
     }
 
-  cmd = xy_strcat (4, "bundle config", where, "'mirror.https://rubygems.org' ", source.url);
+  cmd = xy_strcat (4, "bundle config set", where, "'mirror.https://rubygems.org' ", source.url);
   chsrc_run (cmd, RunOpt_No_Last_New_Line);
 
   chsrc_determine_chgtype (ChgType_Auto);
