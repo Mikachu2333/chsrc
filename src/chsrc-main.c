@@ -35,7 +35,6 @@
 
 #include "framework/version.h"
 #include "framework/foundation.c"
-#include "framework/helper.c"
 #include "framework/OS.c"
 #include "framework/chef.c"
 #include "framework/dish.c"

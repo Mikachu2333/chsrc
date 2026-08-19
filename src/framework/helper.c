@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  * -------------------------------------------------------------
  * File Name     : helper.c
- * File Authors  : 曾奥然 <ccmywish@qq.com>
+ * File Authors  : @ccmywish
  * Contributors  : Nul None <nul@none.org>
  * Created On    : <2025-07-14>
  * Last Modified : <2025-10-28>
