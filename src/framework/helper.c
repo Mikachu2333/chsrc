@@ -14,6 +14,8 @@
 bool
 hp_is_url (const char *str)
 {
+  if (!str)
+    return false;
   return (xy_str_start_with (str, "http://") || xy_str_start_with (str, "https://"));
 }
 

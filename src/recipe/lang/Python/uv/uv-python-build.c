@@ -26,7 +26,7 @@ pl_uv_python_build_prepare (void)
   chef_prep_this_dish (pl_uv_python_build, gsr);
 
   chef_set_recipe_created_on   (this, "2026-08-02");
-  chef_set_recipe_last_updated (this, "2026-08-13");
+  chef_set_recipe_last_updated (this, "2026-08-19");
 
   chef_set_chefs (this, 2, "@Mikachu2333", "@ccmywish");
   chef_set_sauciers (this, 0);
@@ -37,10 +37,7 @@ pl_uv_python_build_prepare (void)
   chef_set_default_scope (this, UserScope);
 
   chef_deny_english (this);
-  chef_deny_user_define (this);
-  this->can_user_define_explain =
-    CHINESE ? "python-install-mirror 不支持手动指定，chsrc 会自动选择"
-            : "python-install-mirror cannot be specified manually; chsrc selects it automatically";
+  chef_allow_user_define (this);
 
   def_sources_begin ()
   {&UpstreamProvider, "https://github.com/astral-sh/python-build-standalone/releases/download",       DelegateToUpstream},

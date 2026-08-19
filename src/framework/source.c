@@ -14,35 +14,13 @@
  * 源的确定
  * ------------------------------------------------------------*/
 
-void
-chsrc_begin_combo_source_resolution (Dish_t *dish)
-{
-  if (ProgStatus.ComboStackDepth >= MaxComboStackDepth)
-    chsrc_breakdown ("combo dish 嵌套层级过深");
-
-  int depth = ProgStatus.ComboStackDepth;
-  ProgStatus.ComboStack[depth] = dish;
-  ProgStatus.ComboBackedUpPaths[depth] = xy_seq_new ();
-  ProgStatus.ComboStackDepth++;
-}
-
-void
-chsrc_end_combo_source_resolution (void)
-{
-  if (ProgStatus.ComboStackDepth <= 0)
-    chsrc_breakdown ("combo dish 栈已为空");
-
-  ProgStatus.ComboStackDepth--;
-}
-
-
 /**
  * 用于 _setsrc() 函数，检测用户输入的镜像站 code，是否存在于该 dish 可用源中
  *
  * @note 一个源Source必定来自于一个Provider，所以该函数名叫 query_mirror_exist
  *
  * @param  dish_name  菜品名
- * @param  input      如果用户输入 default 或者 def，则选择第一个源
+ * @param  input      如果用户输入 `first`，则选择第一个源
  */
 int
 query_mirror_exist (Source_t *sources, size_t size, char *dish_name, char *input)
@@ -149,25 +127,28 @@ query_mirror_exist (Source_t *sources, size_t size, char *dish_name, char *input
  *
  * @param speed 单位为Byte/s
  */
-char *
+static char *
 to_human_readable_speed (double speed)
 {
   char *scale[] = {"Byte/s", "KByte/s", "MByte/s", "GByte/s", "TByte/s"};
   int i = 0;
   while (speed > 1024.0)
-  {
-    i += 1;
-    speed /= 1024.0;
-  }
+    {
+      i += 1;
+      speed /= 1024.0;
+    }
   char *buf = xy_malloc0 (64);
   sprintf (buf, "%.2f %s", speed, scale[i]);
 
   char *new = NULL;
-  if (i <= 1 ) new = red (buf);
+  if (i <= 1 )
+    {
+      new = red(buf);
+    }
   else
     {
-      if (i == 2 && speed < 2.00) new = yellow (buf);
-      else new = green (buf);
+      if (i == 2 && speed < 2.00) new = yellow(buf);
+      else new = green(buf);
     }
   return new;
 }
@@ -181,7 +162,7 @@ to_human_readable_speed (double speed)
  *
  * 该函数实际原型为 char * (*)(const char*)
  */
-void *
+static void *
 measure_speed_for_url (void *url)
 {
   char *time_sec = NULL;
@@ -224,7 +205,7 @@ measure_speed_for_url (void *url)
 /**
  * @return 返回速度speed，单位为 Byte/s
  */
-double
+static double
 parse_and_say_curl_result (char *curl_buf)
 {
   /* 分隔两部分数据 */
@@ -278,7 +259,7 @@ get_max_ele_idx_in_dbl_ary (double *array, int size)
  * @param      size           待测源的数量
  * @param[out] speed_records  速度值记录，单位为Byte/s
  */
-void
+static void
 measure_speed_for_every_source (Source_t sources[], int size, double speed_records[])
 {
   // bool get_measured[size]; /* 是否真正执行了测速 */
@@ -559,19 +540,19 @@ use_specific_mirror_or_auto_select (char *input, Dish_t *dish)
 }
 
 
-bool
+static bool
 source_is_upstream (Source_t *source)
 {
   return xy_streql (source->mirror->code, "upstream");
 }
 
-bool
+static bool
 source_is_userdefine (Source_t *source)
 {
   return xy_streql (source->mirror->code, "user");
 }
 
-bool
+static bool
 source_has_empty_url (Source_t *source)
 {
   return source->url == NULL;
@@ -581,22 +562,30 @@ source_has_empty_url (Source_t *source)
 /**
  * @brief 在 combo dish 中为当前 sub dish 解析源
  *
- * 用户只提供一个 code。若当前 sub dish 拥有该 code，直接使用它；否则，
- * 若某个兄弟 sub dish 拥有该 code，说明该 code 仅属于另一类源，当前 sub
- * dish 应自动测速选择其最快镜像。都不存在时走普通查询路径并报错。
+ * 用户只提供一个 mirror code，
+ *
+ * 1. 若当前 sub dish 拥有该 code，直接使用它
+ * 2. 若1不成立，而某个兄弟 sub dish 拥有该 code，说明该 code 仅属于另一类源，
+ *    当前 sub dish 应自动测速选择其最快镜像
+ * 3. 若1和2都不成立，则直接报错
  */
 int
-chsrc_resolve_combo_subdish_source (Dish_t *dish, char *option)
+resolve_combo_subdish_source (Dish_t *dish, char *mirror_code)
 {
-  if (dish_has_source_from_mirror (dish, option))
-    return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, option);
+  if (dish_has_source_from_mirror (dish, mirror_code))
+    return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, mirror_code);
 
-  if (subdish_sibling_has_source_from_mirror (dish, option))
-    return auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
+  if (subdish_sibling_has_source_from_mirror (dish, mirror_code))
+    {
+      chsrc_alert2 (CHINESE ? "当前子菜品没有来自所请求镜像站的源，尝试测速选择最快源"
+                            : "Current sub dish has no source from the requested mirror, try to auto select the fastest source");
+      return auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
+    }
 
-  chsrc_breakdown (ENGLISH
-                   ? "This combo sub dish has no source from the requested mirror"
-                   : "该 combo sub dish 没有所请求镜像站的源");
+
+  chsrc_error (CHINESE ? "所有的子菜品均没有来自所请求镜像站的源"
+                       : "All sub dishes have no source from the requested mirror");
+  exit (Exit_UserCause);
   return 0;
 }
 
@@ -629,27 +618,44 @@ chsrc_yield_source (Dish_t *dish, char *option)
   if (!dish->prepared) dish->preparefn();
 
   Source_t source;
+  char *user_defined_url = NULL;
+  char *mirror_code = NULL;
+
+  if (hp_is_url (option))
+    {
+      user_defined_url = option;
+    }
+  else if (option)
+    {
+      mirror_code = option;
+    }
+
+  /**
+   * @note
+   *   这里的逻辑需要厘清: 这个函数本身，只会被 _setsrc() 调用，而
+   *   combo dish 自身是没有 _setsrc() 的！所以进入到这里来的，必
+   *   定是 combo dish 的 sub dish 的 _setsrc()
+   */
   if (chsrc_in_dish_group_mode() && option)
     {
-      if (hp_is_url (option))
+      Dish_t *combo_dish = current_combo_dish();
+      if (user_defined_url)
         {
-          /* combo dish 传入 URL 时，支持该 sub dish 自定义 URL 的则直接使用；
-           * 不支持则自动选择该 sub dish 的最快源。这样 uv 可只把 URL 当作
-           * PyPI index，而 python-install-mirror 仍自动选择。 */
-          if (dish->can_user_define)
+          if (combo_dish->can_user_define)
             {
-              Source_t tmp = { &UserDefinedProvider, option };
+              Source_t tmp = { &UserDefinedProvider, option, NULL };
               source = tmp;
             }
           else
             {
-              int index = auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
-              source = dish->sources[index];
+              char *default_msg = "该 combo dish 不支持用户自定义源，可能原因是：该 combo dish 的多个 sub dish 所需要的源不同，无法确定你提供的源到底适用于哪个 sub dish，因此请尝试单独为每个 sub dish 指定源 (使用 chsrc ls <dish> 查看其 sub dish 列表)";
+              chsrc_error (default_msg);
+              exit (Exit_Unsupported);
             }
         }
       else
         {
-          int index = chsrc_resolve_combo_subdish_source (dish, option);
+          int index = resolve_combo_subdish_source (dish, mirror_code);
           source = dish->sources[index];
         }
     }
@@ -658,7 +664,7 @@ chsrc_yield_source (Dish_t *dish, char *option)
       if (!(dish->can_user_define))
         {
           char *en_msg = "Using user-defined sources for this dish is not supported.";
-          char *zh_msg = dish->can_user_define_explain ? xy_2strcat ("暂不支持对该菜品使用用户自定义源，", dish->can_user_define_explain) : "暂不支持对该菜品使用用户自定义源";
+          char *zh_msg = dish->user_define_cap_explain ? xy_2strcat ("暂不支持对该菜品使用用户自定义源，", dish->user_define_cap_explain) : "暂不支持对该菜品使用用户自定义源";
           chsrc_error (ENGLISH ? en_msg : zh_msg);
           exit (Exit_Unsupported);
         }

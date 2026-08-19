@@ -197,8 +197,8 @@ typedef struct Dish_t
   /* Features */
   bool  can_english;        /* 是否支持英文输出 */
 
-  bool  can_user_define;    /* 是否支持用户自定义URL来换源 */
-  char *can_user_define_explain; /* 用户自定义URL的说明 */
+  bool  can_user_define;         /* 是否支持用户自定义URL来换源 */
+  char *user_define_cap_explain; /* 用户不能自定义URL的原因解释 */
 
   /**
    * 各作用域的支持情况

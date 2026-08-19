@@ -47,7 +47,7 @@ dish_has_sub_dishes (Dish_t *dish)
 bool
 dish_has_source_from_mirror (Dish_t *dish, const char *mirror_code)
 {
-  if (!dish || !dish->sources || !code)
+  if (!dish || !dish->sources || !mirror_code)
     return false;
 
   if (xy_streql (mirror_code, "upstream"))
@@ -101,4 +101,35 @@ subdish_sibling_has_source_from_mirror (Dish_t *dish, const char *mirror_code)
     }
 
   return false;
+}
+
+void
+push_combo_stack (Dish_t *combo_dish)
+{
+  if (ProgStatus.ComboStackDepth >= MaxComboStackDepth)
+    chsrc_breakdown ("combo dish 嵌套层级过深");
+
+  int depth = ProgStatus.ComboStackDepth;
+  ProgStatus.ComboStack[depth] = combo_dish;
+  ProgStatus.ComboBackedUpPaths[depth] = xy_seq_new ();
+  ProgStatus.ComboStackDepth++;
+}
+
+void
+pop_combo_stack (void)
+{
+  if (ProgStatus.ComboStackDepth <= 0)
+    chsrc_breakdown ("combo dish 栈已为空");
+
+  ProgStatus.ComboStackDepth--;
+}
+
+
+Dish_t *
+current_combo_dish ()
+{
+  if (ProgStatus.ComboStackDepth <= 0)
+    return NULL;
+
+  return ProgStatus.ComboStack[ProgStatus.ComboStackDepth - 1];
 }

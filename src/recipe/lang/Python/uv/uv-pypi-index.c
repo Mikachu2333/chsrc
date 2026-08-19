@@ -10,7 +10,7 @@ pl_uv_pypi_index_prepare (void)
   chef_prep_this_dish (pl_uv_pypi_index, gsr);
 
   chef_set_recipe_created_on   (this, "2024-12-11");
-  chef_set_recipe_last_updated (this, "2026-08-12");
+  chef_set_recipe_last_updated (this, "2026-08-19");
 
   chef_set_chefs (this, 3, "@happy-game", "@MingriLingran", "@Mikachu2333");
   chef_set_sauciers (this, 2, "@ccmywish", "@Kattos");

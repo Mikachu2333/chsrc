@@ -414,7 +414,7 @@ chef_allow_user_define (Dish_t *dish)
   xy_cant_be_null (dish);
 
   dish->can_user_define = true;
-  dish->can_user_define_explain = NULL;
+  dish->user_define_cap_explain = NULL;
 }
 
 void
@@ -424,9 +424,7 @@ chef_deny_user_define (Dish_t *dish)
 
   dish->can_user_define = false;
 
-  char *reason = CHINESE ? "URL将会根据内部实现重写，因此不能自定义"
-                         : "The URL will be rewritten based on internal implementation, so it cannot be customized";
-  dish->can_user_define_explain = reason;
+  dish->user_define_cap_explain = NULL;
 }
 
 

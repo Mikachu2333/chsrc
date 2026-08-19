@@ -819,7 +819,7 @@ chefs_handle_Set_Source (Dish_t *dish, const char *input, char *option)
 {
   if (dish_has_sub_dishes(dish))
     {
-      chsrc_begin_combo_source_resolution (dish);
+      push_combo_stack (dish);
 
       for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
         {
@@ -830,7 +830,7 @@ chefs_handle_Set_Source (Dish_t *dish, const char *input, char *option)
           br();
         }
 
-      chsrc_end_combo_source_resolution ();
+      pop_combo_stack ();
       return;
     }
 
