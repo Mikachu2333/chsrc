@@ -1,12 +1,16 @@
 #!/usr/bin/env perl
 # ---------------------------------------------------------------
 # Test File     : cli.pl
-# Test Authors  : 曾奥然 <ccmywish@qq.com>
+# Test Authors  : @ccmywish
 # Contributors  : Nil Null <nil@null.org>
 # Created On    : <2024-06-05>
-# Last Modified : <2026-08-14>
+# Last Modified : <2026-08-19>
 #
 # 测试 chsrc 可执行文件
+#
+#    $ perl test/cli.pl
+#
+#    $ perl test/cli.pl fastcheck
 # ---------------------------------------------------------------
 
 =encoding utf8
@@ -106,16 +110,37 @@ my $fake_dish_name = qr/暂不支持的换源菜品/;
 like `$CHSRC get fake_dish_name 2>&1`,  $fake_dish_name, 'chsrc get fake_dish_name';
 
 
+
+
+
 =begin comment
 
 测试 combo dish
 
 =end comment
 =cut
+
+my $URL = 'https://abc.com/';
+
+# uv combo
+my $set_uv_abcd = qr/该套餐的所有子菜品都不支持你指定的镜像站/;
+like `$CHSRC set uv abcd 2>&1`,  $set_uv_abcd, 'chsrc set uv abcd';
+
+my $set_uv_url = qr/该套餐不支持用户自定义源/;
+like `$CHSRC set uv $URL 2>&1`,  $set_uv_url, "chsrc set uv $URL";
+
+# js combo
+my $set_js_url = qr/食谱更新.*\n食谱更新.*\n食谱更新/;
+like `$CHSRC set js $URL`,  $set_js_url, "chsrc set js $URL";
+
 my $measure_js = qr/js 由以下3个子菜品组成.*\nnpm\nyarn\npnpm/;
 like `$CHSRC measure -no-color js`, $measure_js, 'chsrc measure -no-color js';
+
 my $list_js = qr/食谱创建.*食谱创建.*食谱创建.*/s;
 like `$CHSRC list -no-color js`, $list_js, 'chsrc list -no-color js';
+
+
+
 
 
 if ((defined $ARGV[0]) && ($ARGV[0] eq 'fastcheck')) {
