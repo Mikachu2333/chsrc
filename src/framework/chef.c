@@ -10,7 +10,51 @@
  * 本文件的函数能够帮助 chefs 为一个 dish 定义 recipe
  * ------------------------------------------------------------*/
 
-#pragma once
+#define def_dish(t, aliases) void t##_getsrc(char *option);void t##_setsrc(char *option);void t##_resetsrc(char *option); Dish_t t##_dish={aliases};
+
+/* combo dish 不需要实现任何操作(除了preparefn)即可使用 */
+#define def_combo_dish(t, aliases) Dish_t t##_dish={aliases};
+
+/* 仅内部使用的 "源dish"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
+#define def_sources_dish(t, name) Dish_t t##_dish={"__internal_dish_only_for_storing_sources__" name "__"}
+
+
+
+#define chef_allow_gsr(t) this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
+#define chef_allow_s(t)   this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = NULL;
+#define chef_allow_sr(t)  this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
+#define chef_allow_gs(t)  this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = NULL;
+#define chef_allow_NOOP(t)
+#define chef_prep_this_dish(t,op) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_##op(t);
+
+/* 简化 "源dish" 的编写 */
+#define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
+
+/* 内部 "源dish" 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
+#define chef_set_preparefn_for_sources_dish(t) t##_dish.preparefn = t##_prepare;
+
+
+#define chef_use_this(t) Dish_t *this = &t##_dish;
+#define chsrc_use_this_source(t) Dish_t *this = &t##_dish; Source_t source = chsrc_yield_source_and_confirm (this, option);
+
+/**
+ * 用于定义换源列表
+ *
+ *   def_sources_begin()
+ *   {&UpstreamProvider, "换源URL", "精准测速链接"},
+ *   {&某镜像站1,        "换源URL", "精准测速链接"},
+ *   {&某镜像站2,        "换源URL",  NULL },  // 若精准测速链接为空，则为模糊测速，默认使用该镜像站的整体测速链接
+ *   def_sources_end()
+ *
+ *   出于代码美观考虑，上述第三列可以写 FeedByPrepare，然后下面使用文档 ./doc/11-如何设置换源链接与测速链接.md 中的函数来填充
+ */
+#define def_sources_begin()  Source_t sources[] = {
+#define def_sources_end()    }; \
+  this->sources_n = xy_c_array_len(sources); \
+  char *_sources_storage = xy_malloc0 (sizeof(sources)); \
+  memcpy (_sources_storage, sources, sizeof(sources)); \
+  this->sources = (Source_t *)_sources_storage;
+
 
 void
 chef_debug_dish (Dish_t *dish)
