@@ -30,7 +30,7 @@ chef_debug_dish (Dish_t *dish)
   printf ("  Reset Function: %p\n", dish->resetfn);
   printf ("  Prepare Function: %p\n", dish->preparefn);
 
-  printf ("  Inited?: %d\n", dish->inited);
+  printf ("  Prepared?: %d\n", dish->prepared);
 
   printf ("  Sources: %p\n", dish->sources);
   printf ("  Sources Count: %d\n", dish->sources_n);
@@ -251,7 +251,7 @@ chef_set_rest_smURL_with_postfix (Dish_t *dish, char *postfix)
 void
 chef_use_other_dish_sources (Dish_t *this, Dish_t *other)
 {
-  if (!other->inited)
+  if (!other->prepared)
     {
       if (other->preparefn)
         other->preparefn();

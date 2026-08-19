@@ -626,7 +626,7 @@ chsrc_yield_source (Dish_t *dish, char *option)
    *
    * 目前可能出现这种情况的时候：组换源的时候，sub dishes 的 _setsrc() 被直接调用
    */
-  if (!dish->inited) dish->preparefn();
+  if (!dish->prepared) dish->preparefn();
 
   Source_t source;
   if (chsrc_in_dish_group_mode() && option)

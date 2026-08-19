@@ -93,7 +93,7 @@ subdish_sibling_has_source_from_mirror (Dish_t *dish, const char *mirror_code)
       if (sub_dish == current)
         continue;
 
-      if (!sub_dish->inited)
+      if (!sub_dish->prepared)
         sub_dish->preparefn ();
 
       if (dish_has_source_from_mirror (sub_dish, mirror_code))

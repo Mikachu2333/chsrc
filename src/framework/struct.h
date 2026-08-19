@@ -7,7 +7,7 @@
  * Contributors  : @livelycode36
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-14>
+ * Last Modified : <2026-08-19>
  *
  * chsrc struct
  * ------------------------------------------------------------*/
@@ -186,7 +186,7 @@ typedef struct Dish_t
    *   2. recipe 内部手动调用，如 "源dish"
    */
   void (*preparefn) (void);
-  bool inited; /* 是否执行过了 preparefn() */
+  bool   prepared; /* 是否执行过了 preparefn() */
 
   XySeq_t *sub_dishes; /* 某些 dish 为 combo dish，完全由 sub dishes 定义 */
 
@@ -234,10 +234,10 @@ Dish_t;
 #define chef_allow_sr(t)  this->getfn = NULL;       this->setfn = t##_setsrc; this->resetfn = t##_resetsrc;
 #define chef_allow_gs(t)  this->getfn = t##_getsrc; this->setfn = t##_setsrc; this->resetfn = NULL;
 #define chef_allow_NOOP(t)
-#define chef_prep_this_dish(t,op) Dish_t *this = &t##_dish; this->inited = true; chef_allow_##op(t);
+#define chef_prep_this_dish(t,op) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_##op(t);
 
 /* 简化 "源dish" 的编写 */
-#define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->inited = true; chef_allow_NOOP(t);
+#define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
 
 /* 内部 "源dish" 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
 #define chef_set_preparefn_for_sources_dish(t) t##_dish.preparefn = t##_prepare;
