@@ -9,7 +9,7 @@
  !               | @NewbieXvwu
  !               |
  ! Created On    : <2023-12-28>
- ! Last Modified : <2026-08-02>
+ ! Last Modified : <2026-08-19>
  ! ---------------------------------------------------------- -->
 
 <div align="center">
@@ -104,7 +104,7 @@
 <details>
 <summary>Windows</summary>
 
-- 可通过 `scoop` 安装，感谢 [@Gn3po4g] 与 [@niheaven]
+- 可通过 `scoop` 安装，感谢 [@rocascent] 与 [@niheaven]
 
 ```bash
 scoop install chsrc
@@ -546,7 +546,7 @@ chsrc set conda  | anaconda
 [@Aaron-212]:      https://github.com/Aaron-212
 [@chenrui333]:     https://github.com/chenrui333
 [@niheaven]:       https://github.com/niheaven
-[@Gn3po4g]:        https://github.com/Gn3po4g
+[@rocascent]:      https://github.com/rocascent
 [@Jerry-Terrasse]: https://github.com/Jerry-Terrasse
 [@Efterklang]:     https://github.com/Efterklang
 [@wickdynex]:      https://github.com/wickdynex

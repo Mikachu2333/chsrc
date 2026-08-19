@@ -34,9 +34,16 @@
 #define Chsrc_Maintain_URL2  "https://gitee.com/RubyMetric/chsrc"
 
 #include "framework/version.h"
-#include "framework/core.c"
+#include "framework/foundation.c"
+#include "framework/helper.c"
+#include "framework/OS.c"
 #include "framework/chef.c"
 #include "framework/dish.c"
+#include "framework/source.c"
+
+/* 某些特殊 recipe 需要依赖 toml 解析库 */
+#include "mikachu-toml.h"
+
 
 void
 chsrc_register_chefs_and_sauciers ()
@@ -54,7 +61,7 @@ chsrc_register_chefs_and_sauciers ()
   chef_register_contributor ("@Aaron-212",      "Aaron Ruan",     "aaron212cn@outlook.com",         NULL);
   chef_register_contributor ("@chenrui333",     "Rui Chen",       "rui@chenrui.dev",                NULL);
   chef_register_contributor ("@livelycode36",   "Shengwei Chen",  "414685209@qq.com",               NULL);
-  chef_register_contributor ("@Gn3po4g",        "Peng Gao",       "gn3po4g@outlook.com",            NULL);
+  chef_register_contributor ("@rocascent",       "Peng Gao",       "gn3po4g@outlook.com",            NULL);
   chef_register_contributor ("@BlockLune",      "BlockLune",      "blocklune@gmail.com",            NULL);
   chef_register_contributor ("@MrWillCom",      "Mr. Will",       "mr.will.com@outlook.com",        NULL);
   chef_register_contributor ("@Jerry-Terrasse", "Terrasse",       "terrasse@qq.com",                NULL);
