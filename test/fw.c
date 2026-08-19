@@ -4,14 +4,15 @@
  * File Authors  : @ccmywish
  * Contributors  : @Mikachu2333
  * Created On    : <2024-12-14>
- * Last Modified : <2025-12-29>
+ * Last Modified : <2026-08-20>
  *
  * 该文件最好启用 DEBUG mode 编译
  * ------------------------------------------------------------*/
 
-#define Chsrc_Version "Frameworker"
+#define Chsrc_Version "chsrc-framework-tester"
 
-#include "../src/framework/core.c"
+#include "../src/framework/foundation.c"
+#include "../src/framework/OS.c"
 
 int
 main (int argc, char const *argv[])

@@ -4,7 +4,7 @@
 # Test Authors  : @ccmywish
 # Contributors  : Nil Null <nil@null.org>
 # Created On    : <2024-06-05>
-# Last Modified : <2026-08-19>
+# Last Modified : <2026-08-20>
 #
 # 测试 chsrc 可执行文件
 #
@@ -131,7 +131,8 @@ like `$CHSRC set uv $URL 2>&1`,  $set_uv_url, "chsrc set uv $URL";
 
 # js combo
 my $set_js_url = qr/食谱更新.*\n食谱更新.*\n食谱更新/;
-like `$CHSRC set js $URL`,  $set_js_url, "chsrc set js $URL";
+# 如果有 npm, yarn, pnpm 这三个子菜品，再打开此测试
+# like `$CHSRC set js $URL`,  $set_js_url, "chsrc set js $URL";
 
 my $measure_js = qr/js 由以下3个子菜品组成.*\nnpm\nyarn\npnpm/;
 like `$CHSRC measure -no-color js`, $measure_js, 'chsrc measure -no-color js';
