@@ -189,6 +189,13 @@ typedef struct Dish_t
   bool   prepared; /* 是否执行过了 preparefn() */
 
   XySeq_t *sub_dishes; /* 某些 dish 为 combo dish，完全由 sub dishes 定义 */
+  /**
+   * 该字段有2个作用:
+   *   1. 确认该 combo dish 是否可以由用户提供源
+   *   2. 避免重复测速
+   */
+  bool all_sub_dishes_use_same_source;
+
 
   Source_t *sources;
        int  sources_n;

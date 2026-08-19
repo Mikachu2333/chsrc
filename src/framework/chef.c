@@ -523,7 +523,7 @@ chef_set_sub_dishes (Dish_t *dish, uint32_t count, ...)
 
   if (count < 1)
     {
-      chsrc_breakdown ("combo dish 必须至少有一个 sub dish");
+      chsrc_breakdown ("套餐必须至少有一个子菜品");
     }
 
   va_list args;
@@ -569,4 +569,13 @@ void
 chef_set_user_agent (char *user_agent)
 {
   ProgStatus.user_agent = user_agent;
+}
+
+
+void
+chef_set_all_sub_dishes_use_same_source (Dish_t *dish, bool value)
+{
+  xy_cant_be_null (dish);
+
+  dish->all_sub_dishes_use_same_source = value;
 }

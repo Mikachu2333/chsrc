@@ -326,7 +326,7 @@ dish_select_fastest_source (Dish_t *dish)
 
   if (!in_dry_run_mode())
   {
-    char *msg = CHINESE ? "测速中" : "Measuring speed in sequence";
+    char *msg = CHINESE ? "进行中" : "working";
     xy_log_brkt (App_Name, bdpurple (CHINESE ? "测速" : "MEASURE"), msg);
     br();
   }

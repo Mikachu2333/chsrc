@@ -749,7 +749,7 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
 void
 chefs_handle_Measure_Source (Dish_t *dish, const char *input, char *option)
 {
-  /* group dish 不测速，让用户自己分别测速 */
+  /* dish group 不测速，让用户自己分别测速 */
   if (dish_has_sub_dishes(dish))
     {
       int sub_count = xy_seq_len (dish->sub_dishes);
@@ -835,9 +835,9 @@ chefs_handle_Set_Source (Dish_t *dish, const char *input, char *option)
 
       if (user_defined_url)
         {
-          if (!dish->can_user_define)
+          if (!dish->all_sub_dishes_use_same_source)
             {
-              char *default_msg = "该套餐不支持用户自定义源，可能原因是：该套餐的多个子菜品所需要的源不同，无法确定你提供的源到底适用于哪个子菜品，因此请尝试单独为每个子菜品指定源";
+              char *default_msg = "该套餐不支持用户自定义源，因为该套餐的多个子菜品所需要的源不同，无法确定你提供的源到底适用于哪个子菜品，因此请尝试单独为每个子菜品指定源";
               chsrc_error (default_msg);
               exit (Exit_Unsupported);
             }
