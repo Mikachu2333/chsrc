@@ -817,9 +817,40 @@ chefs_handle_Get_Source (Dish_t *dish, const char *input, char *option)
 void
 chefs_handle_Set_Source (Dish_t *dish, const char *input, char *option)
 {
+  char *user_defined_url = NULL;
+  char *mirror_code = NULL;
+
+  if (hp_is_url (option))
+    {
+      user_defined_url = option;
+    }
+  else if (option)
+    {
+      mirror_code = option;
+    }
+
   if (dish_has_sub_dishes(dish))
     {
       push_combo_stack (dish);
+
+      if (user_defined_url)
+        {
+          if (!dish->can_user_define)
+            {
+              char *default_msg = "该套餐不支持用户自定义源，可能原因是：该套餐的多个子菜品所需要的源不同，无法确定你提供的源到底适用于哪个子菜品，因此请尝试单独为每个子菜品指定源";
+              chsrc_error (default_msg);
+              exit (Exit_Unsupported);
+            }
+        }
+      else if (mirror_code)
+        {
+          if (!combo_at_least_one_sub_dish_has_source_from_mirror (dish, mirror_code))
+            {
+              char *default_msg = "该套餐的所有子菜品都不支持你指定的镜像站，请尝试使用其他镜像站或自定义源";
+              chsrc_error (default_msg);
+              exit (Exit_Unsupported);
+            }
+        }
 
       for (size_t i=0; i<xy_seq_len(dish->sub_dishes); i++)
         {
@@ -908,8 +939,8 @@ chefs_handle_user_command (Dish_t *dish, TargetCmd code, const char *input, char
       if (dish_has_sub_dishes(dish))
         {
           int sub_count = xy_seq_len(dish->sub_dishes);
-          char *zh_msg = bdyellow(xy_strcat (4, input, " 由", xy_int2str(sub_count), "个子菜品组成: "));
-          char *en_msg = bdyellow(xy_strcat (4, input, " consists of ", xy_int2str(sub_count), " sub dishes\n"));
+          char *zh_msg = bdyellow(xy_strcat (5, "套餐 ", input, " 由 ", xy_int2str(sub_count), " 个子菜品组成: "));
+          char *en_msg = bdyellow(xy_strcat (5, "Combo dish '", input, "' consists of ", xy_int2str(sub_count), " sub dishes\n"));
 
           for (size_t i=0; i<sub_count; i++)
             {

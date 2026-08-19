@@ -103,6 +103,32 @@ subdish_sibling_has_source_from_mirror (Dish_t *dish, const char *mirror_code)
   return false;
 }
 
+/**
+ * @brief 判断 combo dish 的所有 sub dish 是否至少有一个拥有来自指定镜像站的源
+ *
+ * 用于 chefs_handle_Set_Source() 中对 combo dish 的总处理
+ */
+bool
+combo_at_least_one_sub_dish_has_source_from_mirror (Dish_t *combo_dish, const char *mirror_code)
+{
+  if (!combo_dish || !combo_dish->sub_dishes)
+    {
+      chsrc_breakdown ("该套餐没有子菜品");
+    }
+
+  for (size_t i=0; i < xy_seq_len(combo_dish->sub_dishes); i++)
+    {
+      Dish_t *sub_dish = xy_seq_at (combo_dish->sub_dishes, i);
+      if (!sub_dish->prepared)
+        sub_dish->preparefn ();
+
+      if (dish_has_source_from_mirror (sub_dish, mirror_code))
+        return true;
+    }
+
+  return false;
+}
+
 void
 push_combo_stack (Dish_t *combo_dish)
 {
