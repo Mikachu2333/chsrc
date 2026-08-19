@@ -39,6 +39,38 @@ dish_has_sub_dishes (Dish_t *dish)
 
 
 
+void
+push_combo_stack (Dish_t *combo_dish)
+{
+  if (ProgStatus.ComboStackDepth >= MaxComboStackDepth)
+    chsrc_breakdown ("combo dish 嵌套层级过深");
+
+  int depth = ProgStatus.ComboStackDepth;
+  ProgStatus.ComboStack[depth] = combo_dish;
+  ProgStatus.ComboBackedUpPaths[depth] = xy_seq_new ();
+  ProgStatus.ComboStackDepth++;
+}
+
+void
+pop_combo_stack (void)
+{
+  if (ProgStatus.ComboStackDepth <= 0)
+    chsrc_breakdown ("combo dish 栈已为空");
+
+  ProgStatus.ComboStackDepth--;
+}
+
+Dish_t *
+current_combo_dish ()
+{
+  if (ProgStatus.ComboStackDepth <= 0)
+    return NULL;
+
+  return ProgStatus.ComboStack[ProgStatus.ComboStackDepth - 1];
+}
+
+
+
 /**
  * @brief 判断 dish 是否拥有来自指定镜像站的源
  *
@@ -129,33 +161,102 @@ combo_at_least_one_sub_dish_has_source_from_mirror (Dish_t *combo_dish, const ch
   return false;
 }
 
-void
-push_combo_stack (Dish_t *combo_dish)
+
+Source_t
+dish_select_source_by_mirror_code (Dish_t *dish, char *mirror_code)
 {
-  if (ProgStatus.ComboStackDepth >= MaxComboStackDepth)
-    chsrc_breakdown ("combo dish 嵌套层级过深");
+  char *dish_name = dish->aliases;
+  Source_t *sources = dish->sources;
+  size_t size = dish->sources_n;
 
-  int depth = ProgStatus.ComboStackDepth;
-  ProgStatus.ComboStack[depth] = combo_dish;
-  ProgStatus.ComboBackedUpPaths[depth] = xy_seq_new ();
-  ProgStatus.ComboStackDepth++;
-}
+  if (0==size)
+    {
+      char *msg1 = CHINESE ? "当前 " : "Currently ";
+      char *msg2 = CHINESE ? " 无任何可用源，请联系维护者" : " doesn't have any source available. Please contact the maintainers";
+      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
+      exit (Exit_MaintainerCause);
+    }
 
-void
-pop_combo_stack (void)
-{
-  if (ProgStatus.ComboStackDepth <= 0)
-    chsrc_breakdown ("combo dish 栈已为空");
+  if (1==size)
+    {
+      char *msg1 = CHINESE ? "当前 " : "Currently ";
+      char *msg2 = CHINESE ? " 仅存在上游默认源，请联系维护者" : " only the upstream source exists. Please contact the maintainers";
+      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
+      exit (Exit_MaintainerCause);
+    }
 
-  ProgStatus.ComboStackDepth--;
-}
+  if (chsrc_in_reset_mode())
+    {
+      char *msg = CHINESE ? "将重置为上游默认源"
+                          : "Will reset to the upstream's default source";
+      say (msg);
+      return sources[0]; /* 返回第1个，因为第1个是上游默认源 */
+    }
+
+  if (2==size)
+    {
+      char *msg1 = CHINESE ? " 是 " : " is ";
+      char *msg2 = CHINESE ? " 目前唯一可用镜像站，感谢他们的慷慨支持"
+                           : "'s ONLY mirror available currently, thanks for their generous support";
+      const char *name = CHINESE ? sources[1].mirror->name
+                                 : sources[1].mirror->abbr;
+      chsrc_succ (xy_strcat (4, name, msg1, dish_name, msg2));
+    }
+
+  if (xy_streql ("first", mirror_code))
+    {
+      char *msg = ENGLISH ? "Will use the first speedy source measured by maintainers" : "将使用维护团队测速第一的源";
+      say (msg);
+      return sources[1]; /* 返回第2个，因为第1个是上游默认源 */
+    }
 
 
-Dish_t *
-current_combo_dish ()
-{
-  if (ProgStatus.ComboStackDepth <= 0)
-    return NULL;
 
-  return ProgStatus.ComboStack[ProgStatus.ComboStackDepth - 1];
+  Source_t src = sources[0];
+
+  bool exist = false;
+
+  for (int i=0; i<size; i++)
+    {
+      src = sources[i];
+      if (xy_streql (src.mirror->code, mirror_code))
+        {
+          exist = true;
+          break;
+        }
+    }
+
+  if (!exist)
+    {
+      bool mirror_site_exist = false;
+      for (int i=0; i<xy_seq_len(ProgStore.mirror_sites); i++)
+        {
+          MirrorSite_t *mir = xy_seq_at (ProgStore.mirror_sites, i);
+          if (xy_streql_ic (mir->code, mirror_code))
+            {
+              mirror_site_exist = true;
+              break;
+            }
+        }
+
+      if (mirror_site_exist)
+        {
+          char *msg1 = CHINESE ? "镜像站 "   : "Mirror site ";
+          char *msg2 = CHINESE ? " 存在，但未提供该软件源" : " exists, but is not available for this software";
+          chsrc_error (xy_strcat (3, msg1, mirror_code, msg2));
+          exit (Exit_UserCause);
+        }
+      else
+        {
+          char *msg1 = CHINESE ? "镜像站 "   : "Mirror site ";
+          char *msg2 = CHINESE ? " 不存在" : " doesn't exist";
+          chsrc_error (xy_strcat (3, msg1, mirror_code, msg2));
+        }
+
+      char *msg = CHINESE ? "查看可使用源，请使用 chsrc list "
+                          : "To see available sources, use chsrc list ";
+      chsrc_error (xy_2strcat (msg, dish_name));
+      exit (Exit_UserCause);
+    }
+  return src;
 }

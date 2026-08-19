@@ -15,114 +15,6 @@
  * ------------------------------------------------------------*/
 
 /**
- * 用于 _setsrc() 函数，检测用户输入的镜像站 code，是否存在于该 dish 可用源中
- *
- * @note 一个源Source必定来自于一个Provider，所以该函数名叫 query_mirror_exist
- *
- * @param  dish_name  菜品名
- * @param  input      如果用户输入 `first`，则选择第一个源
- */
-int
-query_mirror_exist (Source_t *sources, size_t size, char *dish_name, char *input)
-{
-  if (hp_is_url (input))
-    {
-      char *msg = ENGLISH ? "Using user-defined sources for this software is not supported at this time, please contact the developers to ask why or request support" : "暂不支持对该软件使用用户自定义源，请联系开发者询问原因或请求支持";
-      chsrc_error (msg);
-      exit (Exit_Unsupported);
-    }
-
-  if (0==size)
-    {
-      char *msg1 = ENGLISH ? "Currently " : "当前 ";
-      char *msg2 = ENGLISH ? " doesn't have any source available. Please contact the maintainers" : " 无任何可用源，请联系维护者";
-      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
-      exit (Exit_MaintainerCause);
-    }
-
-  if (1==size)
-    {
-      char *msg1 = ENGLISH ? "Currently " : "当前 ";
-      char *msg2 = ENGLISH ? " only the upstream source exists. Please contact the maintainers" : " 仅存在上游默认源，请联系维护者";
-      chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
-      exit (Exit_MaintainerCause);
-    }
-
-  /* if (xy_streql ("reset", input)) 不再使用这种方式 */
-  if (chsrc_in_reset_mode())
-    {
-      char *msg = ENGLISH ? "Will reset to the upstream's default source" : "将重置为上游默认源";
-      say (msg);
-      return 0; /* 返回第1个，因为第1个是上游默认源 */
-    }
-
-  if (2==size)
-    {
-      char *msg1 = ENGLISH ? " is " : " 是 ";
-      char *msg2 = ENGLISH ? "'s ONLY mirror available currently, thanks for their generous support"
-                           : " 目前唯一可用镜像站，感谢他们的慷慨支持";
-      const char *name = ENGLISH ? sources[1].mirror->abbr
-                                 : sources[1].mirror->name;
-      chsrc_succ (xy_strcat (4, name, msg1, dish_name, msg2));
-    }
-
-  if (xy_streql ("first", input))
-    {
-      char *msg = ENGLISH ? "Will use the first speedy source measured by maintainers" : "将使用维护团队测速第一的源";
-      say (msg);
-      return 1; /* 返回第2个，因为第1个是上游默认源 */
-    }
-
-  int idx = 0;
-  Source_t src = sources[0];
-
-  bool exist = false;
-  for (int i=0; i<size; i++)
-    {
-      src = sources[i];
-      if (xy_streql (src.mirror->code, input))
-        {
-          idx = i;
-          exist = true;
-          break;
-        }
-    }
-  if (!exist)
-    {
-      bool mirror_site_exist = false;
-      for (int i=0; i<xy_seq_len(ProgStore.mirror_sites); i++)
-        {
-          MirrorSite_t *mir = xy_seq_at (ProgStore.mirror_sites, i);
-          if (xy_streql_ic (mir->code, input))
-            {
-              mirror_site_exist = true;
-              break;
-            }
-        }
-
-      if (mirror_site_exist)
-        {
-          char *msg1 = ENGLISH ? "Mirror site "   : "镜像站 ";
-          char *msg2 = ENGLISH ? " exists, but is not available for this software" : " 存在，但未提供该软件源";
-          chsrc_error (xy_strcat (3, msg1, input, msg2));
-          exit (Exit_UserCause);
-        }
-      else
-        {
-          char *msg1 = ENGLISH ? "Mirror site "   : "镜像站 ";
-          char *msg2 = ENGLISH ? " doesn't exist" : " 不存在";
-          chsrc_error (xy_strcat (3, msg1, input, msg2));
-        }
-
-      char *msg = ENGLISH ? "To see available sources, use chsrc list " : "查看可使用源，请使用 chsrc list ";
-      chsrc_error (xy_2strcat (msg, dish_name));
-      exit (Exit_UserCause);
-    }
-  return idx;
-}
-
-
-/**
  * 该函数来自 oh-my-mirrorz.py，由 @ccmywish 翻译为C语言，但功劳和版权属于原作者
  *
  * @param speed 单位为Byte/s
@@ -421,24 +313,28 @@ measure_speed_for_every_source (Source_t sources[], int size, double speed_recor
 /**
  * 自动测速选择镜像站和源
  */
-int
-auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
+Source_t
+dish_select_fastest_source (Dish_t *dish)
 {
+  Source_t *sources = dish->sources;
+  size_t size = dish->sources_n;
+  char *dish_name = dish->aliases;
+
   /* reset 时选择默认源 */
   if (chsrc_in_reset_mode())
-    return 0;
+    return sources[0];
 
   if (!in_dry_run_mode())
   {
-    char *msg = ENGLISH ? "Measuring speed in sequence" : "测速中";
-    xy_log_brkt (App_Name, bdpurple (ENGLISH ? "MEASURE" : "测速"), msg);
+    char *msg = CHINESE ? "测速中" : "Measuring speed in sequence";
+    xy_log_brkt (App_Name, bdpurple (CHINESE ? "测速" : "MEASURE"), msg);
     br();
   }
 
   if (0==size || 1==size)
     {
-      char *msg1 = ENGLISH ? "Currently " : "当前 ";
-      char *msg2 = ENGLISH ? "No any source, please contact maintainers: chsrc issue" : " 无任何可用源，请联系维护者: chsrc issue";
+      char *msg1 = CHINESE ? "当前 " : "Currently ";
+      char *msg2 = CHINESE ? " 无任何可用源，请联系维护者: chsrc issue" : "No any source, please contact maintainers: chsrc issue";
       chsrc_error (xy_strcat (3, msg1, dish_name, msg2));
       exit (Exit_MaintainerCause);
     }
@@ -446,7 +342,7 @@ auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
   if (in_dry_run_mode())
   /* Dry Run 时，跳过测速 */
     {
-      return 1; /* 原则第一个源 */
+      return sources[1]; /* 原则第一个源 */
     }
 
   bool only_one = false;
@@ -456,7 +352,8 @@ auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
   bool exist_curl = chsrc_check_program_quietly_when_exist ("curl");
   if (!exist_curl)
     {
-      char *msg = ENGLISH ? "No curl, unable to measure speed" : "没有curl命令，无法测速";
+      char *msg = CHINESE ? "没有curl命令，无法测速"
+                          : "No curl, unable to measure speed";
       chsrc_error (msg);
       exit (Exit_UserCause);
     }
@@ -474,12 +371,12 @@ auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
        */
       if (strstr (curl_version, "pc-cygwin"))
         {
-          char *msg = ENGLISH ? "You're using curl built by Cygwin which has a bug! Please use another curl!" : "你使用的是Cygwin构建的curl，该版本的curl存在bug，请改用其他版本的curl";
+          char *msg = CHINESE ? "你使用的是Cygwin构建的curl，该版本的curl存在bug，请改用其他版本的curl"     : "You're using curl built by Cygwin which has a bug! Please use another curl!";
           chsrc_error (msg);
           exit (Exit_UserCause);
         }
     }
-  /** --------------------------------------------- */
+  /* --------------------------------------------- */
 
   /* 总测速记录值 */
   double speed_records[size];
@@ -494,50 +391,37 @@ auto_select_mirror (Source_t *sources, size_t size, const char *dish_name)
     }
   */
 
-  int fast_idx = get_max_ele_idx_in_dbl_ary (speed_records, size);
+  int fastest_idx = get_max_ele_idx_in_dbl_ary (speed_records, size);
+  Source_t source = sources[fastest_idx];
 
   if (only_one)
     {
-      char *msg1 = ENGLISH ? "NOTICE  mirror site: " : "镜像站提示: ";
-      char   *is = ENGLISH ? " is " : " 是 ";
-      char *msg2 = ENGLISH ? "'s ONLY mirror available currently, thanks for their generous support"
-                           : " 目前唯一可用镜像站，感谢他们的慷慨支持";
-      const char *name = ENGLISH ? sources[fast_idx].mirror->abbr
-                                 : sources[fast_idx].mirror->name;
-      say (xy_strcat (5, msg1, bdgreen(name), green(is), green(dish_name), green(msg2)));
+      char *msg1 = CHINESE ? "镜像站提示: " : "NOTICE  mirror site: ";
+      char   *is = CHINESE ? " 是 " : " is ";
+      char *msg2 = CHINESE ? " 目前唯一可用镜像站，感谢他们的慷慨支持"
+                           : "'s ONLY mirror available currently, thanks for their generous support";
+      const char *name = CHINESE ? source.mirror->name
+                                 : source.mirror->abbr;
+      println (xy_strcat (5, msg1, bdgreen(name), green(is), green(dish_name), green(msg2)));
     }
   else
     {
-      char *msg = ENGLISH ? "FASTEST mirror site: " : "最快镜像站: ";
-      const char *name = ENGLISH ? sources[fast_idx].mirror->abbr
-                                 : sources[fast_idx].mirror->name;
-      say (xy_2strcat (msg, green(name)));
+      char *msg = CHINESE ? "最快镜像站: " : "FASTEST mirror site: ";
+      const char *name = CHINESE ? source.mirror->name
+                                 : source.mirror->abbr;
+      println (xy_2strcat (msg, green(name)));
     }
 
   // https://github.com/RubyMetric/chsrc/pull/71
   if (in_measure_mode())
     {
       char *msg = ENGLISH ? "URL of above source: " : "镜像源地址: ";
-      say (xy_2strcat (msg, green(sources[fast_idx].url)));
+      println (xy_2strcat (msg, green(source.url)));
     }
 
-  return fast_idx;
+  return source;
 }
 
-
-
-int
-use_specific_mirror_or_auto_select (char *input, Dish_t *dish)
-{
-  if (input)
-    {
-      return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, input);
-    }
-  else
-    {
-      return auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
-    }
-}
 
 
 static bool
@@ -569,24 +453,23 @@ source_has_empty_url (Source_t *source)
  *    当前 sub dish 应自动测速选择其最快镜像
  * 3. 若1和2都不成立，则直接报错
  */
-int
-yield_source_by_mirror_code_for_sub_dish (Dish_t *dish, char *mirror_code)
+Source_t
+subdish_select_source_by_mirror_code (Dish_t *dish, char *mirror_code)
 {
   if (dish_has_source_from_mirror (dish, mirror_code))
-    return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, mirror_code);
+    return dish_select_source_by_mirror_code (dish, mirror_code);
 
   if (subdish_sibling_has_source_from_mirror (dish, mirror_code))
     {
       chsrc_alert2 (CHINESE ? "当前子菜品没有来自所请求镜像站的源，尝试测速选择最快源"
                             : "Current sub dish has no source from the requested mirror, try to auto select the fastest source");
-      return auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
+      return dish_select_fastest_source (dish);
     }
 
 
   chsrc_error (CHINESE ? "所有的子菜品均没有来自所请求镜像站的源"
                        : "All sub dishes have no source from the requested mirror");
   exit (Exit_UserCause);
-  return 0;
 }
 
 
@@ -647,19 +530,16 @@ chsrc_yield_source (Dish_t *dish, char *option)
     {
       if (chsrc_in_dish_group_mode())
         {
-          int index = yield_source_by_mirror_code_for_sub_dish (dish, mirror_code);
-          source = dish->sources[index];
+          source = subdish_select_source_by_mirror_code (dish, mirror_code);
         }
       else
         {
-          int index = query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, mirror_code);
-          source = dish->sources[index];
+          source = dish_select_source_by_mirror_code (dish, mirror_code);
         }
     }
   else
     {
-      int index = auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
-      source = dish->sources[index];
+      source = dish_select_fastest_source (dish);
     }
   return source;
 }

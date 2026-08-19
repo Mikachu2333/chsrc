@@ -775,7 +775,7 @@ chefs_handle_Measure_Source (Dish_t *dish, const char *input, char *option)
     }
   else
     {
-      auto_select_mirror (dish->sources, dish->sources_n, input);
+      dish_select_fastest_source (dish);
       return;
     }
 }

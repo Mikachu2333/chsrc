@@ -45,11 +45,7 @@ os_freebsd_setsrc (char *option)
   // 据 @ykla，FreeBSD不自带sudo，但是我们依然要保证是root权限
   chsrc_ensure_root ();
 
-  chef_use_this (os_freebsd);
-  int index = use_specific_mirror_or_auto_select (option, this);
-
-  Source_t source = this->sources[index];
-  chsrc_confirm_source(&source);
+  chsrc_use_this_source (os_freebsd);
 
   chsrc_log2 ("1. 添加 freebsd-pkg 源 (二进制安装包)");
   chsrc_ensure_dir ("/usr/local/etc/pkg/repos");
@@ -77,13 +73,14 @@ os_freebsd_setsrc (char *option)
   bool git_exist = query_program_exist (xy_quiet_cmd ("git version"), "git", Noisy_When_Exist|Noisy_When_NonExist);
   if (git_exist)
     {
-      if (xy_streql("nju",source.mirror->code))
+      Source_t source_backup = source; // 备份当前源，后续恢复
+      if (xy_streql("nju", source.mirror->code))
         {
-          source = this->sources[index-1]; // 使用NJU的前一个源，即USTC源
+          source = this->sources[1]; // 使用USTC源
         }
       char *git_cmd = xy_strcat (3, "git clone --depth 1 https://", source.url, "/freebsd-ports/ports.git /usr/ports");
       chsrc_run (git_cmd, RunOpt_Default);
-      source = this->sources[index]; // 恢复至选中的源
+      source = source_backup; // 恢复至选中的源
       chsrc_alert2 ("下次更新请使用 git -C /usr/ports pull 而非使用 gitup");
     }
   else
