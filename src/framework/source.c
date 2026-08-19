@@ -570,7 +570,7 @@ source_has_empty_url (Source_t *source)
  * 3. 若1和2都不成立，则直接报错
  */
 int
-resolve_combo_subdish_source (Dish_t *dish, char *mirror_code)
+yield_source_by_mirror_code_for_sub_dish (Dish_t *dish, char *mirror_code)
 {
   if (dish_has_source_from_mirror (dish, mirror_code))
     return query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, mirror_code);
@@ -596,15 +596,10 @@ resolve_combo_subdish_source (Dish_t *dish, char *mirror_code)
  *
  * 用户*只可能*通过下面5种方式来换源，无论哪一种都会返回一个 Source_t 出来
  *
- *   1. 用户指定了一个 Mirror Code，即 chsrc set <dish> <code>
- *   2. 用户指定了一个 URL，        即 chsrc set <dish> https://ur
+ *   1. 用户指定了一个 mirror code，即 chsrc set <dish> <code>
+ *   2. 用户指定了一个 URL，        即 chsrc set <dish> https://url
  *   3. 用户什么都没指定，          即 chsrc set <dish>
  *   4. 用户正在重置源，            即 chsrc reset <dish>
- *
- * 如果处于 combo source resolution 上下文中，则按 sub dish 与 sibling
- * 的源列表集中决定：code 命中本 dish 则直接使用；命中 sibling 则本 dish
- * 自动测速；传入 URL 时，支持自定义 URL 的 sub dish 使用 URL，其余自动测速。
- *
  */
 Source_t
 chsrc_yield_source (Dish_t *dish, char *option)
@@ -636,30 +631,7 @@ chsrc_yield_source (Dish_t *dish, char *option)
    *   combo dish 自身是没有 _setsrc() 的！所以进入到这里来的，必
    *   定是 combo dish 的 sub dish 的 _setsrc()
    */
-  if (chsrc_in_dish_group_mode() && option)
-    {
-      Dish_t *combo_dish = current_combo_dish();
-      if (user_defined_url)
-        {
-          if (combo_dish->can_user_define)
-            {
-              Source_t tmp = { &UserDefinedProvider, option, NULL };
-              source = tmp;
-            }
-          else
-            {
-              char *default_msg = "该 combo dish 不支持用户自定义源，可能原因是：该 combo dish 的多个 sub dish 所需要的源不同，无法确定你提供的源到底适用于哪个 sub dish，因此请尝试单独为每个 sub dish 指定源 (使用 chsrc ls <dish> 查看其 sub dish 列表)";
-              chsrc_error (default_msg);
-              exit (Exit_Unsupported);
-            }
-        }
-      else
-        {
-          int index = resolve_combo_subdish_source (dish, mirror_code);
-          source = dish->sources[index];
-        }
-    }
-  else if (hp_is_url (option))
+  if (user_defined_url)
     {
       if (!(dish->can_user_define))
         {
@@ -668,12 +640,25 @@ chsrc_yield_source (Dish_t *dish, char *option)
           chsrc_error (ENGLISH ? en_msg : zh_msg);
           exit (Exit_Unsupported);
         }
-      Source_t tmp = { &UserDefinedProvider, option };
+      Source_t tmp = { &UserDefinedProvider, user_defined_url };
       source = tmp;
+    }
+  else if (mirror_code)
+    {
+      if (chsrc_in_dish_group_mode())
+        {
+          int index = yield_source_by_mirror_code_for_sub_dish (dish, mirror_code);
+          source = dish->sources[index];
+        }
+      else
+        {
+          int index = query_mirror_exist (dish->sources, dish->sources_n, dish->aliases, mirror_code);
+          source = dish->sources[index];
+        }
     }
   else
     {
-      int index = use_specific_mirror_or_auto_select (option, dish);
+      int index = auto_select_mirror (dish->sources, dish->sources_n, dish->aliases);
       source = dish->sources[index];
     }
   return source;
