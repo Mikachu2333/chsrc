@@ -36,8 +36,8 @@
 #include "framework/version.h"
 #include "framework/foundation.c"
 #include "framework/OS.c"
-#include "framework/chef.c"
 #include "framework/dish.c"
+#include "framework/chef.c"
 #include "framework/source.c"
 
 /* 某些特殊 recipe 需要依赖 toml 解析库 */
@@ -699,7 +699,7 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
           Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
           println (bdpurple (sub_dish->aliases));
-          /* 嵌套的 group dish 的处理 */
+          /* 嵌套的 combo 的处理 */
           if (dish_has_sub_dishes(sub_dish))
             {
               chefs_handle_List_Info (sub_dish, dish_get_first_alias(sub_dish), option);

@@ -5,7 +5,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @BingChunMoLi
  * Created On    : <2025-08-09>
- * Last Modified : <2026-08-14>
+ * Last Modified : <2026-08-20>
  *
  * 本文件的函数能够帮助 chefs 为一个 dish 定义 recipe
  * ------------------------------------------------------------*/
@@ -68,19 +68,25 @@ chef_debug_dish (Dish_t *dish)
 
   say ("DEBUG Dish Information:");
   printf ("  Aliases: %s\n", dish->aliases);
-
-  printf ("  Get Function: %p\n", dish->getfn);
-  printf ("  Set Function: %p\n", dish->setfn);
-  printf ("  Reset Function: %p\n", dish->resetfn);
   printf ("  Prepare Function: %p\n", dish->preparefn);
-
   printf ("  Prepared?: %d\n", dish->prepared);
 
-  printf ("  Sources: %p\n", dish->sources);
-  printf ("  Sources Count: %d\n", dish->sources_n);
+  if (dish_has_sub_dishes(dish))
+    {
+      printf ("  Sub Dishes Count: %d\n", xy_seq_len(dish->sub_dishes));
+    }
+  else
+    {
+      printf ("  Get Function: %p\n", dish->getfn);
+      printf ("  Set Function: %p\n", dish->setfn);
+      printf ("  Reset Function: %p\n", dish->resetfn);
 
-  printf ("  Chefs Count: %d\n", xy_seq_len(dish->chefs));
-  printf ("  Sauciers Count: %d\n", xy_seq_len(dish->sauciers));
+      printf ("  Sources: %p\n", dish->sources);
+      printf ("  Sources Count: %d\n", dish->sources_n);
+
+      printf ("  Chefs Count: %d\n", xy_seq_len(dish->chefs));
+      printf ("  Sauciers Count: %d\n", xy_seq_len(dish->sauciers));
+    }
 #endif
 }
 
@@ -140,7 +146,7 @@ chef_set_provider_smURL (SourceProvider_t *provider, char *url)
 {
   provider->psmi.skip = NotSkip;
   provider->psmi.url = xy_strdup (url);
-  chsrc_debug ("m", xy_strcat (4, "recipe 重新为 ", provider->code, "(镜像站信息本身) 设置测速链接: ", url));
+  chsrc_debug ("chef", xy_strcat (4, "recipe 重新为 ", provider->code, "(镜像站信息本身) 设置测速链接: ", url));
 }
 
 
@@ -153,7 +159,7 @@ void
 chef_set_provider_sm_accuracy (SourceProvider_t *provider, bool accuracy)
 {
   provider->psmi.accurate = accuracy;
-  chsrc_debug ("m", xy_strcat (4, "recipe 重新为 ", provider->code, "(镜像站信息本身) 设置测速精度: ", accuracy ? "精准" : "粗略"));
+  chsrc_debug ("chef", xy_strcat (4, "recipe 重新为 ", provider->code, "(镜像站信息本身) 设置测速精度: ", accuracy ? "精准" : "粗略"));
 }
 
 
