@@ -6,7 +6,7 @@
  * Contributors  : @Mikachu2333
  *               |
  * Created On    : <2026-08-13>
- * Last Modified : <2026-08-19>
+ * Last Modified : <2026-08-20>
  *
  * dish 为主体的一些函数
  * ------------------------------------------------------------*/
@@ -60,13 +60,23 @@ pop_combo_stack (void)
   ProgStatus.ComboStackDepth--;
 }
 
+
+int
+current_combo_stack_depth ()
+{
+  return ProgStatus.ComboStackDepth;
+}
+
+
 Dish_t *
 current_combo_dish ()
 {
-  if (ProgStatus.ComboStackDepth <= 0)
+  int depth = current_combo_stack_depth ();
+
+  if (depth <= 0)
     return NULL;
 
-  return ProgStatus.ComboStack[ProgStatus.ComboStackDepth - 1];
+  return ProgStatus.ComboStack[depth - 1];
 }
 
 

@@ -81,7 +81,8 @@ typedef enum ChgType_t
   ChgType_Untested
 } ChgType_t;
 
-#define MaxComboStackDepth 16
+
+#define MaxComboStackDepth 4
 
 /* Global Program Status */
 struct
@@ -100,13 +101,17 @@ struct
   Dish_t *ComboStack[MaxComboStackDepth];
   XySeq_t *ComboBackedUpPaths[MaxComboStackDepth];
   int ComboStackDepth;
+
+  /* 多个 sub dish 使用同一个源 */
+  Source_t SharedSource[MaxComboStackDepth];
 }
 ProgStatus =
 {
   .chgtype = ChgType_Auto,
   .chsrc_run_faas = false,
   .user_agent = "chsrc/" Chsrc_Version,
-  .ComboStackDepth = 0,
+
+  .ComboStackDepth = 0
 };
 
 

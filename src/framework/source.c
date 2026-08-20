@@ -9,10 +9,21 @@
  *               | @Mikachu2333
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-19>
+ * Last Modified : <2026-08-20>
  *
  * 源的确定
  * ------------------------------------------------------------*/
+
+Source_t
+current_shared_source ()
+{
+  int depth = current_combo_stack_depth ();
+
+  if (depth <= 0)
+    return (Source_t){ NULL, NULL, NULL };
+
+  return ProgStatus.SharedSource[depth - 1];
+}
 
 /**
  * 该函数来自 oh-my-mirrorz.py，由 @ccmywish 翻译为C语言，但功劳和版权属于原作者
@@ -320,6 +331,22 @@ dish_select_fastest_source (Dish_t *dish)
   size_t size = dish->sources_n;
   char *dish_name = dish->aliases;
 
+  /* 使用缓存 */
+  if (chsrc_in_dish_group_mode())
+    {
+      if (current_combo_dish()->all_sub_dishes_use_same_source)
+        {
+          Source_t shared = current_shared_source();
+          if (shared.provider && shared.url)
+            {
+              char *msg = CHINESE ? "使用上次测速的最快源"
+                                  : "Using last measured fastest source";
+              xy_log_brkt (App_Name, bdpurple (CHINESE ? "测速" : "MEASURE"), msg);
+              return shared;
+            }
+        }
+    }
+
   /* reset 时选择默认源 */
   if (chsrc_in_reset_mode())
     return sources[0];
@@ -417,6 +444,16 @@ dish_select_fastest_source (Dish_t *dish)
     {
       char *msg = ENGLISH ? "URL of above source: " : "镜像源地址: ";
       println (xy_2strcat (msg, green(source.url)));
+    }
+
+
+  /* 缓存 */
+  if (chsrc_in_dish_group_mode())
+    {
+      if (current_combo_dish()->all_sub_dishes_use_same_source)
+        {
+          ProgStatus.SharedSource[current_combo_stack_depth() - 1] = source;
+        }
     }
 
   return source;
