@@ -5,7 +5,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @BingChunMoLi
  * Created On    : <2025-08-09>
- * Last Modified : <2026-08-20>
+ * Last Modified : <2026-08-22>
  *
  * 本文件的函数能够帮助 chefs 为一个 dish 定义 recipe
  * ------------------------------------------------------------*/
@@ -29,6 +29,8 @@
 
 /* 简化 "源dish" 的编写 */
 #define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
+
+#define chef_prep_this_combo_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
 
 /* 内部 "源dish" 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
 #define chef_set_preparefn_for_sources_dish(t) t##_dish.preparefn = t##_prepare;

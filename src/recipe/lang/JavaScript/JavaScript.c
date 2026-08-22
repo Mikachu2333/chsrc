@@ -7,7 +7,7 @@ def_combo_dish(pl_js_group, "js/javascript/node/nodejs");
 void
 pl_js_group_prepare (void)
 {
-  chef_prep_this_dish (pl_js_group, NOOP);
+  chef_prep_this_combo_dish (pl_js_group);
 
   chef_set_recipe_created_on   (this, "2023-09-09");
   chef_set_recipe_last_updated (this, "2026-08-19");
