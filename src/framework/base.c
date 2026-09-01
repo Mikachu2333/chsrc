@@ -1,7 +1,7 @@
 /** ------------------------------------------------------------
  * SPDX-License-Identifier: GPL-3.0-or-later
  * -------------------------------------------------------------
- * File Name     : foundation.c
+ * File Name     : base.c
  * File Authors  : @ccmywish
  *               | @G_I_Y
  * Contributors  : @happy-game
@@ -9,7 +9,7 @@
  *               | @Mikachu2333
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-19>
+ * Last Modified : <2026-09-01>
  *
  * framework foundation
  * ------------------------------------------------------------*/

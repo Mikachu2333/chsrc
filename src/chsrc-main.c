@@ -34,7 +34,7 @@
 #define Chsrc_Maintain_URL2  "https://gitee.com/RubyMetric/chsrc"
 
 #include "framework/version.h"
-#include "framework/foundation.c"
+#include "framework/base.c"
 #include "framework/OS.c"
 #include "framework/dish.c"
 #include "framework/chef.c"
