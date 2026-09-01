@@ -579,9 +579,10 @@ chef_set_user_agent (char *user_agent)
 
 
 void
-chef_set_all_sub_dishes_use_same_source (Dish_t *dish, bool value)
+chef_all_sub_dishes_use_same_source_from (Dish_t *combo_dish, Dish_t *sources_dish)
 {
-  xy_cant_be_null (dish);
+  xy_cant_be_null (combo_dish);
 
-  dish->all_sub_dishes_use_same_source = value;
+  combo_dish->all_sub_dishes_use_same_source = true;
+  combo_dish->sources_dish = sources_dish;
 }

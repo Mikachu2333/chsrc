@@ -14,5 +14,5 @@ pl_py_group_prepare (void)
 
   chef_set_sub_dishes (this, 3, &pl_pip_dish, &pl_pdm_dish, &pl_poetry_dish);
 
-  chef_set_all_sub_dishes_use_same_source (this, true);
+  chef_all_sub_dishes_use_same_source_from (this, &pl_pypi_dish);
 }

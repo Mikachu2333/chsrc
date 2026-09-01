@@ -202,7 +202,7 @@ typedef struct Dish_t
   Source_t *sources;
        int  sources_n;
 
-  struct Dish_t *sources_dish; /* 有些Dish用的是其它Dish的sources */
+  struct Dish_t *sources_dish; /* 有些 dish 用的是其它 dish 的 sources */
 
 
   /* Features */

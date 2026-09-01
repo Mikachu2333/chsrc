@@ -418,18 +418,29 @@ cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name, unsigne
       }
   }
 
-  if (dish_use_other_dish_sources(dish))
+  if (chsrc_in_dish_group_mode() && current_combo_dish()->all_sub_dishes_use_same_source)
     {
-      char *alias = dish_get_first_alias(dish->sources_dish);
+      /**
+       * 这种情况下，list 已经帮我们展示了所有 sub dish 共享的这个 sources dish，
+       * 我们不要再对每个 sub dish 重复显示它了
+       */
+      xy_noop();
+    }
+  else
+    {
+      if (dish_use_other_dish_sources(dish))
+        {
+          char *alias = dish_get_first_alias(dish->sources_dish);
 
-      indent_str[indent] = ' ';
-      indent_str[indent + 4] = '\0';
+          indent_str[indent] = ' ';
+          indent_str[indent + 4] = '\0';
 
-      printf ("\n%s%s %s%s\n", indent_str, bdpurple(input_dish_name),
-        CHINESE ? "使用其它菜品的源: " : "uses other dish's source: ", bdpurple(alias));
+          printf ("\n%s%s %s%s\n", indent_str, bdpurple(input_dish_name),
+            CHINESE ? "使用其它菜品的源: " : "uses other dish's source: ", bdpurple(alias));
 
-      Dish_t *sources_dish = dish->sources_dish;
-      cli_print_dish_maintain_info (sources_dish, alias, indent + 4);
+          Dish_t *sources_dish = dish->sources_dish;
+          cli_print_dish_maintain_info (sources_dish, alias, indent + 4);
+        }
     }
 }
 
@@ -658,6 +669,17 @@ waiter_handle_List_Info (Dish_t *dish, const char *input, char *option)
               cli_print_dish_maintain_info (sub_dish, sub_dish_alias, (current_combo_stack_depth()-1) * 2);
               br();
             }
+        }
+
+      if (dish->all_sub_dishes_use_same_source)
+        {
+          char *msg = CHINESE ? "上述所有子菜品借用本菜品源"
+                              : "All above sub dishes use the same source from this";
+
+          Dish_t *shared_dish = dish->sources_dish;
+          char *alias = dish_get_first_alias(shared_dish);
+          printf ("%s (%s)\n", bdpurple(alias), msg);
+          cli_print_dish_maintain_info (shared_dish, alias, (current_combo_stack_depth()-1) * 2);
         }
 
       pop_combo_stack();

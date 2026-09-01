@@ -14,5 +14,4 @@ pl_uv_prepare (void)
 
   chef_set_sub_dishes (this, 2, &pl_uv_pypi_index_dish,
                                 &pl_uv_python_build_dish);
-  chef_set_all_sub_dishes_use_same_source (this, false);
 }
