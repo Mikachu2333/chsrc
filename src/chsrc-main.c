@@ -429,31 +429,53 @@ cli_print_dish_maintain_info_briefly (Dish_t *dish, const char *input_dish_name)
 }
 
 
+
+static char *
+indent_level_to_string (unsigned int indent_level)
+{
+  const int indent_max = 64;
+  char *indent_str = xy_malloc0 (indent_max);
+  memset (indent_str, ' ', indent_max);
+
+  indent_str[indent_max - 1] = '\0';
+  if (indent_level > indent_max - 1)
+    {
+      chsrc_breakdown ("Indentation too deep!");
+    }
+  else
+    {
+      indent_str[indent_level] = '\0';
+    }
+  return indent_str;
+}
+
+
 /**
  * @brief 详细打印维护信息
  *
  * 用于 chsrc ls <dish>
  */
 void
-cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name)
+cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name, unsigned int indent)
 {
+  char *indent_str = indent_level_to_string (indent);
   if (dish->created_on)
     {
-      char *msg = ENGLISH ? "Recipe Created On: " : "食谱创建: ";
-      printf ("%s%s ", bdblue(msg), dish->created_on);
+      char *msg = CHINESE ? "食谱创建: " : "Recipe Created On: ";
+      printf ("%s%s%s ", indent_str, bdblue(msg), dish->created_on);
     }
 
   if (dish->last_updated)
     {
-      char *msg = ENGLISH ? "Recipe Last Updated: " : "食谱更新: ";
+      char *msg = CHINESE ? "食谱更新: " : "Recipe Last Updated: ";
       printf ("%s%s\n", bdblue(msg), dish->last_updated);
     }
 
   {
-    char *msg = ENGLISH ? "Chefs: " : "主厨: ";
+    char *msg = CHINESE ? "主厨: " : "Chefs: ";
     if (dish->chefs && xy_seq_len(dish->chefs) > 0)
       {
-        printf ("%s", bdblue(msg));
+        printf ("%s%s", indent_str, bdblue(msg));
         for (size_t i=0; i<xy_seq_len(dish->chefs); i++)
           {
             if (i > 0) printf (", ");
@@ -472,10 +494,10 @@ cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name)
   }
 
   {
-    char *msg = ENGLISH ? "Sauciers: " : "调味: ";
+    char *msg = CHINESE ? "调味: " : "Sauciers: ";
     if (dish->sauciers && xy_seq_len(dish->sauciers) > 0)
       {
-        printf ("%s", bdblue(msg));
+        printf ("%s%s", indent_str, bdblue(msg));
         for (size_t i=0; i<xy_seq_len(dish->sauciers); i++)
           {
             if (i > 0) printf (", ");
@@ -490,6 +512,20 @@ cli_print_dish_maintain_info (Dish_t *dish, const char *input_dish_name)
         printf ("%s%s\n", bdblue(msg), bdgreen(msg1));
       }
   }
+
+  if (dish_use_other_dish_sources(dish))
+    {
+      char *alias = dish_get_first_alias(dish->sources_dish);
+
+      indent_str[indent] = ' ';
+      indent_str[indent + 4] = '\0';
+
+      printf ("\n%s%s %s%s\n", indent_str, bdpurple(input_dish_name),
+        CHINESE ? "使用其它菜品的源: " : "uses other dish's source: ", bdpurple(alias));
+
+      Dish_t *sources_dish = dish->sources_dish;
+      cli_print_dish_maintain_info (sources_dish, alias, indent + 4);
+    }
 }
 
 
@@ -681,6 +717,8 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
   /* group dish 仅展示维护信息 */
   if (dish_has_sub_dishes(dish))
     {
+      push_combo_stack (dish);
+
       int sub_count = xy_seq_len (dish->sub_dishes);
 
       char *zh_msg = xy_strcat (3,
@@ -699,18 +737,25 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
         {
           Dish_t *sub_dish = xy_seq_at (dish->sub_dishes, i);
           sub_dish->preparefn();
-          println (bdpurple (sub_dish->aliases));
+
+          printf ("%s%s\n",
+            indent_level_to_string((current_combo_stack_depth()-1) * 2),
+            bdpurple (sub_dish->aliases));
+
           /* 嵌套的 combo 的处理 */
+          char *sub_dish_alias = dish_get_first_alias(sub_dish);
           if (dish_has_sub_dishes(sub_dish))
             {
-              chefs_handle_List_Info (sub_dish, dish_get_first_alias(sub_dish), option);
+              chefs_handle_List_Info (sub_dish, sub_dish_alias, option);
             }
           else
             {
-              cli_print_dish_maintain_info (sub_dish, input);
+              cli_print_dish_maintain_info (sub_dish, sub_dish_alias, (current_combo_stack_depth()-1) * 2);
               br();
             }
         }
+
+      pop_combo_stack();
       return;
     }
 
@@ -739,7 +784,7 @@ chefs_handle_List_Info (Dish_t *dish, const char *input, char *option)
   {
   char *msg = ENGLISH ? "Maintainer Information:\n" : "维护信息:\n";
   say (bdgreen(msg));
-  cli_print_dish_maintain_info (dish, input);
+  cli_print_dish_maintain_info (dish, input, 0);
   }
 }
 
