@@ -7,7 +7,7 @@
  ! Contributors  : @Mikachu2333
  !               |
  ! Created On    : <2024-08-19>
- ! Last Modified : <2026-08-12>
+ ! Last Modified : <2026-09-01>
  ! ---------------------------------------------------------- -->
 
 # Write A Recipe Even If You Don't Know C
@@ -93,11 +93,8 @@
 
 8. 按需实现 `_setsrc()` `_getsrc()` `_resetsrc()`， 可以使用这些函数:
 
-    1. `framework/core.c` 中以 `chsrc_` 开头的所有函数或宏
+    1. `framework/*.c` 中以 `chsrc_`, `chef_`, `hp_` 开头的所有函数或宏
     2. `xy.h` 中以 `xy_` 开头的所有函数或宏
-    3. `chec.c` 中以 `chef_` 开头的所有函数或宏
-    4. `dish.c` 中以 `dish_` 开头的所有函数或宏
-    5. `helper.c` 中以 `hp_` 开头的所有函数或宏
 
     一个简单的方法是，在 VS Code 中按快捷键 `Ctrl-T` 搜索上述三种前缀
 
