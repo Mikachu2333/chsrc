@@ -124,7 +124,7 @@ parse_and_say_curl_result (char *curl_buf)
   if (0==http_code)
     {
       char *msg = ENGLISH ? "ERROR curl output: " : "错误 curl 输出: ";
-      println (red (xy_strcat (3, msg, curl_buf)));
+      println (red (xy_2strcat (msg, curl_buf)));
     }
   else if (200!=http_code)
     {
