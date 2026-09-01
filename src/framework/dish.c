@@ -163,7 +163,7 @@ subdish_sibling_has_source_from_mirror (Dish_t *dish, const char *mirror_code)
 /**
  * @brief 判断 combo dish 的所有 sub dish 是否至少有一个拥有来自指定镜像站的源
  *
- * 用于 chefs_handle_Set_Source() 中对 combo dish 的总处理
+ * 用于 waiter_handle_Set_Source() 中对 combo dish 的总处理
  */
 bool
 combo_at_least_one_sub_dish_has_source_from_mirror (Dish_t *combo_dish, const char *mirror_code)
