@@ -6,7 +6,7 @@
  * Contributors  : @Mikachu2333
  *               |
  * Created On    : <2026-08-13>
- * Last Modified : <2026-08-20>
+ * Last Modified : <2026-09-01>
  *
  * dish 为主体的一些函数
  * ------------------------------------------------------------*/
@@ -35,6 +35,21 @@ bool
 dish_has_sub_dishes (Dish_t *dish)
 {
   return (dish->sub_dishes && xy_seq_len(dish->sub_dishes) > 1);
+}
+
+
+
+bool
+dish_use_other_dish_sources (Dish_t *dish)
+{
+  if (dish->sources_dish)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 

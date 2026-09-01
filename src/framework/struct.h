@@ -7,7 +7,7 @@
  * Contributors  : @livelycode36
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-08-19>
+ * Last Modified : <2026-09-01>
  *
  * chsrc struct
  * ------------------------------------------------------------*/
@@ -199,6 +199,8 @@ typedef struct Dish_t
 
   Source_t *sources;
        int  sources_n;
+
+  struct Dish_t *sources_dish; /* 有些Dish用的是其它Dish的sources */
 
 
   /* Features */

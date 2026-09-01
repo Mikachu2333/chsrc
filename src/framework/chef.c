@@ -5,7 +5,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @BingChunMoLi
  * Created On    : <2025-08-09>
- * Last Modified : <2026-08-22>
+ * Last Modified : <2026-09-01>
  *
  * 本文件的函数能够帮助 chefs 为一个 dish 定义 recipe
  * ------------------------------------------------------------*/
@@ -16,7 +16,7 @@
 #define def_combo_dish(t, aliases) Dish_t t##_dish={aliases};
 
 /* 仅内部使用的 "源dish"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
-#define def_sources_dish(t, name) Dish_t t##_dish={"__internal_dish_only_for_storing_sources__" name "__"}
+#define def_sources_dish(t, name) Dish_t t##_dish={"__internal__sources_only_dish__" name "__"}
 
 
 
@@ -297,9 +297,6 @@ chef_set_rest_smURL_with_postfix (Dish_t *dish, char *postfix)
 }
 
 
-/**
- * @note 用于: 组中的 sub dish 在 standalone 模式时正确填充源信息
- */
 void
 chef_use_other_dish_sources (Dish_t *this, Dish_t *other)
 {
@@ -314,6 +311,7 @@ chef_use_other_dish_sources (Dish_t *this, Dish_t *other)
         }
     }
 
+  this->sources_dish = other;
   this->sources = other->sources;
   this->sources_n = other->sources_n;
 }
