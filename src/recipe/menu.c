@@ -244,6 +244,6 @@ chsrc_init_menu ()
   add (anaconda);
 #undef add
 
-  chef_set_preparefn_for_sources_dish (pl_pypi);
-  chef_set_preparefn_for_sources_dish (pl_nodejs_binary);
+  chef_set_preparefn_for_sources_only_dish (pl_pypi);
+  chef_set_preparefn_for_sources_only_dish (pl_nodejs_binary);
 }

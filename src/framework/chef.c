@@ -15,8 +15,8 @@
 /* combo dish 不需要实现任何操作(除了preparefn)即可使用 */
 #define def_combo_dish(t, aliases) Dish_t t##_dish={aliases};
 
-/* 仅内部使用的 "源dish"，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
-#define def_sources_dish(t, name) Dish_t t##_dish={"__internal__sources_only_dish__" name "__"}
+/* 仅内部使用的 dish，只用来存储源信息，请参考 pl_nodejs_binary 以及 pl_pypi */
+#define def_sources_only_dish(t, name) Dish_t t##_dish={"__internal__sources_only_dish__" name "__"}
 
 
 
@@ -27,13 +27,13 @@
 #define chef_allow_NOOP(t)
 #define chef_prep_this_dish(t,op) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_##op(t);
 
-/* 简化 "源dish" 的编写 */
-#define chef_prep_this_sources_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
+/* 简化 sources only dish 的编写 */
+#define chef_prep_this_sources_only_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
 
 #define chef_prep_this_combo_dish(t) Dish_t *this = &t##_dish; this->prepared = true; chef_allow_NOOP(t);
 
-/* 内部 "源dish" 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
-#define chef_set_preparefn_for_sources_dish(t) t##_dish.preparefn = t##_prepare;
+/* 内部 sources only dish 的 preparefn 未通过 menu.c 的 add() 注册, 手动挂载 */
+#define chef_set_preparefn_for_sources_only_dish(t) t##_dish.preparefn = t##_prepare;
 
 
 #define chef_use_this(t) Dish_t *this = &t##_dish;

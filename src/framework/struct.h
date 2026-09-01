@@ -183,7 +183,7 @@ typedef struct Dish_t
    * 身的函数地址不可能由自己初始化，所以需要额外的位置初始化:
    *
    *   1. menu.c 中通过 add() 注册
-   *   2. recipe 内部手动调用，如 "源dish"
+   *   2. recipe 内部手动调用，如 "sources only dish"
    */
   void (*preparefn) (void);
   bool   prepared; /* 是否执行过了 preparefn() */
