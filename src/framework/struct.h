@@ -193,6 +193,8 @@ typedef struct Dish_t
    * 该字段有2个作用:
    *   1. 确认该 combo dish 是否可以由用户提供源
    *   2. 避免重复测速
+   *
+   * @ref https://github.com/RubyMetric/chsrc/issues/358#issuecomment-5350147424
    */
   bool all_sub_dishes_use_same_source;
 
