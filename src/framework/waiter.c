@@ -677,9 +677,18 @@ waiter_handle_List_Info (Dish_t *dish, const char *input, char *option)
                               : "All above sub dishes use the same source from this";
 
           Dish_t *shared_dish = dish->sources_dish;
-          char *alias = dish_get_first_alias(shared_dish);
-          printf ("%s (%s)\n", bdpurple(alias), msg);
-          cli_print_dish_maintain_info (shared_dish, alias, (current_combo_stack_depth()-1) * 2);
+
+          if (combo_has_sub_dish(dish, shared_dish))
+            {
+              /* 如果上述已经打印过了，就不再多余打印，参考 JavaScript combo dish */
+              xy_noop();
+            }
+          else
+            {
+              char *alias = dish_get_first_alias(shared_dish);
+              printf ("%s (%s)\n", bdpurple(alias), msg);
+              cli_print_dish_maintain_info (shared_dish, alias, (current_combo_stack_depth()-1) * 2);
+            }
         }
 
       pop_combo_stack();

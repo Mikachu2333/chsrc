@@ -6,7 +6,7 @@
  * Contributors  : @Mikachu2333
  *               |
  * Created On    : <2026-08-13>
- * Last Modified : <2026-09-01>
+ * Last Modified : <2026-09-05>
  *
  * dish 为主体的一些函数
  * ------------------------------------------------------------*/
@@ -185,6 +185,28 @@ combo_at_least_one_sub_dish_has_source_from_mirror (Dish_t *combo_dish, const ch
 
   return false;
 }
+
+
+
+/**
+ * @brief 判断 `combo_dish` 是否包含指定的 `sub_dish`
+ */
+bool
+combo_has_sub_dish (Dish_t *combo_dish, Dish_t *sub_dish)
+{
+  if (!combo_dish || !dish_has_sub_dishes(combo_dish))
+    chsrc_breakdown ("该套餐定义有问题");
+
+  for (size_t i=0; i < xy_seq_len(combo_dish->sub_dishes); i++)
+    {
+      Dish_t *d = xy_seq_at (combo_dish->sub_dishes, i);
+      if (d == sub_dish)
+        return true;
+    }
+
+  return false;
+}
+
 
 
 Source_t
