@@ -9,7 +9,7 @@
  *               | @Mikachu2333
  *               |
  * Created On    : <2023-08-29>
- * Last Modified : <2026-09-01>
+ * Last Modified : <2026-09-05>
  *
  * framework foundation
  * ------------------------------------------------------------*/
@@ -196,7 +196,12 @@ chsrc_in_standalone_mode()
 #endif
 #define chsrc_verbose(str) xy_info(App_Name "(VERBOSE)",str)
 /* 多语句必须括起来，否则在不带 { } 的 if else 等语句中会出错 */
-#define chsrc_breakdown(reason) { xy_error(App_Name "(BREAKDOWN)",reason); exit(Exit_MaintainerCause); }
+#define chsrc_breakdown(reason) { \
+  char *file = " (" __FILE__ ":"; \
+  char *line = xy_2strcat(xy_int2str(__LINE__), ")"); \
+  char *loc = xy_2strcat(file, line); \
+  xy_error(App_Name "(BREAKDOWN)", xy_2strcat(reason, loc)); \
+  exit(Exit_MaintainerCause); }
 
 
 /* 2系列都是带有括号的 */
