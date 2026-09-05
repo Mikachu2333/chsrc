@@ -5,7 +5,7 @@
  ! Config Authors: @ccmywish
  ! Contributors  : Nil Null <nil@null.org>
  ! Created On    : <2025-07-22>
- ! Last Modified : <2026-08-14>
+ ! Last Modified : <2026-09-05>
  ! ---------------------------------------------------------- -->
 
 # [rawstr4c] input for chsrc
@@ -72,8 +72,8 @@
    chsrc 尊重贡献者，我们甚至拥有 贡献者(Contributor_t) 这个结构体，所有贡献者的
    信息直接进入运行时流动，永远不会仅作为注释被编译器抹去。
 
-   chsrc 的代码是有趣的，"餐厅比喻" 贯穿了整个程序，chsrc 作为服务员接受用户对于某个
-   菜品(dish)的请求(get,set,ls)，后厨按需备菜(prepare)，主厨(chef)和调味师(saucier)
+   chsrc 的代码是有趣的，"餐厅比喻" 贯穿了整个程序，chsrc 作为服务员(waiter)接受客人
+   对某菜品(dish)的请求(get,set,ls)，后厨按需备菜(prepare)，主厨(chef)和调味师(saucier)
    依据菜谱(recipe)出餐。换源(source)，就是切换该菜品食材的供应商(provider/mirror)
 
    源代码地址: https://github.com/RubyMetric/chsrc
@@ -128,7 +128,7 @@ MAINTAIN:
    them flows into runtime, and will never be erased by the compiler merely as comments.
 
    chsrc is interesting. The "restaurant metaphor" runs through the entire program. chsrc
-   acts as a waiter, accepting users' requests (get, set, ls) for a certain "dish". The
+   acts as a "waiter", accepting users' requests (get, set, ls) for a certain "dish". The
    kitchen "prepare"s the ingredients as needed. The "chef" and the "saucier" follow the
    "recipe" to serve the dish. Changing "source"s means changing the "provider" of the
    ingredients for that dish.
