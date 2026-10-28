@@ -13,6 +13,7 @@
 
 #include "../src/framework/base.c"
 #include "../src/framework/OS.c"
+#include "../src/framework/env.c"
 
 int
 main (int argc, char const *argv[])
