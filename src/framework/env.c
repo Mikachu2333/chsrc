@@ -1735,6 +1735,914 @@ env_query_persisted_posix (const char *name, bool *out_found, char **out_val, ch
 
 
 /* ============================================================
+ * UTF-8 <-> UTF-16LE 编解码与 .reg 备份序列化（纯 C 跨平台可单测）
+ * ============================================================ */
+
+static void
+env_u16_push (uint16_t **buf, size_t *len, size_t *cap, uint16_t unit)
+{
+  if (*len + 2 > *cap)
+    {
+      *cap *= 2;
+      uint16_t *grown = realloc (*buf, (*cap) * sizeof (uint16_t));
+      if (!grown)
+        xy_throw ("Memory allocation failed in env_u16_push");
+      *buf = grown;
+    }
+  (*buf)[(*len)++] = unit;
+}
+
+static void
+env_utf8_to_utf16le (const char *utf8, uint16_t **out_u16, size_t *out_u16_len)
+{
+  size_t    cap = 64;
+  size_t    len = 0;
+  uint16_t *buf = xy_malloc0 (cap * sizeof (uint16_t));
+
+  const unsigned char *s = (const unsigned char *) (utf8 ? utf8 : "");
+  size_t i = 0;
+
+  while ('\0' != s[i])
+    {
+      uint32_t cp = 0;
+      unsigned char b0 = s[i];
+
+      if (b0 < 0x80)
+        {
+          cp = b0;
+          i += 1;
+        }
+      else if ((b0 & 0xE0) == 0xC0 && (s[i + 1] & 0xC0) == 0x80)
+        {
+          cp = ((uint32_t) (b0 & 0x1F) << 6) | (uint32_t) (s[i + 1] & 0x3F);
+          if (cp < 0x80)
+            cp = 0xFFFD;
+          i += 2;
+        }
+      else if (   (b0 & 0xF0) == 0xE0
+               && (s[i + 1] & 0xC0) == 0x80
+               && (s[i + 2] & 0xC0) == 0x80)
+        {
+          cp =   ((uint32_t) (b0 & 0x0F) << 12)
+               | ((uint32_t) (s[i + 1] & 0x3F) << 6)
+               |  (uint32_t) (s[i + 2] & 0x3F);
+          if (cp < 0x800 || (cp >= 0xD800 && cp <= 0xDFFF))
+            cp = 0xFFFD;
+          i += 3;
+        }
+      else if (   (b0 & 0xF8) == 0xF0
+               && (s[i + 1] & 0xC0) == 0x80
+               && (s[i + 2] & 0xC0) == 0x80
+               && (s[i + 3] & 0xC0) == 0x80)
+        {
+          cp =   ((uint32_t) (b0 & 0x07) << 18)
+               | ((uint32_t) (s[i + 1] & 0x3F) << 12)
+               | ((uint32_t) (s[i + 2] & 0x3F) << 6)
+               |  (uint32_t) (s[i + 3] & 0x3F);
+          if (cp < 0x10000 || cp > 0x10FFFF)
+            cp = 0xFFFD;
+          i += 4;
+        }
+      else
+        {
+          cp = 0xFFFD;
+          i += 1;
+        }
+
+      if (cp <= 0xFFFF)
+        {
+          env_u16_push (&buf, &len, &cap, (uint16_t) cp);
+        }
+      else
+        {
+          uint32_t v = cp - 0x10000;
+          env_u16_push (&buf, &len, &cap, (uint16_t) (0xD800 + (v >> 10)));
+          env_u16_push (&buf, &len, &cap, (uint16_t) (0xDC00 + (v & 0x3FF)));
+        }
+    }
+
+  buf[len] = 0;
+  *out_u16     = buf;
+  *out_u16_len = len;
+}
+
+static char *
+env_utf16le_to_utf8 (const uint16_t *u16, size_t u16_len)
+{
+  while (u16_len > 0 && 0 == u16[u16_len - 1])
+    {
+      u16_len--;
+    }
+
+  EnvBuf_t out;
+  env_buf_init (&out);
+
+  size_t i = 0;
+  while (i < u16_len)
+    {
+      uint32_t cp = u16[i++];
+      if (cp >= 0xD800 && cp <= 0xDBFF)
+        {
+          if (i < u16_len && u16[i] >= 0xDC00 && u16[i] <= 0xDFFF)
+            {
+              uint32_t low = u16[i++];
+              cp = 0x10000 + (((cp - 0xD800) << 10) | (low - 0xDC00));
+            }
+          else
+            {
+              cp = 0xFFFD;
+            }
+        }
+      else if (cp >= 0xDC00 && cp <= 0xDFFF)
+        {
+          cp = 0xFFFD;
+        }
+
+      if (cp < 0x80)
+        {
+          env_buf_append_char (&out, (char) cp);
+        }
+      else if (cp < 0x800)
+        {
+          env_buf_append_char (&out, (char) (0xC0 | (cp >> 6)));
+          env_buf_append_char (&out, (char) (0x80 | (cp & 0x3F)));
+        }
+      else if (cp < 0x10000)
+        {
+          env_buf_append_char (&out, (char) (0xE0 | (cp >> 12)));
+          env_buf_append_char (&out, (char) (0x80 | ((cp >> 6) & 0x3F)));
+          env_buf_append_char (&out, (char) (0x80 | (cp & 0x3F)));
+        }
+      else
+        {
+          env_buf_append_char (&out, (char) (0xF0 | (cp >> 18)));
+          env_buf_append_char (&out, (char) (0x80 | ((cp >> 12) & 0x3F)));
+          env_buf_append_char (&out, (char) (0x80 | ((cp >> 6) & 0x3F)));
+          env_buf_append_char (&out, (char) (0x80 | (cp & 0x3F)));
+        }
+    }
+
+  return env_buf_take (&out);
+}
+
+typedef struct EnvRegSnapshot_t
+{
+  const char    *name;
+  bool           existed;
+  uint32_t       reg_type;     /* 1 = REG_SZ, 2 = REG_EXPAND_SZ 等 */
+  char          *utf8_sz_val;  /* REG_SZ / REG_EXPAND_SZ 解码文本 */
+  unsigned char *raw_bytes;    /* 原始字节快照 */
+  size_t         raw_len;
+}
+EnvRegSnapshot_t;
+
+static void
+env_append_reg_escaped_str (EnvBuf_t *b, const char *s)
+{
+  if (!s)
+    return;
+  for (size_t i = 0; '\0' != s[i]; i++)
+    {
+      if ('\\' == s[i] || '"' == s[i])
+        env_buf_append_char (b, '\\');
+      env_buf_append_char (b, s[i]);
+    }
+}
+
+/**
+ * 生成带 UTF-16LE BOM (0xFF 0xFE) 的标准 Windows Registry Editor Version 5.00 备份字节流
+ */
+static unsigned char *
+env_build_reg_backup_bytes (const char             *key_path,
+                            const EnvRegSnapshot_t *snaps,
+                            size_t                  snap_count,
+                            size_t                 *out_byte_len)
+{
+  EnvBuf_t txt;
+  env_buf_init (&txt);
+
+  env_buf_append_str (&txt, "Windows Registry Editor Version 5.00\r\n\r\n[");
+  env_buf_append_str (&txt, key_path);
+  env_buf_append_str (&txt, "]\r\n");
+
+  for (size_t i = 0; i < snap_count; i++)
+    {
+      env_buf_append_char (&txt, '"');
+      env_append_reg_escaped_str (&txt, snaps[i].name);
+      env_buf_append_str (&txt, "\"=");
+
+      if (!snaps[i].existed)
+        {
+          env_buf_append_str (&txt, "-\r\n");
+        }
+      else if (1 == snaps[i].reg_type && NULL != snaps[i].utf8_sz_val)
+        {
+          env_buf_append_char (&txt, '"');
+          env_append_reg_escaped_str (&txt, snaps[i].utf8_sz_val);
+          env_buf_append_str (&txt, "\"\r\n");
+        }
+      else
+        {
+          char hdr[32];
+          snprintf (hdr, sizeof (hdr), "hex(%x):", (unsigned int) snaps[i].reg_type);
+          env_buf_append_str (&txt, hdr);
+          for (size_t b = 0; b < snaps[i].raw_len; b++)
+            {
+              char hx[8];
+              snprintf (hx, sizeof (hx), "%s%02x", (b > 0 ? "," : ""), snaps[i].raw_bytes[b]);
+              env_buf_append_str (&txt, hx);
+            }
+          env_buf_append_str (&txt, "\r\n");
+        }
+    }
+
+  env_buf_append_str (&txt, "\r\n");
+
+  uint16_t *u16     = NULL;
+  size_t    u16_len = 0;
+  env_utf8_to_utf16le (txt.data, &u16, &u16_len);
+  env_buf_free (&txt);
+
+  size_t         total_bytes = 2 + u16_len * 2;
+  unsigned char *bytes       = xy_malloc0 (total_bytes + 2);
+
+  /* UTF-16LE BOM */
+  bytes[0] = 0xFF;
+  bytes[1] = 0xFE;
+
+  for (size_t i = 0; i < u16_len; i++)
+    {
+      bytes[2 + i * 2]     = (unsigned char) (u16[i] & 0xFF);
+      bytes[2 + i * 2 + 1] = (unsigned char) ((u16[i] >> 8) & 0xFF);
+    }
+
+  free (u16);
+  *out_byte_len = total_bytes;
+  return bytes;
+}
+
+
+/* ============================================================
+ * Windows 注册表后端（Reg*W + .reg 备份与失败自动回滚 + WM_SETTINGCHANGE）
+ * ============================================================ */
+
+#ifdef XY_Build_On_Windows
+
+#define ENV_WIN_HKCU_SUBKEY   L"Environment"
+#define ENV_WIN_HKLM_SUBKEY   L"SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
+#define ENV_WIN_HKCU_REGPATH  "HKEY_CURRENT_USER\\Environment"
+#define ENV_WIN_HKLM_REGPATH  "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
+
+static unsigned int Env_Win_Backup_Seq       = 0;
+static bool         Env_Win_Combo_HKCU_Saved = false;
+static bool         Env_Win_Combo_HKLM_Saved = false;
+static int          Env_Win_Last_Combo_Depth = 0;
+
+static void
+env_free_reg_snapshots (EnvRegSnapshot_t *snaps, size_t count)
+{
+  if (!snaps)
+    return;
+  for (size_t i = 0; i < count; i++)
+    {
+      if (snaps[i].utf8_sz_val) free (snaps[i].utf8_sz_val);
+      if (snaps[i].raw_bytes)   free (snaps[i].raw_bytes);
+    }
+  free (snaps);
+}
+
+static size_t
+env_wstrlen (const WCHAR *ws)
+{
+  size_t n = 0;
+  if (!ws)
+    return 0;
+  while (0 != ws[n])
+    n++;
+  return n;
+}
+
+static EnvOp_t
+env_read_win_snapshot_one (HKEY hkey, const char *name, EnvRegSnapshot_t *snap, char **out_err)
+{
+  snap->name        = name;
+  snap->existed     = false;
+  snap->reg_type    = 0;
+  snap->utf8_sz_val = NULL;
+  snap->raw_bytes   = NULL;
+  snap->raw_len     = 0;
+
+  if (!hkey)
+    return Env_OK;
+
+  uint16_t *wname     = NULL;
+  size_t    wname_len = 0;
+  env_utf8_to_utf16le (name, &wname, &wname_len);
+  (void) wname_len;
+
+  DWORD reg_type = 0;
+  DWORD cb_data  = 0;
+  LONG  st       = RegQueryValueExW (hkey, (LPCWSTR) wname, NULL, &reg_type, NULL, &cb_data);
+
+  if (ERROR_FILE_NOT_FOUND == st)
+    {
+      free (wname);
+      return Env_OK;
+    }
+  if (ERROR_SUCCESS != st)
+    {
+      free (wname);
+      char *code_str = xy_int2str ((int) st);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strcat (4, "Failed to query Windows Registry value `", name, "` (error ", code_str)
+            : xy_strcat (4, "读取 Windows 注册表变量 `", name, "` 失败，错误码: ", code_str);
+        }
+      free (code_str);
+      return Env_TargetUnwritable;
+    }
+
+  unsigned char *raw = xy_malloc0 ((size_t) cb_data + sizeof (WCHAR));
+  DWORD cb_read = cb_data;
+  st = RegQueryValueExW (hkey, (LPCWSTR) wname, NULL, &reg_type, (LPBYTE) raw, &cb_read);
+  free (wname);
+
+  if (ERROR_SUCCESS != st)
+    {
+      free (raw);
+      char *code_str = xy_int2str ((int) st);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strcat (4, "Failed to read Windows Registry value `", name, "` (error ", code_str)
+            : xy_strcat (4, "读取 Windows 注册表变量 `", name, "` 内容失败，错误码: ", code_str);
+        }
+      free (code_str);
+      return Env_TargetUnwritable;
+    }
+
+  snap->existed   = true;
+  snap->reg_type  = (uint32_t) reg_type;
+  snap->raw_bytes = raw;
+  snap->raw_len   = (size_t) cb_read;
+
+  if (REG_SZ == reg_type || REG_EXPAND_SZ == reg_type)
+    {
+      size_t u16_units = (size_t) cb_read / sizeof (WCHAR);
+      uint16_t *u16_aligned = xy_malloc0 ((u16_units + 1) * sizeof (uint16_t));
+      for (size_t u = 0; u < u16_units; u++)
+        {
+          u16_aligned[u] =   (uint16_t) raw[u * 2]
+                           | ((uint16_t) raw[u * 2 + 1] << 8);
+        }
+      snap->utf8_sz_val = env_utf16le_to_utf8 (u16_aligned, u16_units);
+      free (u16_aligned);
+    }
+
+  return Env_OK;
+}
+
+/**
+ * 将整个当前注册表键的原有值连同本次新增变量的删除标记 ("NAME"=-) 导出到 %TEMP%\chsrc-<PID>\env-hkcu|hklm-<seq>.reg
+ */
+static bool
+env_write_win_reg_backup (HKEY                    hkey_read,
+                          bool                    is_system,
+                          const EnvRegSnapshot_t *snaps,
+                          size_t                  snap_count,
+                          char                  **out_reg_utf8_path,
+                          char                  **out_err)
+{
+  *out_reg_utf8_path = NULL;
+
+  /* Combo dish 同一根键去重：若同一轮 combo 已完整导出过该根键原始镜像，无需重复覆盖 */
+  if (chsrc_in_dish_group_mode ())
+    {
+      if (ProgStatus.ComboStackDepth != Env_Win_Last_Combo_Depth)
+        {
+          Env_Win_Last_Combo_Depth = ProgStatus.ComboStackDepth;
+          Env_Win_Combo_HKCU_Saved = false;
+          Env_Win_Combo_HKLM_Saved = false;
+        }
+      if (!is_system && Env_Win_Combo_HKCU_Saved)
+        return true;
+      if (is_system && Env_Win_Combo_HKLM_Saved)
+        return true;
+    }
+  else
+    {
+      Env_Win_Combo_HKCU_Saved = false;
+      Env_Win_Combo_HKLM_Saved = false;
+    }
+
+  WCHAR temp_dir[MAX_PATH + 16];
+  DWORD tlen = GetTempPathW (MAX_PATH + 1, temp_dir);
+  if (0 == tlen || tlen > MAX_PATH + 1)
+    {
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strdup ("GetTempPathW failed; unable to locate %TEMP% directory for Registry backup")
+            : xy_strdup ("无法获取 %TEMP% 临时目录路径，已中止注册表修改");
+        }
+      return false;
+    }
+
+  char *temp_utf8 = env_utf16le_to_utf8 ((const uint16_t *) temp_dir, env_wstrlen (temp_dir));
+  char  sub_buf[64];
+  snprintf (sub_buf, sizeof (sub_buf), "chsrc-%lu", (unsigned long) GetCurrentProcessId ());
+
+  bool has_sep = (xy_str_end_with (temp_utf8, "\\") || xy_str_end_with (temp_utf8, "/"));
+  char *dir_utf8 = has_sep ? xy_2strcat (temp_utf8, sub_buf)
+                           : xy_strcat (3, temp_utf8, "\\", sub_buf);
+  free (temp_utf8);
+
+  uint16_t *dir_w     = NULL;
+  size_t    dir_w_len = 0;
+  env_utf8_to_utf16le (dir_utf8, &dir_w, &dir_w_len);
+  (void) dir_w_len;
+
+  if (!CreateDirectoryW ((LPCWSTR) dir_w, NULL))
+    {
+      DWORD err = GetLastError ();
+      if (ERROR_ALREADY_EXISTS != err)
+        {
+          char *err_s = xy_int2str ((int) err);
+          if (out_err)
+            {
+              *out_err = ENGLISH
+                ? xy_strcat (4, "Failed to create Registry backup directory `", dir_utf8, "` (Win32 error ", err_s)
+                : xy_strcat (4, "无法创建注册表备份目录 `", dir_utf8, "`，错误码: ", err_s);
+            }
+          free (err_s);
+          free (dir_w);
+          free (dir_utf8);
+          return false;
+        }
+    }
+  free (dir_w);
+
+  Env_Win_Backup_Seq++;
+  char file_name[64];
+  snprintf (file_name, sizeof (file_name), "env-%s-%u.reg",
+            is_system ? "hklm" : "hkcu", Env_Win_Backup_Seq);
+
+  char *reg_utf8 = xy_strcat (3, dir_utf8, "\\", file_name);
+  free (dir_utf8);
+
+  /* 若处于 combo 模式，尽量把该键下全部现有值也一并纳入首次完整快照 */
+  EnvRegSnapshot_t *export_snaps = NULL;
+  size_t            export_count = 0;
+  bool              own_export   = false;
+
+  if (chsrc_in_dish_group_mode () && NULL != hkey_read)
+    {
+      DWORD val_count    = 0;
+      DWORD max_name_len = 0;
+      DWORD max_data_len = 0;
+      if (ERROR_SUCCESS == RegQueryInfoKeyW (hkey_read, NULL, NULL, NULL, NULL, NULL, NULL,
+                                             &val_count, &max_name_len, &max_data_len, NULL, NULL))
+        {
+          export_snaps = xy_malloc0 ((val_count + snap_count + 1) * sizeof (EnvRegSnapshot_t));
+          own_export   = true;
+
+          WCHAR *wname_buf = xy_malloc0 ((max_name_len + 4) * sizeof (WCHAR));
+          for (DWORD idx = 0; idx < val_count; idx++)
+            {
+              DWORD cch_name = max_name_len + 2;
+              LONG  est      = RegEnumValueW (hkey_read, idx, wname_buf, &cch_name,
+                                              NULL, NULL, NULL, NULL);
+              if (ERROR_SUCCESS != est)
+                continue;
+              char *ename = env_utf16le_to_utf8 ((const uint16_t *) wname_buf, (size_t) cch_name);
+              if (Env_OK == env_read_win_snapshot_one (hkey_read, ename, &export_snaps[export_count], NULL))
+                {
+                  export_snaps[export_count].name = ename;
+                  export_count++;
+                }
+              else
+                {
+                  free (ename);
+                }
+            }
+          free (wname_buf);
+
+          /* 追加本次将写入但原先不存在的变量（导出为 "NAME"=-） */
+          for (size_t s = 0; s < snap_count; s++)
+            {
+              if (!snaps[s].existed)
+                {
+                  export_snaps[export_count].name    = xy_strdup (snaps[s].name);
+                  export_snaps[export_count].existed = false;
+                  export_count++;
+                }
+            }
+        }
+    }
+
+  const EnvRegSnapshot_t *src_snaps = own_export ? export_snaps : snaps;
+  size_t                  src_count = own_export ? export_count : snap_count;
+
+  size_t         reg_byte_len = 0;
+  unsigned char *reg_bytes    = env_build_reg_backup_bytes (
+    is_system ? ENV_WIN_HKLM_REGPATH : ENV_WIN_HKCU_REGPATH,
+    src_snaps, src_count, &reg_byte_len);
+
+  if (own_export)
+    {
+      for (size_t i = 0; i < export_count; i++)
+        {
+          free ((void *) export_snaps[i].name);
+        }
+      env_free_reg_snapshots (export_snaps, export_count);
+    }
+
+  uint16_t *reg_w     = NULL;
+  size_t    reg_w_len = 0;
+  env_utf8_to_utf16le (reg_utf8, &reg_w, &reg_w_len);
+  (void) reg_w_len;
+
+  HANDLE hf = CreateFileW ((LPCWSTR) reg_w, GENERIC_WRITE, 0, NULL,
+                           CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  free (reg_w);
+
+  if (INVALID_HANDLE_VALUE == hf)
+    {
+      DWORD err = GetLastError ();
+      char *err_s = xy_int2str ((int) err);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strcat (4, "Failed to create Registry backup file `", reg_utf8, "` (Win32 error ", err_s)
+            : xy_strcat (4, "无法创建注册表备份文件 `", reg_utf8, "`（请检查磁盘空间与权限），错误码: ", err_s);
+        }
+      free (err_s);
+      free (reg_bytes);
+      free (reg_utf8);
+      return false;
+    }
+
+  DWORD written = 0;
+  BOOL  wok     = WriteFile (hf, reg_bytes, (DWORD) reg_byte_len, &written, NULL);
+  DWORD werr    = wok ? 0 : GetLastError ();
+  CloseHandle (hf);
+  free (reg_bytes);
+
+  if (!wok || written != (DWORD) reg_byte_len)
+    {
+      char *err_s = xy_int2str ((int) werr);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strcat (4, "Failed to write Registry backup file `", reg_utf8, "` (Win32 error ", err_s)
+            : xy_strcat (4, "写入注册表备份文件 `", reg_utf8, "` 失败（磁盘可能已满），错误码: ", err_s);
+        }
+      free (err_s);
+      free (reg_utf8);
+      return false;
+    }
+
+  if (chsrc_in_dish_group_mode ())
+    {
+      if (is_system) Env_Win_Combo_HKLM_Saved = true;
+      else           Env_Win_Combo_HKCU_Saved = true;
+    }
+
+  char *bk_msg = ENGLISH
+    ? xy_2strcat ("Backed up Windows Registry environment to: ", reg_utf8)
+    : xy_2strcat ("已备份 Windows 注册表环境变量至: ", reg_utf8);
+  chsrc_log2 (bk_msg);
+  free (bk_msg);
+
+  *out_reg_utf8_path = reg_utf8;
+  return true;
+}
+
+static void
+env_rollback_win_registry (HKEY hkey_write, const EnvRegSnapshot_t *snaps, size_t count)
+{
+  for (size_t i = 0; i < count; i++)
+    {
+      uint16_t *wname     = NULL;
+      size_t    wname_len = 0;
+      env_utf8_to_utf16le (snaps[i].name, &wname, &wname_len);
+      (void) wname_len;
+
+      if (!snaps[i].existed)
+        {
+          RegDeleteValueW (hkey_write, (LPCWSTR) wname);
+        }
+      else
+        {
+          RegSetValueExW (hkey_write, (LPCWSTR) wname, 0,
+                          (DWORD) snaps[i].reg_type,
+                          (const BYTE *) snaps[i].raw_bytes,
+                          (DWORD) snaps[i].raw_len);
+        }
+      free (wname);
+    }
+}
+
+static EnvOp_t
+env_apply_windows (const EnvKV_t *kvs, size_t kv_count, char **out_err)
+{
+  bool is_system = chsrc_in_system_scope_mode ();
+
+  if (is_system && !chsrc_is_root () && !in_dry_run_mode ())
+    {
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strdup ("Please run the terminal as Administrator to ensure the necessary permissions")
+            : xy_strdup ("请以管理员身份运行终端来保证必要的权限");
+        }
+      return Env_NoPermission;
+    }
+
+  for (size_t k = 0; k < kv_count; k++)
+    {
+      if (!env_validate_value (kvs[k].value, EnvDialect_WinRegistry, NULL))
+        {
+          if (out_err)
+            {
+              *out_err = ENGLISH
+                ? xy_strcat (3, "Value for `", kvs[k].name,
+                             "` contains invalid control characters or newlines for Windows Registry")
+                : xy_strcat (3, "变量 `", kvs[k].name,
+                             "` 的值含有换行或非法控制字符，无法写入 Windows 注册表");
+            }
+          return Env_BadValue;
+        }
+    }
+
+  HKEY    root_key = is_system ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  LPCWSTR sub_key  = is_system ? ENV_WIN_HKLM_SUBKEY : ENV_WIN_HKCU_SUBKEY;
+
+  HKEY hkey_read = NULL;
+  LONG st = RegOpenKeyExW (root_key, sub_key, 0, KEY_QUERY_VALUE, &hkey_read);
+  if (ERROR_FILE_NOT_FOUND == st)
+    {
+      hkey_read = NULL;
+    }
+  else if (ERROR_ACCESS_DENIED == st)
+    {
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strdup ("Access denied when opening Windows Registry Environment key")
+            : xy_strdup ("打开 Windows 注册表环境变量键时权限不足");
+        }
+      return Env_NoPermission;
+    }
+  else if (ERROR_SUCCESS != st)
+    {
+      char *code_s = xy_int2str ((int) st);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_2strcat ("Failed to open Windows Registry Environment key, error: ", code_s)
+            : xy_2strcat ("打开 Windows 注册表环境变量键失败，错误码: ", code_s);
+        }
+      free (code_s);
+      return Env_TargetUnwritable;
+    }
+
+  EnvRegSnapshot_t *snaps = xy_malloc0 (kv_count * sizeof (EnvRegSnapshot_t));
+  for (size_t k = 0; k < kv_count; k++)
+    {
+      EnvOp_t qrc = env_read_win_snapshot_one (hkey_read, kvs[k].name, &snaps[k], out_err);
+      if (Env_OK != qrc)
+        {
+          if (hkey_read) RegCloseKey (hkey_read);
+          env_free_reg_snapshots (snaps, k);
+          return qrc;
+        }
+    }
+
+  /* 幂等判定：检查是否所有目标变量在注册表中已完全一致 */
+  bool any_changed = false;
+  for (size_t k = 0; k < kv_count; k++)
+    {
+      if (NULL == kvs[k].value)
+        {
+          if (snaps[k].existed)
+            {
+              any_changed = true;
+              break;
+            }
+        }
+      else
+        {
+          if (   !snaps[k].existed
+              || REG_SZ != snaps[k].reg_type
+              || NULL == snaps[k].utf8_sz_val
+              || !xy_streql (snaps[k].utf8_sz_val, kvs[k].value))
+            {
+              any_changed = true;
+              break;
+            }
+        }
+    }
+
+  if (!any_changed)
+    {
+      if (hkey_read) RegCloseKey (hkey_read);
+      env_free_reg_snapshots (snaps, kv_count);
+      return Env_Unchanged;
+    }
+
+  /* Dry-run 模式不创建 .reg 文件、不修改注册表、不发送广播 */
+  if (in_dry_run_mode ())
+    {
+      if (hkey_read) RegCloseKey (hkey_read);
+      env_free_reg_snapshots (snaps, kv_count);
+      const char *reg_disp = is_system ? ENV_WIN_HKLM_REGPATH : ENV_WIN_HKCU_REGPATH;
+      log_for_file_write (reg_disp, true);
+      return Env_OK;
+    }
+
+  char *backup_path = NULL;
+  if (!env_write_win_reg_backup (hkey_read, is_system, snaps, kv_count, &backup_path, out_err))
+    {
+      if (hkey_read) RegCloseKey (hkey_read);
+      env_free_reg_snapshots (snaps, kv_count);
+      return Env_TargetUnwritable;
+    }
+
+  if (hkey_read)
+    {
+      RegCloseKey (hkey_read);
+      hkey_read = NULL;
+    }
+
+  HKEY  hkey_write = NULL;
+  DWORD disp       = 0;
+  st = RegCreateKeyExW (root_key, sub_key, 0, NULL, REG_OPTION_NON_VOLATILE,
+                        KEY_QUERY_VALUE | KEY_SET_VALUE, NULL, &hkey_write, &disp);
+  if (ERROR_ACCESS_DENIED == st)
+    {
+      if (backup_path) free (backup_path);
+      env_free_reg_snapshots (snaps, kv_count);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strdup ("Access denied when opening Windows Registry Environment key for writing")
+            : xy_strdup ("以写入权限打开 Windows 注册表环境变量键被拒绝");
+        }
+      return Env_NoPermission;
+    }
+  if (ERROR_SUCCESS != st)
+    {
+      char *code_s = xy_int2str ((int) st);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_2strcat ("Failed to open Windows Registry Environment key for writing, error: ", code_s)
+            : xy_2strcat ("打开 Windows 注册表写入句柄失败，错误码: ", code_s);
+        }
+      free (code_s);
+      if (backup_path) free (backup_path);
+      env_free_reg_snapshots (snaps, kv_count);
+      return Env_TargetUnwritable;
+    }
+
+  for (size_t k = 0; k < kv_count; k++)
+    {
+      uint16_t *wname     = NULL;
+      size_t    wname_len = 0;
+      env_utf8_to_utf16le (kvs[k].name, &wname, &wname_len);
+      (void) wname_len;
+
+      LONG op_st = ERROR_SUCCESS;
+      if (NULL == kvs[k].value)
+        {
+          op_st = RegDeleteValueW (hkey_write, (LPCWSTR) wname);
+          if (ERROR_FILE_NOT_FOUND == op_st)
+            op_st = ERROR_SUCCESS;
+        }
+      else
+        {
+          uint16_t *wval     = NULL;
+          size_t    wval_len = 0;
+          env_utf8_to_utf16le (kvs[k].value, &wval, &wval_len);
+          DWORD cb = (DWORD) ((wval_len + 1) * sizeof (WCHAR));
+          op_st = RegSetValueExW (hkey_write, (LPCWSTR) wname, 0, REG_SZ,
+                                  (const BYTE *) wval, cb);
+          free (wval);
+        }
+      free (wname);
+
+      if (ERROR_SUCCESS != op_st)
+        {
+          /* 立即回滚已修改的前序键值 */
+          env_rollback_win_registry (hkey_write, snaps, k);
+          RegCloseKey (hkey_write);
+
+          char *code_s  = xy_int2str ((int) op_st);
+          const char *b = backup_path ? backup_path : "(combo backup)";
+          if (out_err)
+            {
+              *out_err = ENGLISH
+                ? xy_strcat (6, "Failed to update Registry value `", kvs[k].name,
+                             "` (error ", code_s,
+                             "); rolled back previous changes. Backup saved at: ", b)
+                : xy_strcat (6, "更新注册表变量 `", kvs[k].name,
+                             "` 失败（错误码 ", code_s,
+                             "），已自动回滚前序修改。原始备份位于: ", b);
+            }
+          free (code_s);
+          if (backup_path) free (backup_path);
+          env_free_reg_snapshots (snaps, kv_count);
+          return Env_TargetUnwritable;
+        }
+    }
+
+  RegCloseKey (hkey_write);
+  if (backup_path) free (backup_path);
+  env_free_reg_snapshots (snaps, kv_count);
+
+  const char *reg_disp = is_system ? ENV_WIN_HKLM_REGPATH : ENV_WIN_HKCU_REGPATH;
+  log_for_file_write (reg_disp, true);
+
+  /* 广播 WM_SETTINGCHANGE，通知 Explorer 与现代终端刷新环境块（超时或失败静默忽略） */
+  DWORD_PTR bc_res = 0;
+  SendMessageTimeoutW (HWND_BROADCAST, WM_SETTINGCHANGE, 0,
+                       (LPARAM) L"Environment", SMTO_ABORTIFHUNG,
+                       1500, &bc_res);
+
+  return Env_OK;
+}
+
+static EnvOp_t
+env_query_persisted_windows (const char *name, bool *out_found, char **out_val, char **out_err)
+{
+  *out_found = false;
+  *out_val   = NULL;
+
+  bool    is_system = chsrc_in_system_scope_mode ();
+  HKEY    root_key  = is_system ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+  LPCWSTR sub_key   = is_system ? ENV_WIN_HKLM_SUBKEY : ENV_WIN_HKCU_SUBKEY;
+
+  HKEY hkey = NULL;
+  LONG st   = RegOpenKeyExW (root_key, sub_key, 0, KEY_QUERY_VALUE, &hkey);
+  if (ERROR_FILE_NOT_FOUND == st)
+    return Env_OK;
+  if (ERROR_ACCESS_DENIED == st)
+    {
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strdup ("Access denied when reading Windows Registry Environment key")
+            : xy_strdup ("读取 Windows 注册表环境变量键权限不足");
+        }
+      return Env_NoPermission;
+    }
+  if (ERROR_SUCCESS != st)
+    {
+      char *code_s = xy_int2str ((int) st);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_2strcat ("Failed to open Windows Registry Environment key, error: ", code_s)
+            : xy_2strcat ("打开 Windows 注册表环境变量键失败，错误码: ", code_s);
+        }
+      free (code_s);
+      return Env_TargetUnwritable;
+    }
+
+  EnvRegSnapshot_t snap;
+  EnvOp_t qrc = env_read_win_snapshot_one (hkey, name, &snap, out_err);
+  RegCloseKey (hkey);
+  if (Env_OK != qrc)
+    return qrc;
+
+  if (!snap.existed)
+    return Env_OK;
+
+  if (REG_SZ != snap.reg_type && REG_EXPAND_SZ != snap.reg_type)
+    {
+      if (snap.raw_bytes) free (snap.raw_bytes);
+      if (snap.utf8_sz_val) free (snap.utf8_sz_val);
+      if (out_err)
+        {
+          *out_err = ENGLISH
+            ? xy_strcat (3, "Windows Registry value `", name, "` has unsupported non-string type")
+            : xy_strcat (3, "Windows 注册表变量 `", name, "` 为非字符串类型，无法作为镜像地址解析");
+        }
+      return Env_AmbiguousTarget;
+    }
+
+  *out_found = true;
+  *out_val   = snap.utf8_sz_val;
+  if (snap.raw_bytes) free (snap.raw_bytes);
+  return Env_OK;
+}
+
+#endif /* XY_Build_On_Windows */
+
+
+/* ============================================================
  * 跨平台统一内部入口（供公开 API 与 test/fw.c 共用）
  * ============================================================ */
 
@@ -1798,11 +2706,9 @@ env_apply_kvs (const EnvKV_t *raw_kvs, size_t raw_count,
     }
 
 #ifdef XY_Build_On_Windows
-  /* Windows 注册表后端在 Phase P2 中完整实现 */
+  EnvOp_t rc = env_apply_windows (kvs, kv_count, out_err);
   free (kvs);
-  if (out_err)
-    *out_err = xy_strdup ("Windows Registry backend pending Phase P2");
-  return Env_TargetUnwritable;
+  return rc;
 #else
   EnvOp_t rc = env_apply_posix (kvs, kv_count, out_shell, out_err);
   free (kvs);
@@ -1841,9 +2747,7 @@ env_query_persisted (const char *name, bool *out_found, char **out_val, char **o
     }
 
 #ifdef XY_Build_On_Windows
-  if (out_err)
-    *out_err = xy_strdup ("Windows Registry backend pending Phase P2");
-  return Env_TargetUnwritable;
+  return env_query_persisted_windows (name, out_found, out_val, out_err);
 #else
   return env_query_persisted_posix (name, out_found, out_val, out_err);
 #endif
