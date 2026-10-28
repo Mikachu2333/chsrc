@@ -6,7 +6,7 @@
  * Contributors  : @Mikachu2333
  *               |
  * Created On    : <2024-08-09>
- * Last Modified : <2026-08-14>
+ * Last Modified : <2026-10-28>
  * -------------------------------------------------------------
  * 本文件作为一个通用模板：
  *
@@ -68,8 +68,10 @@ void
   // 做了贡献？将自己的信息加在这里！
   chef_set_sauciers (this, 2, "@nulnone", "@someone");
 
+  /* 可选枚举: ScopeCap_Unknown | ScopeCap_Unable | ScopeCap_Able_But_Not_Implemented
+   *           ScopeCap_Able_But_Just_Docs | ScopeCap_Able_And_Implemented */
   chef_set_scope_cap (this, ProjectScope, ScopeCap_Able_And_Implemented);
-  chef_set_scope_cap (this, UserScope,    ScopeCap_Able_But_NotImplemented);
+  chef_set_scope_cap (this, UserScope,    ScopeCap_Able_But_Not_Implemented);
   chef_set_scope_cap (this, SystemScope,  ScopeCap_Unable);
   chef_set_default_scope (this, UserScope);
 
@@ -100,6 +102,7 @@ void
 <category>_<dish>_getsrc (char *option)
 {
   // chsrc get <dish>
+  // 若为环境变量型 recipe，可调用: chsrc_view_env ("VAR_NAME", NULL);
 }
 
 
@@ -118,7 +121,7 @@ void
   /* 你可能想要指定不同的 dish 来使用它的源 */
   // Source_t source = chsrc_yield_source_and_confirm (&pl_pypi_dish, option);
 
-  /* 具体的换源步骤，如调用第三方命令... */
+  /* 具体的换源步骤，如调用第三方命令，或使用 chsrc_set_env / chsrc_set_env_block 持久化环境变量... */
 
   /* 最后总结输出 */
   chsrc_determine_chgtype (ChgType_xxx);

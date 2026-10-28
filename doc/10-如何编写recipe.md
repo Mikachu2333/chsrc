@@ -7,7 +7,7 @@
  ! Contributors  : @Mikachu2333
  !               |
  ! Created On    : <2024-08-19>
- ! Last Modified : <2026-09-01>
+ ! Last Modified : <2026-10-28>
  ! ---------------------------------------------------------- -->
 
 # Write A Recipe Even If You Don't Know C
@@ -82,6 +82,7 @@
     1. 看一眼就能上手的参照物是 [PHP recipe](../src/recipe/lang/PHP.c)
     2. 最好的参照物是 [Ruby recipe](../src/recipe/lang/Ruby/Ruby.c)
     3. 组换源参照物是 [JS combo recipe](../src/recipe/lang/JavaScript/JavaScript.c)
+    4. 环境变量型换源参照物是单变量的 [Pub recipe](../src/recipe/lang/Dart/Pub.c) 与多变量的 [rustup recipe](../src/recipe/lang/Rust/rustup.c)
 
 5. 在 [Wiki] 中记录的镜像站中寻找可用源；可以额外补充镜像站
 
@@ -95,6 +96,12 @@
 
     1. `framework/*.c` 中以 `chsrc_`, `chef_`, `hp_` 开头的所有函数或宏
     2. `xy.h` 中以 `xy_` 开头的所有函数或宏
+    3. 若菜品通过**环境变量**持久化换源，请统一使用 `framework/env.c` 提供的跨平台幂等接口，**切勿**手工向 `.bashrc`/`.zshrc` 追加字符串或直接调用 Windows `setx`：
+        - `chsrc_set_env (name, value)`：写入或更新单个持久化环境变量（传入 `NULL` 表示删除该变量，常用于 `_resetsrc()`）
+        - `chsrc_set_env_block (name1, value1, ..., NULL)`：原子写入或删除多个环境变量（一次备份、一次落盘/广播、一次提示）
+        - `chsrc_view_env (var1, ..., NULL)`：精确读取并展示已持久化的环境变量值（若与当前终端会话不一致会自动提示）
+        - `chsrc_get_env (name)`：读取当前进程内存中的环境变量（`return caller-free`）
+        - 作用域声明上，若某作用域官方支持但 `chsrc` 仅输出手工配置指引，可标记为 `ScopeCap_Able_But_Just_Docs`
 
     一个简单的方法是，在 VS Code 中按快捷键 `Ctrl-T` 搜索上述三种前缀
 
