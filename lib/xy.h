@@ -10,7 +10,7 @@
  *               | AnonTokio    <anontokio@163.com>
  *               |
  * Created On    : <2023-08-28>
- * Last Modified : <2026-08-13>
+ * Last Modified : <2026-10-28>
  *
  *
  *                     xy: 襄阳、咸阳
@@ -108,6 +108,11 @@ xy =
 
 
 
+/**
+ * 平台判定约定：
+ *   1. 编译期 `#ifdef XY_Build_On_Windows` 仅用于包裹 Win32 SDK 专有头文件、类型与 API 调用
+ *   2. 运行期 `if (xy.on_windows)` 用于纯 C 跨平台分支逻辑，二者真值严格一致
+ */
 #ifdef _WIN32
   #define XY_Build_On_Windows 1
 
@@ -1393,50 +1398,32 @@ xy_dir_exist (const char *path)
 {
   char *allocated_dir = NULL;
   const char *dir = path;
-  if (xy.on_windows)
+
+  if (xy_str_start_with (path, "~"))
     {
-      if (xy_str_start_with (path, "~"))
-        {
-          allocated_dir = xy_2strcat (xy_os_home, path + 1);
-          dir = allocated_dir;
-        }
+      allocated_dir = xy_2strcat (xy_os_home, path + 1);
+      dir = allocated_dir;
     }
 
-  if (xy.on_windows)
-    {
+  bool result = false;
+
 #ifdef XY_Build_On_Windows
-      // 也可以用 opendir() #include <dirent.h>
-      DWORD attr = GetFileAttributesA (dir);
-
-      bool result = false;
-      if (attr == INVALID_FILE_ATTRIBUTES)
-        {
-          // Q: 我们应该报错吗？
-          result = false;
-        }
-      else if (attr & FILE_ATTRIBUTE_DIRECTORY)
-        {
-          result = true;
-        }
-      else
-        {
-          result = false;
-        }
-      if (allocated_dir) free (allocated_dir);
-      return result;
-#endif
-    }
-  else
+  DWORD attr = GetFileAttributesA (dir);
+  if (attr != INVALID_FILE_ATTRIBUTES && (attr & FILE_ATTRIBUTE_DIRECTORY))
     {
-      char *tmp_cmd = xy_2strcat ("test -d ", dir);
-      int status = system (tmp_cmd);
-      free (tmp_cmd);
-      bool result = (0==status);
-      if (allocated_dir) free (allocated_dir);
-      return result;
+      result = true;
     }
+#else
+  DIR *d = opendir (dir);
+  if (d)
+    {
+      closedir (d);
+      result = true;
+    }
+#endif
 
-  return false;
+  if (allocated_dir) free (allocated_dir);
+  return result;
 }
 
 /**
@@ -1546,29 +1533,25 @@ xy_parent_dir (const char *path)
 void
 _xy_detect_os ()
 {
+#ifdef XY_Build_On_Windows
   /**
-   * 首先判断是否为 Windows
-   *
-   * SystemDrive 为 C:
+   * Windows 原生编译目标 (_WIN32)
+   * 使运行期 xy.on_windows 与编译期 XY_Build_On_Windows 严格等价
    */
-  char *drive = getenv ("SystemDrive");
-  if (drive)
-    {
-      char path[256];
-      /**
-       * C:\Users 目录都可能不存在！
-       * https://github.com/RubyMetric/chsrc/issues/361
-       */
-      snprintf (path, sizeof (path), "%s\\Windows", drive);
-      DIR *d = opendir (path);
-      if (d)
-        {
-          xy.on_windows = true;
-          xy.os_family = "windows";
-          closedir (d);
-          return;
-        }
-    }
+  xy.on_windows = true;
+  xy.os_family = "windows";
+  return;
+#endif
+
+#if defined(__CYGWIN__) || defined(__MSYS__)
+  /**
+   * Cygwin / MSYS2 POSIX 运行时未定义 _WIN32，无 Win32 SDK 头与注册表约定，
+   * 归入 Unix 分支处理
+   */
+  xy.on_linux = true;
+  xy.os_family = "unix";
+  return;
+#endif
 
   /* 判断 Linux */
   FILE *fp = fopen ("/proc/version", "r");
