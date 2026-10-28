@@ -4,7 +4,7 @@
  * File Authors  : @ccmywish
  * Contributors  : @Mikachu2333
  * Created On    : <2024-12-14>
- * Last Modified : <2026-08-20>
+ * Last Modified : <2026-10-28>
  *
  * 该文件最好启用 DEBUG mode 编译
  * ------------------------------------------------------------*/
@@ -75,6 +75,9 @@ main (int argc, char const *argv[])
 
   chsrc_overwrite_file ("Line999 \nLine998\nLine997\n", tmpfile);
   assert_str (xy_file_read (tmpfile), "Line999 \nLine998\nLine997\n");
+
+  chsrc_overwrite_file ("", tmpfile);
+  assert_str (xy_file_read (tmpfile), "");
 
   chsrc_log (xy_2strcat ("CPU arch = ", chsrc_get_cpuarch ()));
   print ("chsrc: CPU cores = ");
